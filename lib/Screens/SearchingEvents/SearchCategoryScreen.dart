@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:quickie_event/Constant.dart';
 import 'package:quickie_event/Screens/SearchingEvents/MapCategoryScreen.dart';
+import 'package:quickie_event/Screens/SearchingEvents/SearchScreen.dart';
 
 import '../../Widgets/SizedBoxWidget.dart';
 import '../../Widgets/TextFormWidget.dart';
@@ -36,7 +37,14 @@ class _SearchCategoryScreenState extends State<SearchCategoryScreen> {
                           _bottomSheet(context);
                         },
                         icon: Icon(Icons.compare_arrows_sharp)),
-                    prefixIcon: Icon(Icons.search),
+                    prefixIcon: IconButton(
+                        onPressed: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => SearchScreen()));
+                        },
+                        icon: Icon(Icons.search)),
                   ),
                 ),
                 Icon(Icons.close)

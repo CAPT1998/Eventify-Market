@@ -5,6 +5,7 @@ import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
 import 'package:quickie_event/Constant.dart';
 import 'package:quickie_event/Screens/EventDetails/EventDetailsScreen.dart';
 import 'package:quickie_event/Screens/Notification/NotificationScreen.dart';
+import 'package:quickie_event/Screens/VideoPlayer/VideoPlayerScreen.dart';
 import 'package:quickie_event/Widgets/SizedBoxWidget.dart';
 import 'package:quickie_event/Widgets/TextWidget.dart';
 
@@ -96,7 +97,16 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
                   scrollDirection: Axis.horizontal,
                   child: Row(
                     children: [
-                      _NearWidget(img: "1", title: "Today", color: greenColor),
+                      InkWell(
+                          onTap: () {
+                            PersistentNavBarNavigator.pushNewScreen(
+                              context,
+                              screen: VideoPlayerScreen(),
+                              withNavBar: false,
+                            );
+                          },
+                          child: _NearWidget(
+                              img: "1", title: "Today", color: greenColor)),
                       _NearWidget(
                           img: "2", title: "Trending", color: Colors.red),
                     ],
@@ -112,10 +122,11 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
                     ),
                     Spacer(),
                     TextWidget(
-                        title: "See All",
-                        fontWeight: FontWeight.w500,
-                        size: 14,
-                        color: appColor)
+                      title: "See All",
+                      fontWeight: FontWeight.w500,
+                      size: 14,
+                      color: appColor,
+                    ),
                   ],
                 ),
                 SizedBox(

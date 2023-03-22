@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
 import 'package:quickie_event/Constant.dart';
+import 'package:quickie_event/Screens/HomeScreens/FavouriteEmptyScreen.dart';
 import 'package:quickie_event/Widgets/TextWidget.dart';
 
 class FavouriteScreen extends StatefulWidget {
@@ -22,6 +24,18 @@ class _FavouriteScreenState extends State<FavouriteScreen> {
           backgroundColor: Colors.grey[50],
           elevation: 0,
           centerTitle: true,
+          actions: [
+            IconButton(
+              onPressed: () {
+                PersistentNavBarNavigator.pushNewScreen(
+                  context,
+                  screen: FavoriteEmptyScreen(),
+                  withNavBar: false,
+                );
+              },
+              icon: Icon(Icons.favorite_border,color: Colors.black,),
+            ),
+          ],
         ),
         body: Column(
           children: [

@@ -246,7 +246,7 @@ class _DetailTicketScreenState extends State<DetailTicketScreen> {
                                     color: greyColor,
                                   ),
                                 ),
-                                Image.asset("assets/img/var.png"),
+                                Image.asset("assets/img/qrcode.png",height: height*0.3,),
                                 SizedBox(
                                   height: 20,
                                 ),
