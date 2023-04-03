@@ -1,8 +1,8 @@
 import 'package:favorite_button/favorite_button.dart';
 import 'package:flutter/material.dart';
 import 'package:quickie_event/Constant.dart';
-import 'package:quickie_event/Widgets/ShareOptionClass.dart';
-import 'package:quickie_event/Widgets/TextWidget.dart';
+import 'package:quickie_event/Quicke_Events/Widgets/ShareOptionClass.dart';
+import 'package:quickie_event/Quicke_Events/Widgets/TextWidget.dart';
 
 class DetailOrganizerScreen extends StatefulWidget {
   const DetailOrganizerScreen({super.key});

@@ -1,10 +1,10 @@
 import 'package:favorite_button/favorite_button.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:quickie_event/Screens/EventDetails/BookingTicket.dart';
+import 'package:quickie_event/Constant.dart';
+import 'package:quickie_event/Quicke_Events/Screens/EventDetails/BookingTicket.dart';
 import 'package:ticket_widget/ticket_widget.dart';
 
-import '../../Constant.dart';
 import '../../Widgets/TextWidget.dart';
 
 class EventDetailsScreen extends StatefulWidget {

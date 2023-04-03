@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-
-import '../../Constant.dart';
+import 'package:quickie_event/Constant.dart';
 import '../../Widgets/TextWidget.dart';
 
 class FavoriteEmptyScreen extends StatefulWidget {

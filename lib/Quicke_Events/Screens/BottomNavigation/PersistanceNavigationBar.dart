@@ -1,13 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
-import 'package:quickie_event/Screens/HomeScreens/DiscoverScreen.dart';
-import 'package:quickie_event/Screens/HomeScreens/FavouriteScreen.dart';
-import 'package:quickie_event/Screens/HomeScreens/MyTicketScreen.dart';
-import 'package:quickie_event/Screens/HomeScreens/ProfileScreen.dart';
-
-import '../../Constant.dart';
-
+import 'package:quickie_event/Constant.dart';
+import 'package:quickie_event/Quicke_Events/Screens/HomeScreens/DiscoverScreen.dart';
+import 'package:quickie_event/Quicke_Events/Screens/HomeScreens/FavouriteScreen.dart';
+import 'package:quickie_event/Quicke_Events/Screens/HomeScreens/MyTicketScreen.dart';
+import 'package:quickie_event/Quicke_Events/Screens/HomeScreens/ProfileScreen.dart';
 class BottomNavigationScreen extends StatefulWidget {
   const BottomNavigationScreen({super.key});
 

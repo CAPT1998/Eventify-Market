@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:quickie_event/Screens/SplashScreen/SplashScreen.dart';
+import 'package:quickie_event/Quicke_Events/Screens/SplashScreen/SplashScreen.dart';
 
 void main(List<String> args) {
   runApp(MyApp());
 }
+
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 

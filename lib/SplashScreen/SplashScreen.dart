@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:quickie_event/Constant.dart';
-import 'package:quickie_event/Screens/BottomNavigation/PersistanceNavigationBar.dart';
+import 'package:quickie_event/Quicke_Events/Screens/BottomNavigation/PersistanceNavigationBar.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});

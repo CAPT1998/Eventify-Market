@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:quickie_event/Constant.dart';
-import 'package:quickie_event/Screens/SearchingEvents/MapCategoryScreen.dart';
-import 'package:quickie_event/Screens/SearchingEvents/SearchScreen.dart';
+import 'package:quickie_event/Quicke_Events/Screens/SearchingEvents/MapCategoryScreen.dart';
+import 'package:quickie_event/Quicke_Events/Screens/SearchingEvents/SearchScreen.dart';
 
 import '../../Widgets/SizedBoxWidget.dart';
 import '../../Widgets/TextFormWidget.dart';

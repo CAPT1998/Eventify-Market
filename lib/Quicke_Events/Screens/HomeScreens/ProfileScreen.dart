@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
 import 'package:quickie_event/Constant.dart';
-import 'package:quickie_event/Screens/Profile/FollowingScreen.dart';
-import 'package:quickie_event/Screens/Profile/NotificationCenterScreen.dart';
-import 'package:quickie_event/Screens/Profile/PaymentLinkScreen.dart';
-import 'package:quickie_event/Screens/Profile/PersonalInformationScreen.dart';
-import 'package:quickie_event/Screens/SearchingEvents/SearchCategoryScreen.dart';
-import 'package:quickie_event/Widgets/TextWidget.dart';
+import 'package:quickie_event/Quicke_Events/Screens/Profile/FollowingScreen.dart';
+import 'package:quickie_event/Quicke_Events/Screens/Profile/NotificationCenterScreen.dart';
+import 'package:quickie_event/Quicke_Events/Screens/Profile/PaymentLinkScreen.dart';
+import 'package:quickie_event/Quicke_Events/Screens/Profile/PersonalInformationScreen.dart';
+import 'package:quickie_event/Quicke_Events/Screens/SearchingEvents/SearchCategoryScreen.dart';
+import 'package:quickie_event/Quicke_Events/Widgets/TextWidget.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});

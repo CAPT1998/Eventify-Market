@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:quickie_event/Constant.dart';
-import 'package:quickie_event/Screens/EventDetails/TicketDetailOrderScreen.dart';
-import 'package:quickie_event/Widgets/TextFormWidget.dart';
-import 'package:quickie_event/Widgets/TextWidget.dart';
+import 'package:quickie_event/Quicke_Events/Screens/EventDetails/TicketDetailOrderScreen.dart';
+import 'package:quickie_event/Quicke_Events/Widgets/TextFormWidget.dart';
+import 'package:quickie_event/Quicke_Events/Widgets/TextWidget.dart';
 
 class ContactInformationDetailScreen extends StatefulWidget {
   const ContactInformationDetailScreen({super.key});

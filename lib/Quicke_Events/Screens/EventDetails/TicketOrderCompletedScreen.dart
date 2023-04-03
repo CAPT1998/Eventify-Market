@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:quickie_event/Constant.dart';
-import 'package:quickie_event/Screens/DetailOrganizer/DetaillOrganizerdetail.dart';
-import 'package:quickie_event/Screens/EventDetails/ContactInformationScreen.dart';
-import 'package:quickie_event/Widgets/TextWidget.dart';
+import 'package:quickie_event/Quicke_Events/Screens/DetailOrganizer/DetaillOrganizerdetail.dart';
+import 'package:quickie_event/Quicke_Events/Screens/EventDetails/ContactInformationScreen.dart';
+import 'package:quickie_event/Quicke_Events/Widgets/TextWidget.dart';
 
 class TicketOrderCompletedScreen extends StatefulWidget {
   const TicketOrderCompletedScreen({super.key});

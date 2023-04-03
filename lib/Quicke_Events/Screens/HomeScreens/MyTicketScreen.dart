@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
-import 'package:quickie_event/Screens/MyTickets.dart/CalenderTicketScreen.dart';
-import 'package:quickie_event/Screens/MyTickets.dart/DetailTicketScreen.dart';
-
-import '../../Constant.dart';
+import 'package:quickie_event/Quicke_Events/Screens/MyTickets.dart/CalenderTicketScreen.dart';
+import 'package:quickie_event/Quicke_Events/Screens/MyTickets.dart/DetailTicketScreen.dart';
+import '../../../Constant.dart';
 import '../../Widgets/TextWidget.dart';
 
 class MyticketScreen extends StatefulWidget {

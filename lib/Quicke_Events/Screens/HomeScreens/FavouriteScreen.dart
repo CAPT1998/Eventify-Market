@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
 import 'package:quickie_event/Constant.dart';
-import 'package:quickie_event/Screens/HomeScreens/FavouriteEmptyScreen.dart';
-import 'package:quickie_event/Widgets/TextWidget.dart';
+import 'package:quickie_event/Quicke_Events/Screens/HomeScreens/FavouriteEmptyScreen.dart';
+import 'package:quickie_event/Quicke_Events/Widgets/TextWidget.dart';
 
 class FavouriteScreen extends StatefulWidget {
   const FavouriteScreen({super.key});

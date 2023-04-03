@@ -3,11 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
 import 'package:quickie_event/Constant.dart';
-import 'package:quickie_event/Screens/EventDetails/EventDetailsScreen.dart';
-import 'package:quickie_event/Screens/Notification/NotificationScreen.dart';
-import 'package:quickie_event/Screens/VideoPlayer/VideoPlayerScreen.dart';
-import 'package:quickie_event/Widgets/SizedBoxWidget.dart';
-import 'package:quickie_event/Widgets/TextWidget.dart';
+import 'package:quickie_event/Quicke_Events/Screens/EventDetails/EventDetailsScreen.dart';
+import 'package:quickie_event/Quicke_Events/Screens/Notification/NotificationScreen.dart';
+import 'package:quickie_event/Quicke_Events/Screens/VideoPlayer/VideoPlayerScreen.dart';
+import 'package:quickie_event/Quicke_Events/Widgets/SizedBoxWidget.dart';
+import 'package:quickie_event/Quicke_Events/Widgets/TextWidget.dart';
 
 import '../../Widgets/TextFormWidget.dart';
 

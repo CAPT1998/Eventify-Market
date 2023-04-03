@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:quickie_event/Constant.dart';
-import 'package:quickie_event/Screens/Profile/LinkedYourCardScreen.dart';
+import 'package:quickie_event/Quicke_Events/Screens/Profile/LinkedYourCardScreen.dart';
 
 import '../../Widgets/SizedBoxWidget.dart';
 import '../../Widgets/TextFormWidget.dart';

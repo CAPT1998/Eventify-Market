@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:quickie_event/Constant.dart';
 import 'package:table_calendar/table_calendar.dart';
-
-import '../../Constant.dart';
 import '../../Widgets/TextWidget.dart';
 
 class CalenderTicketScreen extends StatefulWidget {
