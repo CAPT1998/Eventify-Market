@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:quickie_event/Quicke_Events/Screens/SplashScreen/SplashScreen.dart';
+import 'package:quickie_event/SplashScreen/SplashScreen.dart';
 
 void main(List<String> args) {
   runApp(MyApp());

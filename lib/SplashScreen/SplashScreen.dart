@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:quickie_event/Constant.dart';
 import 'package:quickie_event/Quicke_Events/Screens/BottomNavigation/PersistanceNavigationBar.dart';
+import 'package:quickie_event/Quicke_Features/Screen_Features/BottomNavigationFeatures.dart/BottomNavigationFeatures.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -18,7 +19,7 @@ class _SplashScreenState extends State<SplashScreen> {
     super.initState();
     Timer(Duration(seconds: 2), () {
       Navigator.pushReplacement(context,
-          MaterialPageRoute(builder: (context) => BottomNavigationScreen()));
+          MaterialPageRoute(builder: (context) => BottomNavigationFeatures()));
     });
   }
 
@@ -28,7 +29,7 @@ class _SplashScreenState extends State<SplashScreen> {
     width = MediaQuery.of(context).size.width;
     return Scaffold(
       body: Center(
-        child: Image.asset("assets/img/logo.png"),
+        child: Image.asset("assets/img/logo.png",width: width*0.4,),
       ),
     );
   }
