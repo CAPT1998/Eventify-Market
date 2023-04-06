@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:quickie_event/Constant.dart';
 import 'package:quickie_event/Quicke_Events/Widgets/TextFormWidget.dart';
+import 'package:quickie_event/Quicke_Features/Widget_Features/CategoriesFeatures/CategoriesFeatureWidget.dart';
 import 'package:quickie_event/Quicke_Features/Widget_Features/CourselSliderFeatures/CourselSliderFeaturesWidget.dart';
 
 class HomeScreenFeatures extends StatefulWidget {
@@ -119,6 +120,7 @@ class _HomeScreenFeaturesState extends State<HomeScreenFeatures> {
                       SizedBox(
                         height: 10,
                       ),
+                      CategoriesFeatureWidget(),
                     ],
                   ),
                 ),
