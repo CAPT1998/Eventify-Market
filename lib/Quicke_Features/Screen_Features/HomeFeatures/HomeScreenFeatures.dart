@@ -78,6 +78,7 @@ class _HomeScreenFeaturesState extends State<HomeScreenFeatures> {
               ),
             ),
             CourselSliderFeatures(),
+           
             Stack(
               children: [
                 Container(

@@ -2,8 +2,9 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:quickie_event/Constant.dart';
+import 'package:quickie_event/ConstantScreens/AuthScreens/LoginScreen.dart';
 import 'package:quickie_event/Quicke_Events/Screens/BottomNavigation/PersistanceNavigationBar.dart';
-import 'package:quickie_event/Quicke_Features/Screen_Features/BottomNavigationFeatures.dart/BottomNavigationFeatures.dart';
+import 'package:quickie_event/Quicke_Features/Screen_Features/BottomNavigationFeatures/BottomNavigationFeatures.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
