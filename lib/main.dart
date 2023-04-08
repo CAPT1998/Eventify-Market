@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:quickie_event/ConstantProviders/AuthProviders.dart';
+import 'package:quickie_event/Quicke_Events/Providers/EventsProvider.dart';
 import 'package:quickie_event/SplashScreen/SplashScreen.dart';
 
 void main(List<String> args) {
@@ -10,9 +13,17 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: SplashScreen(),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider<AuthProvider>(
+            create: (context) => AuthProvider()),
+        ChangeNotifierProvider<EventProvider>(
+            create: (context) => EventProvider()),
+      ],
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        home: SplashScreen(),
+      ),
     );
   }
 }

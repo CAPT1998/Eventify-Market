@@ -2,7 +2,9 @@ import 'package:favorite_button/favorite_button.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
+import 'package:provider/provider.dart';
 import 'package:quickie_event/Constant.dart';
+import 'package:quickie_event/Quicke_Events/Providers/EventsProvider.dart';
 import 'package:quickie_event/Quicke_Events/Screens/EventDetails/EventDetailsScreen.dart';
 import 'package:quickie_event/Quicke_Events/Screens/Notification/NotificationScreen.dart';
 import 'package:quickie_event/Quicke_Events/Screens/VideoPlayer/VideoPlayerScreen.dart';
@@ -20,466 +22,478 @@ class DiscoverScreen extends StatefulWidget {
 
 class _DiscoverScreenState extends State<DiscoverScreen> {
   GoogleMapController? _googleMapController;
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    Provider.of<EventProvider>(context, listen: false).mGetEvents();
+  }
 
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-      child: Scaffold(
-        body: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SizeWidget(height: 30),
-                Row(
-                  children: [
-                    Container(
-                      padding: EdgeInsets.all(10),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10),
-                        color: lightGreyColor,
-                      ),
-                      child: Row(
-                        children: [
-                          Icon(Icons.location_on_outlined),
-                          SizeWidget(width: 5),
-                          TextWidget(title: "New York City"),
-                        ],
-                      ),
-                    ),
-                    Spacer(),
-                    Container(
-                      // padding: EdgeInsets.all(10),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10),
-                        color: lightGreyColor,
-                      ),
-                      child: IconButton(
-                        onPressed: () {
-                          PersistentNavBarNavigator.pushNewScreen(
-                            context,
-                            screen: NotificationScreen(),
-                            withNavBar: false,
-                          );
-                        },
-                        icon: Icon(Icons.notifications_active_outlined),
-                      ),
-                    ),
-                  ],
-                ),
-                SizeWidget(height: 30),
-                textfieldProduct(
-                  context: context,
-                  name: "Search events",
-                  prefixIcon: Icon(Icons.search),
-                ),
-                SizedBox(height: 20),
-                Row(
-                  children: [
-                    TextWidget(
-                      title: "Explore Nearby",
-                      fontWeight: FontWeight.w700,
-                      size: 16,
-                    ),
-                    Spacer(),
-                    TextWidget(
-                        title: "See All",
-                        fontWeight: FontWeight.w500,
-                        size: 14,
-                        color: appColor)
-                  ],
-                ),
-                SizedBox(
-                  height: 20,
-                ),
-                SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: Row(
+      child: Consumer<EventProvider>(
+        builder: (context, value, child) => Scaffold(
+          body: SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SizeWidget(height: 30),
+                  Row(
                     children: [
-                      InkWell(
-                          onTap: () {
-                            PersistentNavBarNavigator.pushNewScreen(
-                              context,
-                              screen: VideoPlayerScreen(),
-                              withNavBar: false,
-                            );
-                          },
-                          child: _NearWidget(
-                              img: "1", title: "Today", color: greenColor)),
-                      _NearWidget(
-                          img: "2", title: "Trending", color: Colors.red),
-                    ],
-                  ),
-                ),
-                SizedBox(height: 20),
-                Row(
-                  children: [
-                    TextWidget(
-                      title: "Trending Categories",
-                      fontWeight: FontWeight.w700,
-                      size: 16,
-                    ),
-                    Spacer(),
-                    TextWidget(
-                      title: "See All",
-                      fontWeight: FontWeight.w500,
-                      size: 14,
-                      color: appColor,
-                    ),
-                  ],
-                ),
-                SizedBox(
-                  height: 25,
-                ),
-                SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      _CategoryWidget(icon: Icons.music_note, title: "Music"),
-                      SizedBox(
-                        width: 20,
-                      ),
-                      _CategoryWidget(
-                          icon: Icons.attractions_sharp, title: "Visual Art"),
-                      SizedBox(
-                        width: 20,
-                      ),
-                      _CategoryWidget(
-                          icon: Icons.business_center_outlined,
-                          title: "Business"),
-                      SizedBox(
-                        width: 20,
-                      ),
-                      _CategoryWidget(
-                          icon: Icons.favorite_outline, title: "Heart"),
-                      SizedBox(
-                        width: 20,
-                      ),
-                      _CategoryWidget(icon: Icons.music_note, title: "Music"),
-                      SizedBox(
-                        width: 20,
-                      ),
-                      _CategoryWidget(
-                          icon: Icons.attractions_sharp, title: "Visual Art"),
-                      SizedBox(
-                        width: 20,
-                      ),
-                      _CategoryWidget(
-                          icon: Icons.business_center_outlined,
-                          title: "Business"),
-                      SizedBox(
-                        width: 20,
-                      ),
-                      _CategoryWidget(
-                          icon: Icons.favorite_outline, title: "Heart"),
-                    ],
-                  ),
-                ),
-                SizedBox(height: 20),
-                Row(
-                  children: [
-                    TextWidget(
-                      title: "Trending Categories",
-                      fontWeight: FontWeight.w700,
-                      size: 16,
-                    ),
-                    Spacer(),
-                    TextWidget(
-                        title: "See All",
-                        fontWeight: FontWeight.w500,
-                        size: 14,
-                        color: appColor)
-                  ],
-                ),
-                SizedBox(
-                  height: 20,
-                ),
-                SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: Row(
-                    children: [
-                      _NearWidget(
-                          img: "3", title: "", color: Colors.transparent),
-                      _NearWidget(
-                          img: "4", title: "Flash Deal", color: yellowColor),
-                    ],
-                  ),
-                ),
-                SizedBox(
-                  height: 20,
-                ),
-                TextWidget(
-                  title: "Hand-picked Collection",
-                  fontWeight: FontWeight.w700,
-                  size: 16,
-                ),
-                SizedBox(
-                  height: 20,
-                ),
-                Stack(
-                  children: [
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(10),
-                      child: Image.asset(
-                        "assets/img/5.png",
-                        width: width,
-                        height: height * 0.25,
-                        fit: BoxFit.fill,
-                      ),
-                    ),
-                    Positioned(
-                      bottom: 0,
-                      right: 0,
-                      child: Container(
-                        height: height * 0.1,
-                        width: width * 0.8,
-                        margin: EdgeInsets.all(20),
-                        padding: EdgeInsets.all(20),
+                      Container(
+                        padding: EdgeInsets.all(10),
                         decoration: BoxDecoration(
-                            color: Color(0XFFFFFFFF).withOpacity(0.3),
-                            borderRadius: BorderRadius.circular(10)),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                          borderRadius: BorderRadius.circular(10),
+                          color: lightGreyColor,
+                        ),
+                        child: Row(
                           children: [
-                            TextWidget(
-                              title: "The Best Art Events in New York",
-                              fontWeight: FontWeight.w700,
-                              size: 14,
-                              color: Colors.white,
-                            ),
-                            Spacer(),
-                            Row(
-                              children: [
-                                CircleAvatar(
-                                  radius: 10,
-                                  backgroundColor: appColor,
-                                  child: Icon(
-                                    Icons.crisis_alert_rounded,
-                                    color: Colors.white,
-                                    size: 12,
-                                  ),
-                                ),
-                                TextWidget(
-                                  title: "  by Eventer",
-                                  fontWeight: FontWeight.w500,
-                                  size: 12,
-                                  color: Colors.white,
-                                ),
-                                Spacer(),
-                                TextWidget(
-                                  title: "8 Upcoming events",
-                                  fontWeight: FontWeight.w500,
-                                  size: 12,
-                                  color: Colors.white,
-                                ),
-                              ],
-                            )
+                            Icon(Icons.location_on_outlined),
+                            SizeWidget(width: 5),
+                            TextWidget(title: "New York City"),
                           ],
                         ),
                       ),
-                    )
-                  ],
-                ),
-                SizedBox(
-                  height: 20,
-                ),
-                TextWidget(
-                  title: "More Events",
-                  fontWeight: FontWeight.w700,
-                  size: 16,
-                ),
-                SizedBox(
-                  height: 20,
-                ),
-                _moreEventsWidget(),
-                _moreEventsWidget(),
-                _moreEventsWidget(),
-                SizedBox(
-                  height: 20,
-                ),
-                Stack(
-                  children: [
-                    InkWell(
-                      onTap: () {
-                        PersistentNavBarNavigator.pushNewScreen(
-                          context,
-                          screen: EventDetailsScreen(),
-                          withNavBar: false,
-                        );
-                      },
-                      child: ClipRRect(
+                      Spacer(),
+                      Container(
+                        // padding: EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                          color: lightGreyColor,
+                        ),
+                        child: IconButton(
+                          onPressed: () {
+                            PersistentNavBarNavigator.pushNewScreen(
+                              context,
+                              screen: NotificationScreen(),
+                              withNavBar: false,
+                            );
+                          },
+                          icon: Icon(Icons.notifications_active_outlined),
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizeWidget(height: 30),
+                  textfieldProduct(
+                    context: context,
+                    name: "Search events",
+                    prefixIcon: Icon(Icons.search),
+                  ),
+                  SizedBox(height: 20),
+                  Row(
+                    children: [
+                      TextWidget(
+                        title: "Explore Nearby",
+                        fontWeight: FontWeight.w700,
+                        size: 16,
+                      ),
+                      Spacer(),
+                      TextWidget(
+                          title: "See All",
+                          fontWeight: FontWeight.w500,
+                          size: 14,
+                          color: appColor)
+                    ],
+                  ),
+                  SizedBox(
+                    height: 20,
+                  ),
+                  SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      children: [
+                        InkWell(
+                            onTap: () {
+                              PersistentNavBarNavigator.pushNewScreen(
+                                context,
+                                screen: VideoPlayerScreen(),
+                                withNavBar: false,
+                              );
+                            },
+                            child: _NearWidget(
+                                img: "1",
+                                title: "Today",
+                                color: greenColor,
+                                value: value)),
+                      ],
+                    ),
+                  ),
+                  SizedBox(height: 20),
+                  Row(
+                    children: [
+                      TextWidget(
+                        title: "Trending Categories",
+                        fontWeight: FontWeight.w700,
+                        size: 16,
+                      ),
+                      Spacer(),
+                      TextWidget(
+                        title: "See All",
+                        fontWeight: FontWeight.w500,
+                        size: 14,
+                        color: appColor,
+                      ),
+                    ],
+                  ),
+                  SizedBox(
+                    height: 25,
+                  ),
+                  SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        _CategoryWidget(icon: Icons.music_note, title: "Music"),
+                        SizedBox(
+                          width: 20,
+                        ),
+                        _CategoryWidget(
+                            icon: Icons.attractions_sharp, title: "Visual Art"),
+                        SizedBox(
+                          width: 20,
+                        ),
+                        _CategoryWidget(
+                            icon: Icons.business_center_outlined,
+                            title: "Business"),
+                        SizedBox(
+                          width: 20,
+                        ),
+                        _CategoryWidget(
+                            icon: Icons.favorite_outline, title: "Heart"),
+                        SizedBox(
+                          width: 20,
+                        ),
+                        _CategoryWidget(icon: Icons.music_note, title: "Music"),
+                        SizedBox(
+                          width: 20,
+                        ),
+                        _CategoryWidget(
+                            icon: Icons.attractions_sharp, title: "Visual Art"),
+                        SizedBox(
+                          width: 20,
+                        ),
+                        _CategoryWidget(
+                            icon: Icons.business_center_outlined,
+                            title: "Business"),
+                        SizedBox(
+                          width: 20,
+                        ),
+                        _CategoryWidget(
+                            icon: Icons.favorite_outline, title: "Heart"),
+                      ],
+                    ),
+                  ),
+                  SizedBox(height: 20),
+                  Row(
+                    children: [
+                      TextWidget(
+                        title: "Trending Categories",
+                        fontWeight: FontWeight.w700,
+                        size: 16,
+                      ),
+                      Spacer(),
+                      TextWidget(
+                          title: "See All",
+                          fontWeight: FontWeight.w500,
+                          size: 14,
+                          color: appColor)
+                    ],
+                  ),
+                  SizedBox(
+                    height: 20,
+                  ),
+                  SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      children: [
+                        _NearWidget(
+                            img: "3",
+                            title: "",
+                            color: Colors.transparent,
+                            value: value),
+                      ],
+                    ),
+                  ),
+                  SizedBox(
+                    height: 20,
+                  ),
+                  TextWidget(
+                    title: "Hand-picked Collection",
+                    fontWeight: FontWeight.w700,
+                    size: 16,
+                  ),
+                  SizedBox(
+                    height: 20,
+                  ),
+                  Stack(
+                    children: [
+                      ClipRRect(
                         borderRadius: BorderRadius.circular(10),
                         child: Image.asset(
-                          "assets/img/11.png",
+                          "assets/img/5.png",
                           width: width,
                           height: height * 0.25,
                           fit: BoxFit.fill,
                         ),
                       ),
-                    ),
-                    Positioned(
-                      top: 10,
-                      right: 10,
-                      child: FavoriteButton(
-                        iconSize: 40,
-                        valueChanged: (_isFavorite) {
-                          print('Is Favorite $_isFavorite)');
+                      Positioned(
+                        bottom: 0,
+                        right: 0,
+                        child: Container(
+                          height: height * 0.1,
+                          width: width * 0.8,
+                          margin: EdgeInsets.all(20),
+                          padding: EdgeInsets.all(20),
+                          decoration: BoxDecoration(
+                              color: Color(0XFFFFFFFF).withOpacity(0.3),
+                              borderRadius: BorderRadius.circular(10)),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              TextWidget(
+                                title: "The Best Art Events in New York",
+                                fontWeight: FontWeight.w700,
+                                size: 14,
+                                color: Colors.white,
+                              ),
+                              Spacer(),
+                              Row(
+                                children: [
+                                  CircleAvatar(
+                                    radius: 10,
+                                    backgroundColor: appColor,
+                                    child: Icon(
+                                      Icons.crisis_alert_rounded,
+                                      color: Colors.white,
+                                      size: 12,
+                                    ),
+                                  ),
+                                  TextWidget(
+                                    title: "  by Eventer",
+                                    fontWeight: FontWeight.w500,
+                                    size: 12,
+                                    color: Colors.white,
+                                  ),
+                                  Spacer(),
+                                  TextWidget(
+                                    title: "8 Upcoming events",
+                                    fontWeight: FontWeight.w500,
+                                    size: 12,
+                                    color: Colors.white,
+                                  ),
+                                ],
+                              )
+                            ],
+                          ),
+                        ),
+                      )
+                    ],
+                  ),
+                  SizedBox(
+                    height: 20,
+                  ),
+                  TextWidget(
+                    title: "More Events",
+                    fontWeight: FontWeight.w700,
+                    size: 16,
+                  ),
+                  SizedBox(
+                    height: 20,
+                  ),
+                  _moreEventsWidget(),
+                  _moreEventsWidget(),
+                  _moreEventsWidget(),
+                  SizedBox(
+                    height: 20,
+                  ),
+                  Stack(
+                    children: [
+                      InkWell(
+                        onTap: () {
+                          PersistentNavBarNavigator.pushNewScreen(
+                            context,
+                            screen: EventDetailsScreen(),
+                            withNavBar: false,
+                          );
                         },
-                      ),
-                    ),
-                    Container(
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                      margin: EdgeInsets.only(top: 10, left: 10),
-                      decoration: BoxDecoration(
-                          color: yellowColor,
-                          borderRadius: BorderRadius.circular(5)),
-                      child: TextWidget(
-                        title: "Flash Deal",
-                        fontWeight: FontWeight.w700,
-                        size: 8,
-                      ),
-                    ),
-                    Positioned(
-                      bottom: 0,
-                      right: 0,
-                      child: Container(
-                        height: height * 0.1,
-                        width: width * 0.9,
-                        padding: EdgeInsets.all(20),
-                        decoration: BoxDecoration(
-                            color: Color(0XFFFFFFFF).withOpacity(0.3),
-                            borderRadius: BorderRadius.circular(10)),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            TextWidget(
-                              title: "Drink & Draw at The Living Gallery",
-                              fontWeight: FontWeight.w700,
-                              size: 14,
-                              color: Colors.white,
-                            ),
-                            Spacer(),
-                            Row(
-                              children: [
-                                Icon(
-                                  Icons.calendar_month_outlined,
-                                  color: Colors.white,
-                                  size: 12,
-                                ),
-                                TextWidget(
-                                  title: "  Nov 27, 07:00 PM",
-                                  fontWeight: FontWeight.w500,
-                                  size: 12,
-                                  color: Colors.white,
-                                ),
-                                Spacer(),
-                                TextWidget(
-                                  title: "\$39.00",
-                                  fontWeight: FontWeight.w500,
-                                  size: 12,
-                                  color: Colors.white,
-                                ),
-                              ],
-                            )
-                          ],
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(10),
+                          child: Image.asset(
+                            "assets/img/11.png",
+                            width: width,
+                            height: height * 0.25,
+                            fit: BoxFit.fill,
+                          ),
                         ),
                       ),
-                    )
-                  ],
-                ),
-                SizedBox(
-                  height: 20,
-                ),
-                Row(
-                  children: [
-                    TextWidget(
-                      title: "Popular Now",
-                      fontWeight: FontWeight.w700,
-                      size: 16,
-                    ),
-                    Spacer(),
-                    TextWidget(
-                        title: "See All",
-                        fontWeight: FontWeight.w500,
-                        size: 14,
-                        color: appColor)
-                  ],
-                ),
-                SizedBox(
-                  height: 20,
-                ),
-                SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: Row(
-                    children: [
-                      _NearWidget(img: "1", title: "Today", color: greenColor),
-                      _NearWidget(
-                          img: "2", title: "Trending", color: Colors.red),
+                      Positioned(
+                        top: 10,
+                        right: 10,
+                        child: FavoriteButton(
+                          iconSize: 40,
+                          valueChanged: (_isFavorite) {
+                            print('Is Favorite $_isFavorite)');
+                          },
+                        ),
+                      ),
+                      Container(
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                        margin: EdgeInsets.only(top: 10, left: 10),
+                        decoration: BoxDecoration(
+                            color: yellowColor,
+                            borderRadius: BorderRadius.circular(5)),
+                        child: TextWidget(
+                          title: "Flash Deal",
+                          fontWeight: FontWeight.w700,
+                          size: 8,
+                        ),
+                      ),
+                      Positioned(
+                        bottom: 0,
+                        right: 0,
+                        child: Container(
+                          height: height * 0.1,
+                          width: width * 0.9,
+                          padding: EdgeInsets.all(20),
+                          decoration: BoxDecoration(
+                              color: Color(0XFFFFFFFF).withOpacity(0.3),
+                              borderRadius: BorderRadius.circular(10)),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              TextWidget(
+                                title: "Drink & Draw at The Living Gallery",
+                                fontWeight: FontWeight.w700,
+                                size: 14,
+                                color: Colors.white,
+                              ),
+                              Spacer(),
+                              Row(
+                                children: [
+                                  Icon(
+                                    Icons.calendar_month_outlined,
+                                    color: Colors.white,
+                                    size: 12,
+                                  ),
+                                  TextWidget(
+                                    title: "  Nov 27, 07:00 PM",
+                                    fontWeight: FontWeight.w500,
+                                    size: 12,
+                                    color: Colors.white,
+                                  ),
+                                  Spacer(),
+                                  TextWidget(
+                                    title: "\$39.00",
+                                    fontWeight: FontWeight.w500,
+                                    size: 12,
+                                    color: Colors.white,
+                                  ),
+                                ],
+                              )
+                            ],
+                          ),
+                        ),
+                      )
                     ],
                   ),
-                ),
-                SizedBox(height: 20),
-                TextWidget(
-                  title: "Explore Nearby",
-                  fontWeight: FontWeight.w700,
-                  size: 16,
-                ),
-                SizedBox(height: 20),
-                SizedBox(
-                  height: 200,
-                  width: width,
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(10),
-                    child: GoogleMap(
-                      onMapCreated: ((controller) =>
-                          _googleMapController = controller),
-                      zoomGesturesEnabled: true,
-                      myLocationEnabled: false,
-                      myLocationButtonEnabled: false,
-                      zoomControlsEnabled: true,
-                      initialCameraPosition: CameraPosition(
-                        target: LatLng(-34.307381, 150.518051),
-                        zoom: 16.0,
+                  SizedBox(
+                    height: 20,
+                  ),
+                  Row(
+                    children: [
+                      TextWidget(
+                        title: "Popular Now",
+                        fontWeight: FontWeight.w700,
+                        size: 16,
+                      ),
+                      Spacer(),
+                      TextWidget(
+                          title: "See All",
+                          fontWeight: FontWeight.w500,
+                          size: 14,
+                          color: appColor)
+                    ],
+                  ),
+                  SizedBox(
+                    height: 20,
+                  ),
+                  SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      children: [
+                        _NearWidget(
+                            img: "1",
+                            title: "Today",
+                            color: greenColor,
+                            value: value),
+                      ],
+                    ),
+                  ),
+                  SizedBox(height: 20),
+                  TextWidget(
+                    title: "Explore Nearby",
+                    fontWeight: FontWeight.w700,
+                    size: 16,
+                  ),
+                  SizedBox(height: 20),
+                  SizedBox(
+                    height: 200,
+                    width: width,
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(10),
+                      child: GoogleMap(
+                        onMapCreated: ((controller) =>
+                            _googleMapController = controller),
+                        zoomGesturesEnabled: true,
+                        myLocationEnabled: false,
+                        myLocationButtonEnabled: false,
+                        zoomControlsEnabled: true,
+                        initialCameraPosition: CameraPosition(
+                          target: LatLng(-34.307381, 150.518051),
+                          zoom: 16.0,
+                        ),
                       ),
                     ),
                   ),
-                ),
-                SizedBox(height: 20),
-                Row(
-                  children: [
-                    TextWidget(
-                      title: "Organizers ",
-                      fontWeight: FontWeight.w700,
-                      size: 16,
-                    ),
-                    Spacer(),
-                    TextWidget(
-                        title: "See All",
-                        fontWeight: FontWeight.w500,
-                        size: 14,
-                        color: appColor)
-                  ],
-                ),
-                SizedBox(
-                  height: 20,
-                ),
-                SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: Row(
+                  SizedBox(height: 20),
+                  Row(
                     children: [
-                      OrganizerWidget(),
-                      OrganizerWidget(),
-                      OrganizerWidget(),
+                      TextWidget(
+                        title: "Organizers ",
+                        fontWeight: FontWeight.w700,
+                        size: 16,
+                      ),
+                      Spacer(),
+                      TextWidget(
+                          title: "See All",
+                          fontWeight: FontWeight.w500,
+                          size: 14,
+                          color: appColor)
                     ],
                   ),
-                ),
-                SizedBox(
-                  height: 50,
-                ),
-              ],
+                  SizedBox(
+                    height: 20,
+                  ),
+                  SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      children: [
+                        OrganizerWidget(),
+                        OrganizerWidget(),
+                        OrganizerWidget(),
+                      ],
+                    ),
+                  ),
+                  SizedBox(
+                    height: 50,
+                  ),
+                ],
+              ),
             ),
           ),
         ),
@@ -518,70 +532,83 @@ Widget OrganizerWidget() {
   );
 }
 
-Widget _NearWidget(
-    {required String img, required String title, dynamic color}) {
-  return Container(
-    margin: EdgeInsets.only(right: 10, bottom: 10),
-    width: width * 0.6,
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Stack(
-          children: [
-            ClipRRect(
-                borderRadius: BorderRadius.circular(10),
-                child: Image.asset("assets/img/$img.png",
-                    height: height * 0.17,
-                    width: width * 0.6,
-                    fit: BoxFit.fill)),
-            Container(
-              padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-              margin: EdgeInsets.only(top: 10, left: 10),
-              decoration: BoxDecoration(
-                  color: color, borderRadius: BorderRadius.circular(5)),
-              child: TextWidget(
-                title: "$title",
-                fontWeight: FontWeight.w700,
-                size: 8,
-                color: Colors.white,
+_NearWidget(
+    {required String img,
+    required String title,
+    dynamic color,
+    required EventProvider value}) {
+  return SizedBox(
+    height: height*0.25,
+    child: ListView.builder(
+      shrinkWrap: true,
+      scrollDirection: Axis.horizontal,
+      itemCount: value.getEventsModel.length,
+      itemBuilder: (context, index) {
+        return Container(
+          margin: EdgeInsets.only(right: 10, bottom: 10),
+          width: width * 0.6,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Stack(
+                children: [
+                  ClipRRect(
+                      borderRadius: BorderRadius.circular(10),
+                      child: Image.asset("assets/img/$img.png",
+                          height: height * 0.17,
+                          width: width * 0.6,
+                          fit: BoxFit.fill)),
+                  Container(
+                    padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                    margin: EdgeInsets.only(top: 10, left: 10),
+                    decoration: BoxDecoration(
+                        color: color, borderRadius: BorderRadius.circular(5)),
+                    child: TextWidget(
+                      title: "$title",
+                      fontWeight: FontWeight.w700,
+                      size: 8,
+                      color: Colors.white,
+                    ),
+                  ),
+                ],
               ),
-            ),
-          ],
-        ),
-        SizedBox(
-          height: 10,
-        ),
-        TextWidget(
-          title: "Bring Me The Horizon Tour",
-          size: 16,
-          fontWeight: FontWeight.w700,
-        ),
-        SizedBox(
-          height: 10,
-        ),
-        Row(
-          children: [
-            Icon(
-              Icons.calendar_month_outlined,
-              size: 15,
-              color: greyColor,
-            ),
-            TextWidget(
-              title: "  Nov 27  .  07:00 PM",
-              size: 12,
-              fontWeight: FontWeight.w500,
-              color: greyColor,
-            ),
-            Spacer(),
-            TextWidget(
-              title: "\$39.00",
-              size: 12,
-              fontWeight: FontWeight.w500,
-              color: darkPurpleColor,
-            ),
-          ],
-        )
-      ],
+              SizedBox(
+                height: 10,
+              ),
+              TextWidget(
+                title: "${value.getEventsModel[index].eventName}",
+                size: 16,
+                fontWeight: FontWeight.w700,
+              ),
+              SizedBox(
+                height: 10,
+              ),
+              Row(
+                children: [
+                  Icon(
+                    Icons.calendar_month_outlined,
+                    size: 15,
+                    color: greyColor,
+                  ),
+                  TextWidget(
+                    title: "  ${value.getEventsModel[index].date.toString().split(" ")[0]}  .  ${value.getEventsModel[index].timing}",
+                    size: 12,
+                    fontWeight: FontWeight.w500,
+                    color: greyColor,
+                  ),
+                  Spacer(),
+                  TextWidget(
+                    title: "\$ ${value.getEventsModel[index].price}",
+                    size: 12,
+                    fontWeight: FontWeight.w500,
+                    color: darkPurpleColor,
+                  ),
+                ],
+              )
+            ],
+          ),
+        );
+      },
     ),
   );
 }
