@@ -6,10 +6,12 @@ import 'package:provider/provider.dart';
 import 'package:quickie_event/ConstantProviders/AuthProviders.dart';
 import 'package:quickie_event/Quicke_Events/Screens/BottomNavigation/PersistanceNavigationBar.dart';
 import 'package:quickie_event/Quicke_Events/Widgets/TextWidget.dart';
+import 'package:quickie_event/Quicke_Features/Screen_Features/BottomNavigationFeatures/BottomNavigationFeatures.dart';
 import 'package:quickie_event/Quicke_Features/Widget_Features/TextFieldFeature.dart';
 import 'package:rounded_loading_button/rounded_loading_button.dart';
 
 import '../../Constant.dart';
+import 'RegistrationScreen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -20,6 +22,9 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   bool passwordVisible = true;
+  
+    TextEditingController email = TextEditingController();
+    TextEditingController password = TextEditingController();
   RoundedLoadingButtonController buttonController =
       RoundedLoadingButtonController();
 
@@ -34,8 +39,6 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     final _formKey = GlobalKey<FormState>();
-    TextEditingController email = TextEditingController();
-    TextEditingController password = TextEditingController();
     return Consumer<AuthProvider>(
       builder: (context, value, child) => Scaffold(
         body: Form(
@@ -86,7 +89,6 @@ class _LoginScreenState extends State<LoginScreen> {
                         passwordVisible
                             ? Icons.visibility_off
                             : Icons.visibility,
-                        // color: Colors.black,
                       ),
                     ),
                   ),
@@ -126,7 +128,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                   context,
                                   MaterialPageRoute(
                                       builder: (context) =>
-                                          BottomNavigationScreen()));
+                                          BottomNavigationFeatures()));
                               buttonController.reset();
                             });
                           } else {
@@ -267,6 +269,22 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                     ),
                   ),
+                   SizedBox(
+                height: 20,
+              ),
+              InkWell(
+                onTap: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => RegistrationScreen()));
+                },
+                child: TextWidget(
+                  title: "Don’t have an account? Register",
+                  size: 15,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
                 ],
               ),
             ),

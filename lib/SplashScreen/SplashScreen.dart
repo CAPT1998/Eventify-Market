@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:quickie_event/Constant.dart';
+import 'package:quickie_event/ConstantScreens/AuthScreens/LoginScreen.dart';
 import 'package:quickie_event/ConstantScreens/AuthScreens/WelcomeScreen.dart';
 import 'package:quickie_event/Quicke_Events/Screens/BottomNavigation/PersistanceNavigationBar.dart';
 import 'package:quickie_event/Quicke_Features/Screen_Features/BottomNavigationFeatures/BottomNavigationFeatures.dart';
@@ -19,7 +20,7 @@ class _SplashScreenState extends State<SplashScreen> {
     super.initState();
     Timer(Duration(seconds: 2), () {
       Navigator.pushReplacement(
-          context, MaterialPageRoute(builder: (context) => BottomNavigationScreen()));
+          context, MaterialPageRoute(builder: (context) => WelcomeScreen()));
     });
   }
 

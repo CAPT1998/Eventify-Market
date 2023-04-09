@@ -2,13 +2,15 @@ import 'package:favorite_button/favorite_button.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:quickie_event/Constant.dart';
+import 'package:quickie_event/Quicke_Events/Models/GetEventsModel.dart';
 import 'package:quickie_event/Quicke_Events/Screens/EventDetails/BookingTicket.dart';
 import 'package:ticket_widget/ticket_widget.dart';
 
 import '../../Widgets/TextWidget.dart';
 
 class EventDetailsScreen extends StatefulWidget {
-  const EventDetailsScreen({super.key});
+  EventDetailsScreen({super.key, required this.model});
+  GetEventsModel model;
 
   @override
   State<EventDetailsScreen> createState() => _EventDetailsScreenState();
@@ -25,8 +27,8 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
             children: [
               Stack(
                 children: [
-                  Image.asset(
-                    "assets/img/11.png",
+                  Image.network(
+                    "${widget.model.eventsPic}",
                     width: width,
                     height: height * 0.35,
                     fit: BoxFit.fill,
@@ -75,7 +77,7 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           TextWidget(
-                            title: "Drink & Draw at The Living Gallery",
+                            title: "${widget.model.eventTitle}",
                             fontWeight: FontWeight.w700,
                             size: 20,
                             color: Colors.white,
@@ -114,12 +116,13 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
                       ),
                       child: ListTile(
                         title: TextWidget(
-                          title: "Wednesday, 27 Nov 2022",
+                          title: "${widget.model.eventStartDate}",
                           size: 14,
                           fontWeight: FontWeight.w500,
                         ),
                         subtitle: TextWidget(
-                          title: "07:00 PM - 10:00 PM",
+                          title:
+                              "${widget.model.eventStartTime} - ${widget.model.eventEndTime}",
                           size: 12,
                           color: greyColor.withOpacity(0.5),
                           fontWeight: FontWeight.w500,
@@ -149,8 +152,7 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
                       height: 10,
                     ),
                     TextWidget(
-                      title:
-                          "Join us every Wednesday for 2 hours of inperson figure drawing. We provide drawing supplies and wine. Or, you can bring your... Read more",
+                      title: "${widget.model.about}",
                       size: 14,
                       maxline: 4,
                       fontWeight: FontWeight.w700,
@@ -179,8 +181,25 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
                           myLocationEnabled: false,
                           myLocationButtonEnabled: false,
                           zoomControlsEnabled: true,
+                          markers: Set<Marker>.of([
+                            Marker(
+                              markerId: MarkerId("1"),
+                              position: LatLng(
+                                  double.parse(
+                                      widget.model.location.split(",")[0]),
+                                  double.parse(
+                                      widget.model.location.split(",")[1])),
+                              // infoWindow:
+                              //     InfoWindow(title: markerIdVal, snippet: '*'),
+                              onTap: () {},
+                            ),
+                          ]),
                           initialCameraPosition: CameraPosition(
-                            target: LatLng(-34.307381, 150.518051),
+                            target: LatLng(
+                                double.parse(
+                                    widget.model.location.split(",")[0]),
+                                double.parse(
+                                    widget.model.location.split(",")[1])),
                             zoom: 16.0,
                           ),
                         ),

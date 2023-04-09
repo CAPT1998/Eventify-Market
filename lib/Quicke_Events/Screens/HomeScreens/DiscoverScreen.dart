@@ -313,13 +313,7 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
                   Stack(
                     children: [
                       InkWell(
-                        onTap: () {
-                          PersistentNavBarNavigator.pushNewScreen(
-                            context,
-                            screen: EventDetailsScreen(),
-                            withNavBar: false,
-                          );
-                        },
+                        onTap: () {},
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(10),
                           child: Image.asset(
@@ -538,74 +532,88 @@ _NearWidget(
     dynamic color,
     required EventProvider value}) {
   return SizedBox(
-    height: height*0.25,
+    height: height * 0.25,
     child: ListView.builder(
       shrinkWrap: true,
       scrollDirection: Axis.horizontal,
       itemCount: value.getEventsModel.length,
       itemBuilder: (context, index) {
-        return Container(
-          margin: EdgeInsets.only(right: 10, bottom: 10),
-          width: width * 0.6,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Stack(
-                children: [
-                  ClipRRect(
-                      borderRadius: BorderRadius.circular(10),
-                      child: Image.asset("assets/img/$img.png",
-                          height: height * 0.17,
-                          width: width * 0.6,
-                          fit: BoxFit.fill)),
-                  Container(
-                    padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                    margin: EdgeInsets.only(top: 10, left: 10),
-                    decoration: BoxDecoration(
-                        color: color, borderRadius: BorderRadius.circular(5)),
-                    child: TextWidget(
-                      title: "$title",
-                      fontWeight: FontWeight.w700,
-                      size: 8,
-                      color: Colors.white,
+        return InkWell(
+          onTap: () {
+            PersistentNavBarNavigator.pushNewScreen(
+              context,
+              screen: EventDetailsScreen(
+                model: value.getEventsModel[index],
+              ),
+              withNavBar: false,
+            );
+          },
+          child: Container(
+            margin: EdgeInsets.only(right: 10, bottom: 10),
+            width: width * 0.6,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Stack(
+                  children: [
+                    ClipRRect(
+                        borderRadius: BorderRadius.circular(10),
+                        child: Image.network(
+                            "${value.getEventsModel[index].eventsPic}",
+                            height: height * 0.17,
+                            width: width * 0.6,
+                            fit: BoxFit.fill)),
+                    Container(
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                      margin: EdgeInsets.only(top: 10, left: 10),
+                      decoration: BoxDecoration(
+                          color: color, borderRadius: BorderRadius.circular(5)),
+                      child: TextWidget(
+                        title: "$title",
+                        fontWeight: FontWeight.w700,
+                        size: 8,
+                        color: Colors.white,
+                      ),
                     ),
-                  ),
-                ],
-              ),
-              SizedBox(
-                height: 10,
-              ),
-              TextWidget(
-                title: "${value.getEventsModel[index].eventName}",
-                size: 16,
-                fontWeight: FontWeight.w700,
-              ),
-              SizedBox(
-                height: 10,
-              ),
-              Row(
-                children: [
-                  Icon(
-                    Icons.calendar_month_outlined,
-                    size: 15,
-                    color: greyColor,
-                  ),
-                  TextWidget(
-                    title: "  ${value.getEventsModel[index].date.toString().split(" ")[0]}  .  ${value.getEventsModel[index].timing}",
-                    size: 12,
-                    fontWeight: FontWeight.w500,
-                    color: greyColor,
-                  ),
-                  Spacer(),
-                  TextWidget(
-                    title: "\$ ${value.getEventsModel[index].price}",
-                    size: 12,
-                    fontWeight: FontWeight.w500,
-                    color: darkPurpleColor,
-                  ),
-                ],
-              )
-            ],
+                  ],
+                ),
+                SizedBox(
+                  height: 10,
+                ),
+                TextWidget(
+                  title: "${value.getEventsModel[index].eventTitle}",
+                  size: 16,
+                  fontWeight: FontWeight.w700,
+                ),
+                SizedBox(
+                  height: 10,
+                ),
+                Row(
+                  children: [
+                    Icon(
+                      Icons.calendar_month_outlined,
+                      size: 15,
+                      color: greyColor,
+                    ),
+                    TextWidget(
+                      title:
+                          "  ${value.getEventsModel[index].eventStartDate.toString().split(" ")[0]}  .  ${value.getEventsModel[index].eventStartTime}",
+                      size: 12,
+                      fontWeight: FontWeight.w500,
+                      color: greyColor,
+                    ),
+                    Spacer(),
+                    TextWidget(
+                      title: "\$ ${value.getEventsModel[index].price}",
+                      size: 12,
+                      fontWeight: FontWeight.w500,
+                      color: darkPurpleColor,
+                    ),
+                  ],
+                )
+              ],
+            ),
           ),
         );
       },

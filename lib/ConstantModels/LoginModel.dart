@@ -16,7 +16,7 @@ class LoginModel {
     });
 
     bool success;
-    dynamic data;
+    Data data;
     String message;
 
     factory LoginModel.fromJson(Map<String, dynamic> json) => LoginModel(
@@ -38,16 +38,16 @@ class Data {
         required this.name,
         required this.email,
         required this.apiToken,
-        required this.deviceToken,
-        this.stripeId,
         this.cardBrand,
         this.cardLastFour,
-        this.trialEndsAt,
-        this.braintreeId,
         this.paypalEmail,
         required this.createdAt,
         required this.updatedAt,
-        required this.customFields,
+        this.phone,
+        this.address,
+        this.gender,
+        this.language,
+        this.dateOfBirth,
         required this.hasMedia,
         required this.media,
     });
@@ -56,16 +56,16 @@ class Data {
     String name;
     String email;
     String apiToken;
-    String deviceToken;
-    dynamic stripeId;
     dynamic cardBrand;
     dynamic cardLastFour;
-    dynamic trialEndsAt;
-    dynamic braintreeId;
     dynamic paypalEmail;
     DateTime createdAt;
     DateTime updatedAt;
-    CustomFields customFields;
+    dynamic phone;
+    dynamic address;
+    dynamic gender;
+    dynamic language;
+    dynamic dateOfBirth;
     bool hasMedia;
     List<dynamic> media;
 
@@ -74,16 +74,16 @@ class Data {
         name: json["name"],
         email: json["email"],
         apiToken: json["api_token"],
-        deviceToken: json["device_token"],
-        stripeId: json["stripe_id"],
         cardBrand: json["card_brand"],
         cardLastFour: json["card_last_four"],
-        trialEndsAt: json["trial_ends_at"],
-        braintreeId: json["braintree_id"],
         paypalEmail: json["paypal_email"],
         createdAt: DateTime.parse(json["created_at"]),
         updatedAt: DateTime.parse(json["updated_at"]),
-        customFields: CustomFields.fromJson(json["custom_fields"]),
+        phone: json["phone"],
+        address: json["address"],
+        gender: json["gender"],
+        language: json["language"],
+        dateOfBirth: json["date_of_birth"],
         hasMedia: json["has_media"],
         media: List<dynamic>.from(json["media"].map((x) => x)),
     );
@@ -93,69 +93,17 @@ class Data {
         "name": name,
         "email": email,
         "api_token": apiToken,
-        "device_token": deviceToken,
-        "stripe_id": stripeId,
         "card_brand": cardBrand,
         "card_last_four": cardLastFour,
-        "trial_ends_at": trialEndsAt,
-        "braintree_id": braintreeId,
         "paypal_email": paypalEmail,
         "created_at": createdAt.toIso8601String(),
         "updated_at": updatedAt.toIso8601String(),
-        "custom_fields": customFields.toJson(),
+        "phone": phone,
+        "address": address,
+        "gender": gender,
+        "language": language,
+        "date_of_birth": dateOfBirth,
         "has_media": hasMedia,
         "media": List<dynamic>.from(media.map((x) => x)),
-    };
-}
-
-class CustomFields {
-    CustomFields({
-        required this.phone,
-        required this.bio,
-        required this.address,
-        required this.verifiedPhone,
-    });
-
-    Address phone;
-    Address bio;
-    Address address;
-    Address verifiedPhone;
-
-    factory CustomFields.fromJson(Map<String, dynamic> json) => CustomFields(
-        phone: Address.fromJson(json["phone"]),
-        bio: Address.fromJson(json["bio"]),
-        address: Address.fromJson(json["address"]),
-        verifiedPhone: Address.fromJson(json["verifiedPhone"]),
-    );
-
-    Map<String, dynamic> toJson() => {
-        "phone": phone.toJson(),
-        "bio": bio.toJson(),
-        "address": address.toJson(),
-        "verifiedPhone": verifiedPhone.toJson(),
-    };
-}
-
-class Address {
-    Address({
-        this.value,
-        this.view,
-        required this.name,
-    });
-
-    dynamic value;
-    String? view;
-    String name;
-
-    factory Address.fromJson(Map<String, dynamic> json) => Address(
-        value: json["value"],
-        view: json["view"],
-        name: json["name"],
-    );
-
-    Map<String, dynamic> toJson() => {
-        "value": value,
-        "view": view,
-        "name": name,
     };
 }

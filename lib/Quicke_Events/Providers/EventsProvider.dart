@@ -8,10 +8,10 @@ class EventProvider with ChangeNotifier {
     List<GetEventsModel> getEventsModel = [];
     var headers = {
       'Authorization':
-          'Bearer wERmGVY7tVBsfiZ0nwvhf5V8bneGKn6IRKARQrYQcR7CiEy6ZAQ0orryqVB6'
+          'Bearer PivvPlsQWxPl1bB5KrbKNBuraJit0PrUZekQUgtLyTRuyBq921atFtoR1HuA'
     };
     var request = http.Request(
-        'GET', Uri.parse('http://quickeeapi.pakwexpo.com/api/events'));
+        'GET', Uri.parse('http://quickeeapi.pakwexpo.com/api/event/details/1'));
     request.headers.addAll(headers);
     http.StreamedResponse response = await request.send();
 

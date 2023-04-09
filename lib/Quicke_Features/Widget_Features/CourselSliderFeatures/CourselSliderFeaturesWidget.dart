@@ -1,8 +1,9 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:quickie_event/Constant.dart';
+import 'package:quickie_event/Quicke_Events/Screens/BottomNavigation/PersistanceNavigationBar.dart';
 
-Widget CourselSliderFeatures() {
+Widget CourselSliderFeatures(BuildContext context) {
   return CarouselSlider(
     options: CarouselOptions(
       autoPlay: true,
@@ -12,12 +13,20 @@ Widget CourselSliderFeatures() {
       onPageChanged: (index, reason) {},
     ),
     items: imgList
-        .map((item) => Image.network(
-          item,
-          fit: BoxFit.cover,
-          height: height,
-          width: width,
-        ))
+        .map((item) => InkWell(
+              onTap: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => BottomNavigationScreen()));
+              },
+              child: Image.network(
+                item,
+                fit: BoxFit.cover,
+                height: height,
+                width: width,
+              ),
+            ))
         .toList(),
   );
 }

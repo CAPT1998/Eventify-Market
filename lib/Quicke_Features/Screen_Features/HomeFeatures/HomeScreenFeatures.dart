@@ -78,7 +78,7 @@ class _HomeScreenFeaturesState extends State<HomeScreenFeatures> {
                 ],
               ),
             ),
-            CourselSliderFeatures(),
+            CourselSliderFeatures(context),
             Stack(
               children: [
                 Container(
@@ -233,7 +233,7 @@ class _HomeScreenFeaturesState extends State<HomeScreenFeatures> {
                 ),
               ],
             ),
-            CourselSliderFeatures(),
+            CourselSliderFeatures(context),
             Padding(
               padding: EdgeInsets.all(20),
               child: Column(
