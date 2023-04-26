@@ -4,6 +4,7 @@ import 'package:another_flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:quickie_event/ConstantProviders/AuthProviders.dart';
+import 'package:quickie_event/ConstantScreens/AuthScreens/ForgetScreen.dart';
 import 'package:quickie_event/Quicke_Events/Screens/BottomNavigation/PersistanceNavigationBar.dart';
 import 'package:quickie_event/Quicke_Events/Widgets/TextWidget.dart';
 import 'package:quickie_event/Quicke_Features/Screen_Features/BottomNavigationFeatures/BottomNavigationFeatures.dart';
@@ -22,9 +23,9 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   bool passwordVisible = true;
-  
-    TextEditingController email = TextEditingController();
-    TextEditingController password = TextEditingController();
+
+  TextEditingController email = TextEditingController();
+  TextEditingController password = TextEditingController();
   RoundedLoadingButtonController buttonController =
       RoundedLoadingButtonController();
 
@@ -97,10 +98,18 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   Align(
                     alignment: Alignment.center,
-                    child: TextWidget(
-                      title: "Forget Password?",
-                      size: 15,
-                      fontWeight: FontWeight.w400,
+                    child: InkWell(
+                      onTap: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => ForgetScreen()));
+                      },
+                      child: TextWidget(
+                        title: "Forget Password?",
+                        size: 15,
+                        fontWeight: FontWeight.w400,
+                      ),
                     ),
                   ),
                   SizedBox(
@@ -133,7 +142,8 @@ class _LoginScreenState extends State<LoginScreen> {
                             });
                           } else {
                             buttonController.error();
-                            ErrorFlushbar(context, "Login", "Invalid Credentials...");
+                            ErrorFlushbar(
+                                context, "Login", "Invalid Credentials...");
                             Timer(Duration(seconds: 2), () {
                               buttonController.reset();
                             });
@@ -269,22 +279,22 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                     ),
                   ),
-                   SizedBox(
-                height: 20,
-              ),
-              InkWell(
-                onTap: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => RegistrationScreen()));
-                },
-                child: TextWidget(
-                  title: "Don’t have an account? Register",
-                  size: 15,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
+                  SizedBox(
+                    height: 20,
+                  ),
+                  InkWell(
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => RegistrationScreen()));
+                    },
+                    child: TextWidget(
+                      title: "Don’t have an account? Register",
+                      size: 15,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
                 ],
               ),
             ),

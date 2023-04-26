@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:quickie_event/Constant.dart';
+import 'package:quickie_event/ConstantIntroduction/IntroductionScreen1.dart';
 import 'package:quickie_event/ConstantScreens/AuthScreens/LoginScreen.dart';
 import 'package:quickie_event/ConstantScreens/AuthScreens/WelcomeScreen.dart';
 import 'package:quickie_event/Quicke_Events/Screens/BottomNavigation/PersistanceNavigationBar.dart';
@@ -16,11 +17,10 @@ class SplashScreen extends StatefulWidget {
 class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     Timer(Duration(seconds: 2), () {
       Navigator.pushReplacement(
-          context, MaterialPageRoute(builder: (context) => WelcomeScreen()));
+          context, MaterialPageRoute(builder: (context) => IntrductionScreen1()));
     });
   }
 

@@ -1,5 +1,6 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
+import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
 import 'package:quickie_event/Constant.dart';
 import 'package:quickie_event/Quicke_Events/Screens/BottomNavigation/PersistanceNavigationBar.dart';
 
@@ -15,10 +16,11 @@ Widget CourselSliderFeatures(BuildContext context) {
     items: imgList
         .map((item) => InkWell(
               onTap: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => BottomNavigationScreen()));
+                PersistentNavBarNavigator.pushNewScreen(
+                  context,
+                  screen: BottomNavigationScreen(),
+                  withNavBar: false,
+                );
               },
               child: Image.network(
                 item,

@@ -1,9 +1,13 @@
 import 'package:favorite_button/favorite_button.dart';
 import 'package:flutter/material.dart';
+import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
 import 'package:quickie_event/Constant.dart';
 import 'package:quickie_event/Quicke_Events/Widgets/TextFormWidget.dart';
+import 'package:quickie_event/Quicke_Features/Screen_Features/Categories/ProductScreen.dart';
 import 'package:quickie_event/Quicke_Features/Widget_Features/CategoriesFeatures/CategoriesFeatureWidget.dart';
 import 'package:quickie_event/Quicke_Features/Widget_Features/CourselSliderFeatures/CourselSliderFeaturesWidget.dart';
+
+import '../Notification/NotificationScreen.dart';
 
 class HomeScreenFeatures extends StatefulWidget {
   const HomeScreenFeatures({super.key});
@@ -39,7 +43,15 @@ class _HomeScreenFeaturesState extends State<HomeScreenFeatures> {
         ),
         elevation: 0,
         actions: [
-          IconButton(onPressed: () {}, icon: Icon(Icons.notifications_on))
+          IconButton(
+              onPressed: () {
+                PersistentNavBarNavigator.pushNewScreen(
+                  context,
+                  screen: NotificationScreen(),
+                  withNavBar: false,
+                );
+              },
+              icon: Icon(Icons.notifications_on))
         ],
       ),
       drawer: Drawer(),
@@ -127,8 +139,17 @@ class _HomeScreenFeaturesState extends State<HomeScreenFeatures> {
                           mainAxisAlignment: MainAxisAlignment.start,
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            CategoriesFeatureWidget(
-                                image: "001-whisky", title: "Wiskhy"),
+                            InkWell(
+                              onTap: () {
+                                PersistentNavBarNavigator.pushNewScreen(
+                                  context,
+                                  screen: ProductScreen(),
+                                  withNavBar: false,
+                                );
+                              },
+                              child: CategoriesFeatureWidget(
+                                  image: "001-whisky", title: "Wiskhy"),
+                            ),
                             CategoriesFeatureWidget(
                                 image: "002-tequila", title: "Tequila"),
                             CategoriesFeatureWidget(

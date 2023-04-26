@@ -108,11 +108,11 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
                       children: [
                         InkWell(
                             onTap: () {
-                              PersistentNavBarNavigator.pushNewScreen(
-                                context,
-                                screen: VideoPlayerScreen(),
-                                withNavBar: false,
-                              );
+                              // PersistentNavBarNavigator.pushNewScreen(
+                              //   context,
+                              //   screen: VideoPlayerScreen(),
+                              //   withNavBar: false,
+                              // );
                             },
                             child: _NearWidget(
                                 img: "1",
