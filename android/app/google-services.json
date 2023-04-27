@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "553966862571",
+    "project_id": "quickee-8d51a",
+    "storage_bucket": "quickee-8d51a.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:553966862571:android:1ea51616e0c254fea33eae",
+        "android_client_info": {
+          "package_name": "net.thedigitalhub.quickee"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "553966862571-h5lkqnu072iec5jrsboedag2q4curkt8.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "net.thedigitalhub.quickee",
+            "certificate_hash": "03e1b37dac1e2020a0247e018329e5e67e77187f"
+          }
+        },
+        {
+          "client_id": "553966862571-m0mgnma9aqruuaskf3moi6olr111a4aj.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDiVVbB6SvVdDkUnZBOyQ-g_yB4dwRvfkk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "553966862571-m0mgnma9aqruuaskf3moi6olr111a4aj.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -4,6 +4,8 @@ import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
 import 'package:quickie_event/Constant.dart';
 import 'package:quickie_event/Quicke_Events/Widgets/TextFormWidget.dart';
 import 'package:quickie_event/Quicke_Features/Screen_Features/Categories/ProductScreen.dart';
+import 'package:quickie_event/Quicke_Features/Screen_Features/Categories/ViewAllCategory.dart';
+import 'package:quickie_event/Quicke_Features/Screen_Features/ProductDetail/ProductDetailScreen.dart';
 import 'package:quickie_event/Quicke_Features/Widget_Features/CategoriesFeatures/CategoriesFeatureWidget.dart';
 import 'package:quickie_event/Quicke_Features/Widget_Features/CourselSliderFeatures/CourselSliderFeaturesWidget.dart';
 
@@ -120,12 +122,21 @@ class _HomeScreenFeaturesState extends State<HomeScreenFeatures> {
                               fontWeight: FontWeight.w600,
                             ),
                           ),
-                          Text(
-                            "Ver Todos",
-                            style: TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.w500,
-                              color: Color(0XFF828588),
+                          InkWell(
+                            onTap: () {
+                              PersistentNavBarNavigator.pushNewScreen(
+                                context,
+                                screen: ViewAllCategories(),
+                                withNavBar: false,
+                              );
+                            },
+                            child: Text(
+                              "Ver Todos",
+                              style: TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w500,
+                                color: Color(0XFF828588),
+                              ),
                             ),
                           )
                         ],
@@ -201,7 +212,15 @@ class _HomeScreenFeaturesState extends State<HomeScreenFeatures> {
                         scrollDirection: Axis.horizontal,
                         child: Row(
                           children: [
-                            _products(),
+                            InkWell(
+                                onTap: () {
+                                  PersistentNavBarNavigator.pushNewScreen(
+                                    context,
+                                    screen: PRoductDetailScreen(),
+                                    withNavBar: false,
+                                  );
+                                },
+                                child: _products()),
                             _products(),
                             _products(),
                             _products(),

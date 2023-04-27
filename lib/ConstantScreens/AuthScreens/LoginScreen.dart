@@ -232,7 +232,29 @@ class _LoginScreenState extends State<LoginScreen> {
                       height: 60,
                       borderRadius: 10,
                       controller: gbuttonController,
-                      onPressed: () {},
+                      onPressed: () async {
+                        await value.signInWithGoogle();
+                        if (value.isUserCreated == true) {
+                          gbuttonController.success();
+                          SuccessFlushbar(
+                              context, "Sign in", "Google Sign in Successfull");
+                          Timer(Duration(seconds: 2), () {
+                            Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        BottomNavigationFeatures()));
+                            gbuttonController.reset();
+                          });
+                        } else {
+                          gbuttonController.error();
+                          ErrorFlushbar(context, "Sign in",
+                              "Google Sign in UnSuccessfull");
+                          Timer(Duration(seconds: 2), () {
+                            gbuttonController.reset();
+                          });
+                        }
+                      },
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [

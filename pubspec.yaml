@@ -55,6 +55,11 @@ dependencies:
   dotted_line: ^3.1.0
   http: ^0.13.5
   pinput: ^2.2.21
+  change_app_package_name: ^1.1.0
+  google_sign_in: ^6.1.0
+  firebase_auth: ^4.2.2
+  firebase_core: ^2.10.0
+  cloud_firestore: ^4.5.2
 
 dev_dependencies:
   flutter_test:

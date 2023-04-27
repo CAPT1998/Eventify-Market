@@ -1,4 +1,4 @@
-package com.example.quickie_event
+package net.thedigitalhub.quickee
 
 import io.flutter.embedding.android.FlutterActivity
 
