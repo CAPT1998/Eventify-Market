@@ -369,7 +369,7 @@ class _HomeScreenFeaturesState extends State<HomeScreenFeatures> {
 Widget _products() {
   return Container(
     width: width * 0.43,
-    height: height * 0.3,
+    // height: height * 0.3,
     margin: EdgeInsets.only(right: 10),
     decoration: BoxDecoration(
         color: Colors.white,

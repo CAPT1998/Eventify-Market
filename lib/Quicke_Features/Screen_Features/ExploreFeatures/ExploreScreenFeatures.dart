@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
 import 'package:quickie_event/Constant.dart';
 import 'package:quickie_event/Quicke_Events/Widgets/TextWidget.dart';
+import 'package:quickie_event/Quicke_Features/Screen_Features/SearchFeatures/SearchFeatureScreen.dart';
 import 'package:rounded_loading_button/rounded_loading_button.dart';
 
 class ExploreScreenFeatures extends StatefulWidget {
@@ -26,17 +28,27 @@ class _ExploreScreenFeaturesState extends State<ExploreScreenFeatures> {
               "assets/img/logo.png",
               width: width * 0.5,
             ),
-             SizedBox(
+            SizedBox(
               height: 50,
             ),
-            TextWidget(title: "Don't have any item in your cart",size: 20,fontWeight: FontWeight.w500),
+            TextWidget(
+                title: "Don't have any item in your cart",
+                size: 20,
+                fontWeight: FontWeight.w500),
             SizedBox(
               height: 50,
             ),
             RoundedLoadingButton(
                 borderRadius: 10,
                 controller: buttonController,
-                onPressed: () {},
+                onPressed: () {
+                  PersistentNavBarNavigator.pushNewScreen(
+                    context,
+                    screen: SearchFeatureScreen(),
+                    withNavBar: false
+                  );
+                  buttonController.reset();
+                },
                 child: TextWidget(
                   title: "Explore",
                   size: 16,

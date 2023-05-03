@@ -203,7 +203,10 @@ class _LoginScreenState extends State<LoginScreen> {
                       height: 60,
                       borderRadius: 10,
                       controller: fbuttonController,
-                      onPressed: () {},
+                      onPressed: () async {
+                        await value.facebookLogin(context);
+                        buttonController.reset();
+                      },
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [

@@ -1,12 +1,15 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart' as http;
+import 'package:quickie_event/Constant.dart';
 import 'package:quickie_event/ConstantModels/LoginModel.dart';
 import 'package:quickie_event/Quicke_Features/Screen_Features/BottomNavigationFeatures/BottomNavigationFeatures.dart';
 
 class AuthProvider with ChangeNotifier {
   String? registerMessage;
+  Map userData = {};
   mSignUpAuth({
     required String name,
     required String email,
@@ -87,7 +90,13 @@ class AuthProvider with ChangeNotifier {
 
       isUserCreated = true;
       this.isUserCreated = isUserCreated;
-      print("$isUserCreated");
+      userData = {
+        "UID": userCredential.user!.uid.toString(),
+        "username": userCredential.user!.displayName.toString(),
+        "email": userCredential.user!.email.toString(),
+        "phoneNumber": userCredential.user!.phoneNumber.toString(),
+        "picture": userCredential.user!.photoURL.toString()
+      };
       userLoginMessage = "Welcome.!";
       notifyListeners();
       return userCredential;
@@ -118,7 +127,38 @@ class AuthProvider with ChangeNotifier {
     }
   }
 
-    // Future<UserCredential?> signInWithFacebook() async {
+  facebookLogin(context) async {
+    try {
+      final result = await FacebookAuth.i.login(
+        permissions: [
+          'public_profile',
+          'email',
+          'pages_show_list',
+          'pages_messaging',
+          'pages_manage_metadata'
+        ],
+      );
+      if (result.status == LoginStatus.success) {
+        final userData = await FacebookAuth.i.getUserData();
+        print(userData);
+        print("================>New Login");
+
+        // "UID": userData["id"],
+        // "username": userData["name"],
+        // "email": userData["email"],
+        // "balance": 0,
+        // "JoinDate": user.metadata.creationTime,
+
+        print("${result.message}");
+      }
+      print("================>${result.message}");
+    } catch (error) {
+      print("===========>$error");
+      SuccessFlushbar(context, "Login", "$error");
+    }
+  }
+  // Future<UserCredential?> signInWithFacebook() async {
+  //   bool isUserCreated = false;
   //   try {
   //     final LoginResult loginResult = await FacebookAuth.instance.login();
   //     OAuthCredential facebookAuthCredential;
@@ -132,28 +172,18 @@ class AuthProvider with ChangeNotifier {
   //     print(userCredential.user!.uid);
   //     // isUserLoggedIn = true;
   //     isUserCreated = true;
+  //     this.isUserCreated = isUserCreated;
   //     userLoginMessage = "Welcome.!";
   //     notifyListeners();
   //     return userCredential;
-  //     // } on FirebaseAuthException catch (e){
-  //     //   print("1111");
-  //     // }
-
   //   } on FirebaseAuthException catch (e) {
-  //     // print("1111");
-  //     // print(e);
-  //     // print(e.message);
-  //     // print(e.email);
-  //     // print(e.code);
-
   //     if (e.code == 'weak-password') {
   //       print('The password provided is too weak.');
   //       userLoginMessage = "The password provided is too weak.";
   //     } else if (e.code == 'email-already-in-use') {
   //       print('The account already exists for that email.');
   //       userLoginMessage = "The account already exists for that email.";
-  //     }
-  //     else if (e.code == 'account-exists-with-different-credential') {
+  //     } else if (e.code == 'account-exists-with-different-credential') {
   //       print('The account already exists for that email.');
   //       userLoginMessage =
   //           "The account already exists with different credential.";
@@ -163,6 +193,7 @@ class AuthProvider with ChangeNotifier {
   //     return null;
   //   } catch (e) {
   //     isUserCreated = false;
+  //     this.isUserCreated = isUserCreated;
   //     userLoginMessage = "Something went wrong";
   //     notifyListeners();
   //     print(e);
