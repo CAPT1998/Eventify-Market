@@ -1,9 +1,12 @@
 import 'package:favorite_button/favorite_button.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:provider/provider.dart';
 import 'package:quickie_event/Constant.dart';
 import 'package:quickie_event/Quicke_Events/Models/GetEventsModel.dart';
+import 'package:quickie_event/Quicke_Events/Providers/EventsProvider.dart';
 import 'package:quickie_event/Quicke_Events/Screens/EventDetails/BookingTicket.dart';
+import 'package:quickie_event/Quicke_Events/Screens/EventDetails/TicketScreen.dart';
 import 'package:ticket_widget/ticket_widget.dart';
 
 import '../../Widgets/TextWidget.dart';
@@ -19,6 +22,16 @@ class EventDetailsScreen extends StatefulWidget {
 class _EventDetailsScreenState extends State<EventDetailsScreen> {
   GoogleMapController? _googleMapController;
   @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    Provider.of<EventProvider>(context, listen: false)
+        .mGetEventTickets(id: "${widget.model.id}");
+    Provider.of<EventProvider>(context, listen: false)
+        .mGetEventSeats(id: "${widget.model.id}");
+  }
+
+  @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
@@ -32,6 +45,12 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
                     width: width,
                     height: height * 0.35,
                     fit: BoxFit.fill,
+                    errorBuilder: (context, url, error) => Image.asset(
+                      "assets/img/placeholder.jpg",
+                      fit: BoxFit.cover,
+                      width: width,
+                      height: height * 0.35,
+                    ),
                   ),
                   Padding(
                     padding: const EdgeInsets.all(10.0),
@@ -116,7 +135,7 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
                       ),
                       child: ListTile(
                         title: TextWidget(
-                          title: "${widget.model.eventStartDate}",
+                          title: "${widget.model.eventStartDate}".split(" ")[0],
                           size: 14,
                           fontWeight: FontWeight.w500,
                         ),
@@ -172,38 +191,40 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
                     SizedBox(
                       height: 200,
                       width: width,
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(10),
-                        child: GoogleMap(
-                          onMapCreated: ((controller) =>
-                              _googleMapController = controller),
-                          zoomGesturesEnabled: true,
-                          myLocationEnabled: false,
-                          myLocationButtonEnabled: false,
-                          zoomControlsEnabled: true,
-                          markers: Set<Marker>.of([
-                            Marker(
-                              markerId: MarkerId("1"),
-                              position: LatLng(
-                                  double.parse(
-                                      widget.model.location.split(",")[0]),
-                                  double.parse(
-                                      widget.model.location.split(",")[1])),
-                              // infoWindow:
-                              //     InfoWindow(title: markerIdVal, snippet: '*'),
-                              onTap: () {},
+                      child: widget.model.location == null
+                          ? Center(child: Text("No Location Available"))
+                          : ClipRRect(
+                              borderRadius: BorderRadius.circular(10),
+                              child: GoogleMap(
+                                onMapCreated: ((controller) =>
+                                    _googleMapController = controller),
+                                zoomGesturesEnabled: true,
+                                myLocationEnabled: false,
+                                myLocationButtonEnabled: false,
+                                zoomControlsEnabled: true,
+                                markers: Set<Marker>.of([
+                                  Marker(
+                                    markerId: MarkerId("1"),
+                                    position: LatLng(
+                                        double.parse(widget.model.location!
+                                            .split(",")[0]),
+                                        double.parse(widget.model.location!
+                                            .split(",")[1])),
+                                    // infoWindow:
+                                    //     InfoWindow(title: markerIdVal, snippet: '*'),
+                                    onTap: () {},
+                                  ),
+                                ]),
+                                initialCameraPosition: CameraPosition(
+                                  target: LatLng(
+                                      double.parse(
+                                          widget.model.location!.split(",")[0]),
+                                      double.parse(widget.model.location!
+                                          .split(",")[1])),
+                                  zoom: 16.0,
+                                ),
+                              ),
                             ),
-                          ]),
-                          initialCameraPosition: CameraPosition(
-                            target: LatLng(
-                                double.parse(
-                                    widget.model.location.split(",")[0]),
-                                double.parse(
-                                    widget.model.location.split(",")[1])),
-                            zoom: 16.0,
-                          ),
-                        ),
-                      ),
                     ),
                     SizedBox(height: 20),
                     TextWidget(
@@ -234,6 +255,7 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
                           title:
                               "Best price or we'll send you 110% of the difference.",
                           size: 12,
+                          maxline: 2,
                           color: greyColor.withOpacity(0.5),
                           fontWeight: FontWeight.w500,
                         ),
@@ -257,30 +279,23 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
                     SizedBox(
                       height: 10,
                     ),
-                    Row(
-                      children: [
-                        _TagWidget("United States Events"),
-                        SizedBox(
-                          width: 10,
-                        ),
-                        _TagWidget("New York Events"),
-                      ],
-                    ),
                     SizedBox(
-                      height: 10,
-                    ),
-                    Row(
-                      children: [
-                        _TagWidget("Art Class"),
-                        SizedBox(
-                          width: 10,
-                        ),
-                        _TagWidget("Drawing Classes"),
-                        SizedBox(
-                          width: 10,
-                        ),
-                        _TagWidget("Visual Art"),
-                      ],
+                      height: 50,
+                      child: ListView.builder(
+                        itemCount: widget.model.tags.length,
+                        shrinkWrap: true,
+                        scrollDirection: Axis.horizontal,
+                        itemBuilder: (context, index) {
+                          return Row(
+                            children: [
+                              _TagWidget("${widget.model.tags[index]}"),
+                              SizedBox(
+                                width: 10,
+                              ),
+                            ],
+                          );
+                        },
+                      ),
                     ),
                     SizedBox(
                       height: 20,
@@ -346,7 +361,9 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
             minWidth: width,
             height: 50,
             onPressed: () {
-              _bottomSheet(context);
+              // _bottomSheet(context);
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => TicketScreen()));
             },
             child: TextWidget(
               title: "Buy Ticket",

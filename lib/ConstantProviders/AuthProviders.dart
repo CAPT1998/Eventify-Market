@@ -43,11 +43,9 @@ class AuthProvider with ChangeNotifier {
   }) async {
     String? loginMessage;
     LoginModel? loginModel;
-    var request = http.Request(
-        'POST',
-        Uri.parse(
-            'http://quickeeapi.pakwexpo.com/api/login?email=$email&password=$password'));
-
+    var request = http.MultipartRequest(
+        'POST', Uri.parse('https://quickeeapi.pakwexpo.com/api/login'));
+    request.fields.addAll({'email': '$email', 'password': '$password'});
     http.StreamedResponse response = await request.send();
 
     if (response.statusCode == 200) {

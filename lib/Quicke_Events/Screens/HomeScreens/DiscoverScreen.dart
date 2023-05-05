@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:favorite_button/favorite_button.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -557,12 +558,20 @@ _NearWidget(
                 Stack(
                   children: [
                     ClipRRect(
-                        borderRadius: BorderRadius.circular(10),
-                        child: Image.network(
-                            "${value.getEventsModel[index].eventsPic}",
-                            height: height * 0.17,
-                            width: width * 0.6,
-                            fit: BoxFit.fill)),
+                      borderRadius: BorderRadius.circular(10),
+                      child: Image.network(
+                        "${value.getEventsModel[index].eventsPic}",
+                        height: height * 0.17,
+                        width: width * 0.6,
+                        fit: BoxFit.fill,
+                        errorBuilder: (context, url, error) => Image.asset(
+                          "assets/img/placeholder.jpg",
+                          fit: BoxFit.fill,
+                          height: height * 0.17,
+                          width: width * 0.6,
+                        ),
+                      ),
+                    ),
                     Container(
                       padding:
                           EdgeInsets.symmetric(horizontal: 10, vertical: 5),
