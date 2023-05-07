@@ -362,8 +362,12 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
             height: 50,
             onPressed: () {
               // _bottomSheet(context);
-              Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => TicketScreen()));
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => TicketScreen(
+                            model: widget.model,
+                          )));
             },
             child: TextWidget(
               title: "Buy Ticket",

@@ -6,11 +6,12 @@ import 'package:quickie_event/Quicke_Events/Providers/EventsProvider.dart';
 import 'package:quickie_event/Quicke_Events/Widgets/TextWidget.dart';
 import 'package:ticket_widget/ticket_widget.dart';
 
+import '../../Models/GetEventsModel.dart';
 import 'BookingTicket.dart';
 
 class TicketScreen extends StatefulWidget {
-  const TicketScreen({super.key});
-
+  TicketScreen({super.key, required this.model});
+  GetEventsModel model;
   @override
   State<TicketScreen> createState() => _TicketScreenState();
 }
@@ -74,6 +75,19 @@ class _TicketScreenState extends State<TicketScreen> {
                               return InkWell(
                                 onTap: () {
                                   value.mupdateSelectTicket(index: index);
+                                  print(
+                                      "object  ${value.getEventTicketsModel[index].id}  ");
+                                  print("object  ${widget.model.id}  ");
+                                  print(
+                                      "object  ${value.getEventTicketsModel[index].price}  ");
+                                  value.mupdateEventAndTicket(
+                                    eventId: "${widget.model.id}",
+                                    ticketId:
+                                        "${value.getEventTicketsModel[index].id}",
+                                    price:
+                                        value.getEventTicketsModel[index].price,
+                                  );
+                                  print("object1");
                                 },
                                 child: Container(
                                   padding: EdgeInsets.symmetric(
@@ -94,7 +108,7 @@ class _TicketScreenState extends State<TicketScreen> {
                                               : appColor,
                                       child: Icon(
                                         CupertinoIcons.tickets,
-                                        color:  Colors.white,
+                                        color: Colors.white,
                                       ),
                                     ),
                                     title: TextWidget(
@@ -144,30 +158,44 @@ class _TicketScreenState extends State<TicketScreen> {
                     size: 14,
                   ),
                   Spacer(),
-                  Container(
-                    padding: EdgeInsets.all(5),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10),
-                      color: lightGreyColor,
-                    ),
-                    child: Icon(
-                      Icons.add,
-                      color: greyColor,
+                  InkWell(
+                    onTap: () {
+                      value.mAddQuantityTicket();
+                    },
+                    child: Container(
+                      padding: EdgeInsets.all(5),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10),
+                        color: lightGreyColor,
+                      ),
+                      child: Icon(
+                        Icons.add,
+                        color: greyColor,
+                      ),
                     ),
                   ),
                   TextWidget(
-                    title: "  1  ",
+                    title: value.reservationModel == null
+                        ? "  0  "
+                        : "  ${value.reservationModel!.quantity}  ",
                     size: 14,
                   ),
-                  Container(
-                    padding: EdgeInsets.all(5),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10),
-                      color: appColor,
-                    ),
-                    child: Icon(
-                      Icons.remove,
-                      color: Colors.white,
+                  InkWell(
+                    onTap: () {
+                      if (value.reservationModel!.quantity > 1) {
+                        value.mSubtractRicket();
+                      }
+                    },
+                    child: Container(
+                      padding: EdgeInsets.all(5),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10),
+                        color: appColor,
+                      ),
+                      child: Icon(
+                        Icons.remove,
+                        color: Colors.white,
+                      ),
                     ),
                   ),
                 ],
@@ -182,8 +210,15 @@ class _TicketScreenState extends State<TicketScreen> {
                 minWidth: width,
                 height: 50,
                 onPressed: () {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => BookingTicket()));
+                  if (value.reservationModel != null &&
+                      value.reservationModel!.quantity > 0) {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => BookingTicket()));
+                  } else {
+                    ErrorFlushbar(context, "Ticket", "Please Select any one Ticket");
+                  }
                 },
                 child: TextWidget(
                   title: "Checkout",

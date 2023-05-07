@@ -1,9 +1,12 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:quickie_event/Constant.dart';
 import 'package:quickie_event/Quicke_Events/Providers/EventsProvider.dart';
 import 'package:quickie_event/Quicke_Events/Screens/EventDetails/ContactInformationScreen.dart';
 import 'package:quickie_event/Quicke_Events/Widgets/TextWidget.dart';
+import 'package:rounded_loading_button/rounded_loading_button.dart';
 
 class BookingTicket extends StatefulWidget {
   const BookingTicket({super.key});
@@ -13,12 +16,15 @@ class BookingTicket extends StatefulWidget {
 }
 
 class _BookingTicketState extends State<BookingTicket> {
+  RoundedLoadingButtonController buttonController =
+      RoundedLoadingButtonController();
   @override
   Widget build(BuildContext context) {
     return Consumer<EventProvider>(
       builder: (context, value, child) => Scaffold(
+        backgroundColor: Colors.white,
         appBar: AppBar(
-          backgroundColor: Colors.grey[50],
+          backgroundColor: Colors.white,
           title: TextWidget(
             title: "Event Detail",
             size: 14,
@@ -131,6 +137,7 @@ class _BookingTicketState extends State<BookingTicket> {
                 SizedBox(
                   height: 20,
                 ),
+                Image.asset("assets/img/book.png"),
                 ListView.builder(
                   shrinkWrap: true,
                   physics: NeverScrollableScrollPhysics(),
@@ -146,44 +153,165 @@ class _BookingTicketState extends State<BookingTicket> {
                             shrinkWrap: true,
                             scrollDirection: Axis.horizontal,
                             itemBuilder: (context, index12) {
-                              return Container(
-                                alignment: Alignment.center,
-                                padding: EdgeInsets.all(10),
-                                margin: EdgeInsets.only(right: 10),
-                                decoration: BoxDecoration(
-                                    border: Border.all(color: Colors.grey),
-                                    borderRadius: BorderRadius.circular(10)),
-                                child: TextWidget(
-                                    title:
-                                        "${value.getEventSeatsModel[index].seatingPlanDetails[index12].seatNo}"),
+                              return InkWell(
+                                onTap: () {
+                                  if (!value.reservationModel!.seatId!.any(
+                                      (element) =>
+                                          element ==
+                                          value
+                                              .getEventSeatsModel[index]
+                                              .seatingPlanDetails[index12]
+                                              .id)) {
+                                    if (value.reservationModel!.quantity >
+                                        value
+                                            .reservationModel!.seatId!.length) {
+                                      value.mAddSeatList(
+                                          id: value.getEventSeatsModel[index]
+                                              .seatingPlanDetails[index12].id,
+                                          name: value
+                                              .getEventSeatsModel[index]
+                                              .seatingPlanDetails[index12]
+                                              .seatNo);
+                                    } else {
+                                      ErrorFlushbar(context, "Quantity",
+                                          "Add More Ticket to book your seat");
+                                    }
+                                  } else {
+                                    value.mSubtractSeatList(
+                                        id: value.getEventSeatsModel[index]
+                                            .seatingPlanDetails[index12].id,
+                                        name: value
+                                            .getEventSeatsModel[index]
+                                            .seatingPlanDetails[index12]
+                                            .seatNo);
+                                  }
+                                },
+                                child: Container(
+                                  alignment: Alignment.center,
+                                  padding: EdgeInsets.all(10),
+                                  margin: EdgeInsets.only(right: 10),
+                                  decoration: BoxDecoration(
+                                      color: value.reservationModel!.seatId!
+                                              .any((element) =>
+                                                  element ==
+                                                  value
+                                                      .getEventSeatsModel[index]
+                                                      .seatingPlanDetails[
+                                                          index12]
+                                                      .id)
+                                          ? appColor
+                                          : value
+                                                      .getEventSeatsModel[index]
+                                                      .seatingPlanDetails[
+                                                          index12]
+                                                      .seatStatus ==
+                                                  "0"
+                                              ? Colors.white
+                                              : value
+                                                          .getEventSeatsModel[
+                                                              index]
+                                                          .seatingPlanDetails[
+                                                              index12]
+                                                          .seatStatus ==
+                                                      "1"
+                                                  ? Colors.grey
+                                                  : appColor,
+                                      border: Border.all(color: Colors.grey),
+                                      borderRadius: BorderRadius.circular(10)),
+                                  child: TextWidget(
+                                      title:
+                                          "${value.getEventSeatsModel[index].seatingPlanDetails[index12].seatNo}",
+                                      color: Colors.white),
+                                ),
                               );
                             },
                           ),
                         ),
                         SizedBox(
                           height: 10,
-                        )
+                        ),
                       ],
                     );
                   },
                 ),
+                SizedBox(
+                  height: 40,
+                ),
+                Row(
+                  children: [
+                    Text(
+                      "  ●",
+                      style: TextStyle(color: Colors.grey, fontSize: 30),
+                    ),
+                    TextWidget(title: "  Reserved", size: 16),
+                    Text(
+                      "    ●",
+                      style: TextStyle(color: Colors.grey[100], fontSize: 30),
+                    ),
+                    TextWidget(title: "  Available", size: 16),
+                    Text(
+                      "    ●",
+                      style: TextStyle(color: appColor, fontSize: 30),
+                    ),
+                    TextWidget(title: "  Booking", size: 16),
+                  ],
+                ),
+                SizedBox(
+                  height: 20,
+                ),
+                Row(
+                  children: [
+                    TextWidget(
+                      title:
+                          "Selected ${value.reservationModel!.seatName!.length} Seat",
+                      size: 18,
+                      fontWeight: FontWeight.w400,
+                    ),
+                    Spacer(),
+                    TextWidget(
+                      title:
+                          "${value.reservationModel!.seatName!}",
+                      size: 18,
+                      fontWeight: FontWeight.w400,
+                    ),
+                  ],
+                )
               ],
             ),
           ),
         ),
         bottomNavigationBar: Container(
           padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-          child: MaterialButton(
+          child: RoundedLoadingButton(
             color: appColor,
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-            minWidth: width,
+            width: width,
+            controller: buttonController,
+            borderRadius: 14,
             height: 50,
-            onPressed: () {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => ContactInformationDetailScreen()));
+            onPressed: () async {
+              await value.mAddReservation();
+              if (value.reservationMessage == "success") {
+                buttonController.success();
+                SuccessFlushbar(context, "Reservation",
+                    "Your Reservation has been successfull");
+                Timer(Duration(seconds: 2), () {
+                  Navigator.pop(context);
+                  Navigator.pop(context);
+                  Navigator.pop(context);
+                  buttonController.reset();
+                });
+              } else {
+                buttonController.error();
+                ErrorFlushbar(context, "Reservation",
+                    "Your Reservation has been Cancelled please try again later");
+                Timer(Duration(seconds: 2), () {
+                  buttonController.reset();
+                });
+              }
+              // Navigator.push(
+              //     context,
+              //     MaterialPageRoute(
+              //         builder: (context) => ContactInformationDetailScreen()));
             },
             child: TextWidget(
               title: "Continue",
