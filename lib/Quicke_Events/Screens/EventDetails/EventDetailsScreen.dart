@@ -191,7 +191,8 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
                     SizedBox(
                       height: 200,
                       width: width,
-                      child: widget.model.location == null
+                      child: widget.model.lattitude == null ||
+                              widget.model.longitude == null
                           ? Center(child: Text("No Location Available"))
                           : ClipRRect(
                               borderRadius: BorderRadius.circular(10),
@@ -206,10 +207,8 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
                                   Marker(
                                     markerId: MarkerId("1"),
                                     position: LatLng(
-                                        double.parse(widget.model.location!
-                                            .split(",")[0]),
-                                        double.parse(widget.model.location!
-                                            .split(",")[1])),
+                                        double.parse(widget.model.lattitude),
+                                        double.parse(widget.model.longitude)),
                                     // infoWindow:
                                     //     InfoWindow(title: markerIdVal, snippet: '*'),
                                     onTap: () {},
@@ -218,9 +217,9 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
                                 initialCameraPosition: CameraPosition(
                                   target: LatLng(
                                       double.parse(
-                                          widget.model.location!.split(",")[0]),
-                                      double.parse(widget.model.location!
-                                          .split(",")[1])),
+                                          widget.model.location.split(",")[0]),
+                                      double.parse(
+                                          widget.model.location.split(",")[1])),
                                   zoom: 16.0,
                                 ),
                               ),

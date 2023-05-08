@@ -18,6 +18,15 @@ class TicketScreen extends StatefulWidget {
 
 class _TicketScreenState extends State<TicketScreen> {
   @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    print(Provider.of<EventProvider>(context, listen: false)
+        .getEventTicketsModel
+        .length);
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Consumer<EventProvider>(
       builder: (context, value, child) => Scaffold(
@@ -75,11 +84,6 @@ class _TicketScreenState extends State<TicketScreen> {
                               return InkWell(
                                 onTap: () {
                                   value.mupdateSelectTicket(index: index);
-                                  print(
-                                      "object  ${value.getEventTicketsModel[index].id}  ");
-                                  print("object  ${widget.model.id}  ");
-                                  print(
-                                      "object  ${value.getEventTicketsModel[index].price}  ");
                                   value.mupdateEventAndTicket(
                                     eventId: "${widget.model.id}",
                                     ticketId:
@@ -217,7 +221,8 @@ class _TicketScreenState extends State<TicketScreen> {
                         MaterialPageRoute(
                             builder: (context) => BookingTicket()));
                   } else {
-                    ErrorFlushbar(context, "Ticket", "Please Select any one Ticket");
+                    ErrorFlushbar(
+                        context, "Ticket", "Please Select any one Ticket");
                   }
                 },
                 child: TextWidget(
