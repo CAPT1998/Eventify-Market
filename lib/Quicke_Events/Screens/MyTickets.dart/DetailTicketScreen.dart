@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:quickie_event/Constant.dart';
+import '../../Models/GetEventSeatHistoryModel.dart';
 import '../../Widgets/TextWidget.dart';
 
 class DetailTicketScreen extends StatefulWidget {
-  const DetailTicketScreen({super.key});
-
+  DetailTicketScreen({super.key,required this.model});
+  GetEventSeatHistoryModel model;
   @override
   State<DetailTicketScreen> createState() => _DetailTicketScreenState();
 }
@@ -71,7 +72,7 @@ class _DetailTicketScreenState extends State<DetailTicketScreen> {
                             color: Color(0XFFFFFFFF).withOpacity(0.3),
                           ),
                           child: TextWidget(
-                            title: "Drink & Draw at The Living Gallery",
+                            title: "${widget.model.eventTitle}",
                             fontWeight: FontWeight.w700,
                             size: 14,
                             color: Colors.white,
@@ -115,7 +116,7 @@ class _DetailTicketScreenState extends State<DetailTicketScreen> {
                             height: 10,
                           ),
                           TextWidget(
-                            title: "Dec 11, 2022",
+                            title: "${widget.model.eventStartDate.toString().split(" ")[0]}",
                             size: 16,
                           ),
                         ],
@@ -133,7 +134,7 @@ class _DetailTicketScreenState extends State<DetailTicketScreen> {
                             height: 10,
                           ),
                           TextWidget(
-                            title: "07:00 PM",
+                            title: "${widget.model.eventStartTime}",
                             size: 16,
                           ),
                         ],
@@ -149,7 +150,7 @@ class _DetailTicketScreenState extends State<DetailTicketScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           TextWidget(
-                              title: "Ticket seat",
+                              title: "Event",
                               size: 12,
                               fontWeight: FontWeight.w500,
                               color: greyColor.withOpacity(0.3)),
@@ -157,7 +158,7 @@ class _DetailTicketScreenState extends State<DetailTicketScreen> {
                             height: 10,
                           ),
                           TextWidget(
-                            title: "Regular",
+                            title: "${widget.model.seats[0].ticketId}",
                             size: 16,
                           ),
                         ],
@@ -245,7 +246,10 @@ class _DetailTicketScreenState extends State<DetailTicketScreen> {
                                     color: greyColor,
                                   ),
                                 ),
-                                Image.asset("assets/img/qrcode.png",height: height*0.3,),
+                                Image.asset(
+                                  "assets/img/qrcode.png",
+                                  height: height * 0.3,
+                                ),
                                 SizedBox(
                                   height: 20,
                                 ),

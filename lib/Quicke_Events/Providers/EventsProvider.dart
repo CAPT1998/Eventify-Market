@@ -1,9 +1,12 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:http/http.dart' as http;
+import 'package:quickie_event/Quicke_Events/Models/GetEventSeatHistoryModel.dart';
 import 'package:quickie_event/Quicke_Events/Models/GetEventSeatsModel.dart';
+import 'package:quickie_event/Quicke_Events/Models/GetEventTableModel.dart';
 import 'package:quickie_event/Quicke_Events/Models/GetEventTicketsModel.dart';
 import 'package:quickie_event/Quicke_Events/Models/GetEventsModel.dart';
 import 'package:quickie_event/Quicke_Events/Models/GetMyPersonalEventsModel.dart';
@@ -154,18 +157,20 @@ class EventProvider with ChangeNotifier {
       seatId += "${element},";
     });
     var headers = {
+      'Content-Type': 'application/json',
       'Authorization':
           'Bearer PivvPlsQWxPl1bB5KrbKNBuraJit0PrUZekQUgtLyTRuyBq921atFtoR1HuA'
     };
-    var request = http.MultipartRequest(
+    var request = http.Request(
         'POST', Uri.parse('http://quickeeapi.pakwexpo.com/api/reservation'));
-    request.fields.addAll({
-      'seat_type_status': '${reservationModel!.seatTypeStatus}',
-      'event_id': '${reservationModel!.eventId}',
-      'ticket_id': '${reservationModel!.ticketId}',
-      'user_id': '${reservationModel!.userId}',
-      'seat_id': '$seatId',
-      'payment_method': 'Paypal'
+    request.body = json.encode({
+      "seat_id": reservationModel!.seatId,
+      "status": 1,
+      "event_id": '${reservationModel!.eventId}',
+      "ticket_id": '${reservationModel!.ticketId}',
+      "payment_method": "Paypal",
+      "user_id": '${reservationModel!.userId}',
+      "seat_type_status": '${reservationModel!.seatTypeStatus}'
     });
 
     request.headers.addAll(headers);
@@ -273,8 +278,8 @@ class EventProvider with ChangeNotifier {
       'Authorization':
           'Bearer PivvPlsQWxPl1bB5KrbKNBuraJit0PrUZekQUgtLyTRuyBq921atFtoR1HuA'
     };
-    var request = http.MultipartRequest(
-        'GET', Uri.parse('https://quickeeapi.pakwexpo.com/api/events/1/find/private'));
+    var request = http.MultipartRequest('GET',
+        Uri.parse('https://quickeeapi.pakwexpo.com/api/events/1/find/private'));
 
     request.headers.addAll(headers);
 
@@ -290,6 +295,48 @@ class EventProvider with ChangeNotifier {
       print(response.reasonPhrase);
       checkValueMyEvents = false;
       notifyListeners();
+    }
+  }
+
+  List<GetEventTableModel> getEventTableModel = [];
+  mGetTablesEvent({required String id}) async {
+    List<GetEventTableModel> getEventTableModel = [];
+    var headers = {
+      'Authorization':
+          'Bearer PivvPlsQWxPl1bB5KrbKNBuraJit0PrUZekQUgtLyTRuyBq921atFtoR1HuA'
+    };
+    var request = http.MultipartRequest(
+        'GET', Uri.parse('http://quickeeapi.pakwexpo.com/api/table/$id'));
+    request.headers.addAll(headers);
+    http.StreamedResponse response = await request.send();
+    if (response.statusCode == 200) {
+      String value = await response.stream.bytesToString();
+      getEventTableModel = getEventTableModelFromJson(value);
+      this.getEventTableModel = getEventTableModel;
+      notifyListeners();
+    } else {
+      print(response.reasonPhrase);
+    }
+  }
+
+  List<GetEventSeatHistoryModel> getEventSeatHsitoryModel = [];
+  mGetEventSeatHistory() async {
+    List<GetEventSeatHistoryModel> getEventSeatHsitoryModel = [];
+    var headers = {
+      'Authorization':
+          'Bearer PivvPlsQWxPl1bB5KrbKNBuraJit0PrUZekQUgtLyTRuyBq921atFtoR1HuA'
+    };
+    var request = http.MultipartRequest(
+        'GET', Uri.parse('http://quickeeapi.pakwexpo.com/api/events/1/find'));
+    request.headers.addAll(headers);
+    http.StreamedResponse response = await request.send();
+    if (response.statusCode == 200) {
+      String value = await response.stream.bytesToString();
+      getEventSeatHsitoryModel = getEventSeatHistoryModelFromJson(value);
+      this.getEventSeatHsitoryModel = getEventSeatHsitoryModel;
+      notifyListeners();
+    } else {
+      print(response.reasonPhrase);
     }
   }
 }

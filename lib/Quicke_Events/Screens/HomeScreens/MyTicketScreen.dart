@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
+import 'package:provider/provider.dart';
+import 'package:quickie_event/Quicke_Events/Providers/EventsProvider.dart';
 import 'package:quickie_event/Quicke_Events/Screens/MyTickets.dart/CalenderTicketScreen.dart';
 import 'package:quickie_event/Quicke_Events/Screens/MyTickets.dart/DetailTicketScreen.dart';
 import '../../../Constant.dart';
+import '../../Models/GetEventSeatHistoryModel.dart';
 import '../../Widgets/TextWidget.dart';
 
 class MyticketScreen extends StatefulWidget {
@@ -15,159 +18,188 @@ class MyticketScreen extends StatefulWidget {
 class _MyticketScreenState extends State<MyticketScreen> {
   TabController? _tabController;
   @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    Provider.of<EventProvider>(context, listen: false).mGetEventSeatHistory();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        appBar: AppBar(
-          leading: null,
-          title: TextWidget(title: "My Ticket", size: 16),
-          backgroundColor: Colors.grey[50],
-          elevation: 0,
-          centerTitle: true,
-          actions: [
-            IconButton(
-                onPressed: () {
-                  PersistentNavBarNavigator.pushNewScreen(
-                    context,
-                    screen: CalenderTicketScreen(),
-                    withNavBar: false,
-                  );
-                },
-                icon: Icon(
-                  Icons.calendar_month_outlined,
-                  color: Colors.black,
-                ))
-          ],
-        ),
-        body: Column(
-          children: [
-            Expanded(
-              child: DefaultTabController(
-                length: 2,
-                child: Column(
-                  children: [
-                    Card(
-                      margin: EdgeInsets.zero,
-                      elevation: 10,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Container(
-                        width: width * 0.9,
-                        height: 50,
-                        decoration: BoxDecoration(
-                          color: lightGreyColor,
+    return Consumer<EventProvider>(
+      builder: (context, value, child) => SafeArea(
+        child: Scaffold(
+          appBar: AppBar(
+            leading: null,
+            title: TextWidget(title: "My Ticket", size: 16),
+            backgroundColor: Colors.grey[50],
+            elevation: 0,
+            centerTitle: true,
+            actions: [
+              IconButton(
+                  onPressed: () {
+                    PersistentNavBarNavigator.pushNewScreen(
+                      context,
+                      screen: CalenderTicketScreen(),
+                      withNavBar: false,
+                    );
+                  },
+                  icon: Icon(
+                    Icons.calendar_month_outlined,
+                    color: Colors.black,
+                  ))
+            ],
+          ),
+          body: Column(
+            children: [
+              Expanded(
+                child: DefaultTabController(
+                  length: 2,
+                  child: Column(
+                    children: [
+                      Card(
+                        margin: EdgeInsets.zero,
+                        elevation: 10,
+                        shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
-                        child: TabBar(
-                          controller: _tabController,
-                          padding: const EdgeInsets.all(3),
-                          labelColor: greyColor,
-                          unselectedLabelColor: Color(0XFFA0A3AD),
-                          labelStyle: const TextStyle(
-                            fontWeight: FontWeight.w700,
-                            fontSize: 12,
+                        child: Container(
+                          width: width * 0.9,
+                          height: 50,
+                          decoration: BoxDecoration(
+                            color: lightGreyColor,
+                            borderRadius: BorderRadius.circular(12),
                           ),
-                          automaticIndicatorColorAdjustment: true,
-                          // overlayColor:,
-                          indicator: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(10),
+                          child: TabBar(
+                            controller: _tabController,
+                            padding: const EdgeInsets.all(3),
+                            labelColor: greyColor,
+                            unselectedLabelColor: Color(0XFFA0A3AD),
+                            labelStyle: const TextStyle(
+                              fontWeight: FontWeight.w700,
+                              fontSize: 12,
+                            ),
+                            automaticIndicatorColorAdjustment: true,
+                            // overlayColor:,
+                            indicator: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            tabs: [
+                              const Tab(
+                                text: "Upcoming",
+                              ),
+                              const Tab(
+                                text: "Past Ticket",
+                              ),
+                            ],
                           ),
-                          tabs: [
-                            const Tab(
-                              text: "Upcoming",
-                            ),
-                            const Tab(
-                              text: "Past Ticket",
-                            ),
-                          ],
                         ),
                       ),
-                    ),
-                    const SizedBox(
-                      height: 60,
-                    ),
-                    Flexible(
-                      child: SizedBox(
-                        child: TabBarView(
-                          // physics: NeverScrollableScrollPhysics(),
-                          children: [
-                            Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 20.0),
-                              child: SingleChildScrollView(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    TextWidget(
-                                        title: "December 2022", size: 16),
-                                    InkWell(
-                                        onTap: () {
-                                          PersistentNavBarNavigator
-                                              .pushNewScreen(
-                                            context,
-                                            screen: DetailTicketScreen(),
-                                            withNavBar: false,
+                      const SizedBox(
+                        height: 60,
+                      ),
+                      Flexible(
+                        child: SizedBox(
+                          child: TabBarView(
+                            // physics: NeverScrollableScrollPhysics(),
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 20.0),
+                                child: SingleChildScrollView(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      // TextWidget(
+                                      //     title: "December 2022", size: 16),
+                                      // InkWell(
+                                      //     onTap: () {
+                                      //       PersistentNavBarNavigator
+                                      //           .pushNewScreen(
+                                      //         context,
+                                      //         screen: DetailTicketScreen(),
+                                      //         withNavBar: false,
+                                      //       );
+                                      //     },
+                                      //     child: _TicketWidget()),
+                                      ListView.builder(
+                                        itemCount: value
+                                            .getEventSeatHsitoryModel.length,
+                                        shrinkWrap: true,
+                                        physics: NeverScrollableScrollPhysics(),
+                                        itemBuilder: (context, index) {
+                                          return Column(
+                                            children: [
+                                              InkWell(
+                                                onTap: () {
+                                                  PersistentNavBarNavigator
+                                                      .pushNewScreen(
+                                                    context,
+                                                    screen: DetailTicketScreen(
+                                                        model: value
+                                                                .getEventSeatHsitoryModel[
+                                                            index]),
+                                                    withNavBar: false,
+                                                  );
+                                                },
+                                                child: _TicketWidget(
+                                                    model: value
+                                                            .getEventSeatHsitoryModel[
+                                                        index]),
+                                              ),
+                                            ],
                                           );
                                         },
-                                        child: _TicketWidget()),
-                                    _TicketWidget(),
-                                    SizedBox(
-                                      height: 20,
-                                    ),
-                                    TextWidget(
-                                        title: "November 2022", size: 16),
-                                    SizedBox(
-                                      height: 20,
-                                    ),
-                                    _TicketWidget(),
-                                    _TicketWidget(),
-                                  ],
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ),
-                            ),
-                            Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 20.0),
-                              child: SingleChildScrollView(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    TextWidget(
-                                        title: "December 2022", size: 16),
-                                    _TicketWidget(),
-                                    _TicketWidget(),
-                                    SizedBox(
-                                      height: 20,
-                                    ),
-                                    TextWidget(
-                                        title: "November 2022", size: 16),
-                                    SizedBox(
-                                      height: 20,
-                                    ),
-                                    _TicketWidget(),
-                                    _TicketWidget(),
-                                  ],
+                              Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 20.0),
+                                child: SingleChildScrollView(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      TextWidget(
+                                          title: "December 2022", size: 16),
+                                      // _TicketWidget(),
+                                      // _TicketWidget(),
+                                      SizedBox(
+                                        height: 20,
+                                      ),
+                                      TextWidget(
+                                          title: "November 2022", size: 16),
+                                      SizedBox(
+                                        height: 20,
+                                      ),
+                                      // _TicketWidget(),
+                                      // _TicketWidget(),
+                                    ],
+                                  ),
                                 ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
   }
 }
 
-Widget _TicketWidget() {
+Widget _TicketWidget({required GetEventSeatHistoryModel model}) {
   return ClipPath(
     clipper: DolDurmaClipper(right: width * 0.2, holeRadius: 50),
     child: Container(
@@ -190,7 +222,7 @@ Widget _TicketWidget() {
               SizedBox(
                 width: width * 0.5,
                 child: TextWidget(
-                  title: "Drink & Draw at The Living Gallery",
+                  title: "${model.eventTitle}",
                   maxline: 2,
                   fontWeight: FontWeight.w700,
                   size: 16,
@@ -199,7 +231,8 @@ Widget _TicketWidget() {
               SizedBox(
                 width: width * 0.5,
                 child: TextWidget(
-                    title: "Sun, Dec 11   07:00 PM",
+                    title:
+                        "${model.eventStartDate.toString().split(" ")[0]}   ${model.eventStartTime}",
                     fontWeight: FontWeight.w500,
                     size: 12,
                     color: greyColor),
@@ -214,7 +247,7 @@ Widget _TicketWidget() {
                         color: greyColor,
                       ),
                       TextWidget(
-                        title: "  2 Ticket",
+                        title: "  ${model.seats.length} Ticket",
                         size: 12,
                         fontWeight: FontWeight.w500,
                         color: greyColor,

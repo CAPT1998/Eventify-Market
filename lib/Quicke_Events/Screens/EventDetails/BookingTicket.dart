@@ -155,35 +155,44 @@ class _BookingTicketState extends State<BookingTicket> {
                             itemBuilder: (context, index12) {
                               return InkWell(
                                 onTap: () {
-                                  if (!value.reservationModel!.seatId!.any(
-                                      (element) =>
-                                          element ==
-                                          value
-                                              .getEventSeatsModel[index]
-                                              .seatingPlanDetails[index12]
-                                              .id)) {
-                                    if (value.reservationModel!.quantity >
-                                        value
-                                            .reservationModel!.seatId!.length) {
-                                      value.mAddSeatList(
+                                  if (value
+                                          .getEventSeatsModel[index]
+                                          .seatingPlanDetails[index12]
+                                          .seatStatus !=
+                                      "1") {
+                                    if (!value.reservationModel!.seatId!.any(
+                                        (element) =>
+                                            element ==
+                                            value
+                                                .getEventSeatsModel[index]
+                                                .seatingPlanDetails[index12]
+                                                .id)) {
+                                      if (value.reservationModel!.quantity >
+                                          value.reservationModel!.seatId!
+                                              .length) {
+                                        value.mAddSeatList(
+                                            id: value.getEventSeatsModel[index]
+                                                .seatingPlanDetails[index12].id,
+                                            name: value
+                                                .getEventSeatsModel[index]
+                                                .seatingPlanDetails[index12]
+                                                .seatNo);
+                                      } else {
+                                        ErrorFlushbar(context, "Quantity",
+                                            "Add More Ticket to book your seat");
+                                      }
+                                    } else {
+                                      value.mSubtractSeatList(
                                           id: value.getEventSeatsModel[index]
                                               .seatingPlanDetails[index12].id,
                                           name: value
                                               .getEventSeatsModel[index]
                                               .seatingPlanDetails[index12]
                                               .seatNo);
-                                    } else {
-                                      ErrorFlushbar(context, "Quantity",
-                                          "Add More Ticket to book your seat");
                                     }
                                   } else {
-                                    value.mSubtractSeatList(
-                                        id: value.getEventSeatsModel[index]
-                                            .seatingPlanDetails[index12].id,
-                                        name: value
-                                            .getEventSeatsModel[index]
-                                            .seatingPlanDetails[index12]
-                                            .seatNo);
+                                    ErrorFlushbar(context, "Seat",
+                                        "Seat Already reserved");
                                   }
                                 },
                                 child: Container(
@@ -269,13 +278,43 @@ class _BookingTicketState extends State<BookingTicket> {
                     ),
                     Spacer(),
                     TextWidget(
-                      title:
-                          "${value.reservationModel!.seatName!}",
+                      title: "${value.reservationModel!.seatName!}",
                       size: 18,
                       fontWeight: FontWeight.w400,
                     ),
                   ],
-                )
+                ),
+                SizedBox(
+                  height: 30,
+                ),
+                ListView.builder(
+                    itemCount: value.getEventTableModel.length,
+                    shrinkWrap: true,
+                    physics: NeverScrollableScrollPhysics(),
+                    itemBuilder: (context, index) {
+                      print(value.getEventTableModel.length);
+                      return Column(
+                        children: [
+                          SizedBox(
+                            height: 200,
+                            width: width,
+                            child: Center(
+                              child: TableWithSeats(
+                                numberOfSeats: 5,
+                                tableSize: 100,
+                                seatPositions: [
+                                  Offset(1, 0),
+                                  Offset(40, 0),
+                                  Offset(80, 0),
+                                  Offset(1, 60),
+                                  Offset(1, 140)
+                                ],
+                              ),
+                            ),
+                          )
+                        ],
+                      );
+                    }),
               ],
             ),
           ),
@@ -321,6 +360,66 @@ class _BookingTicketState extends State<BookingTicket> {
             ),
           ),
         ),
+      ),
+    );
+  }
+}
+
+class TableWithSeats extends StatelessWidget {
+  final int numberOfSeats;
+  final double tableSize;
+  final List<Offset> seatPositions;
+
+  const TableWithSeats({
+    Key? key,
+    required this.numberOfSeats,
+    required this.tableSize,
+    required this.seatPositions,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      children: [
+        // Table
+        Positioned(
+          top: tableSize / 2,
+          left: tableSize / 2,
+          child: Container(
+            width: tableSize,
+            height: tableSize,
+            // color: Colors.brown,
+            child: Image.asset(
+              "assets/img/table.jpg",
+              fit: BoxFit.fill,
+            ),
+          ),
+        ),
+        // Seats
+        ...seatPositions
+            .map(
+              (position) => Positioned(
+                top: position.dy,
+                left: position.dx,
+                child: Seat(),
+              ),
+            )
+            .toList(),
+      ],
+    );
+  }
+}
+
+class Seat extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 30,
+      height: 40,
+      decoration: BoxDecoration(
+        color: Colors.grey[500],
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: Colors.black),
       ),
     );
   }

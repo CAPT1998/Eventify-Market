@@ -70,7 +70,7 @@ class BackendService {
   static Future<List<String>> getSuggestions(String query, name) async {
     if (query.length > 3) {
       final places = await FlutterGooglePlacesSdk(
-          'AIzaSyB3AJ346V-wawHGxPZaeG5ZMndcXeVLCEU');
+          'AIzaSyATgPJDeFJrfKuMJ6SEFeGsyEGq9rQRV2I');
       FindAutocompletePredictionsResponse predictions =
           await places.findAutocompletePredictions(query);
       // print(predictions.predictions);

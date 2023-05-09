@@ -6,9 +6,8 @@ import 'package:quickie_event/Quicke_Events/Providers/CategoryProvider.dart';
 import 'package:quickie_event/Quicke_Events/Providers/EventsProvider.dart';
 import 'package:quickie_event/SplashScreen/SplashScreen.dart';
 
-void main(List<String> args) async{
-
-   WidgetsFlutterBinding.ensureInitialized();
+void main(List<String> args) async {
+  WidgetsFlutterBinding.ensureInitialized();
   // Shared.pref = await SharedPreferences.getInstance();
   await Firebase.initializeApp();
   runApp(MyApp());

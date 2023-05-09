@@ -29,6 +29,8 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
         .mGetEventTickets(id: "${widget.model.id}");
     Provider.of<EventProvider>(context, listen: false)
         .mGetEventSeats(id: "${widget.model.id}");
+    Provider.of<EventProvider>(context, listen: false)
+        .mGetTablesEvent(id: "${widget.model.id}");
   }
 
   @override
