@@ -216,7 +216,6 @@ class _CreateNewEventsState extends State<CreateNewEvents> {
                             }
                           },
                           icon: Icon(Icons.timer_sharp))),
-                 
                   SizedBox(
                     height: 10,
                   ),

@@ -142,7 +142,7 @@ class _MyticketScreenState extends State<MyticketScreen> {
                                                                 .getEventSeatHsitoryModel[
                                                             index]),
                                                     withNavBar: false,
-                                                  );
+                                                  ); 
                                                 },
                                                 child: _TicketWidget(
                                                     model: value

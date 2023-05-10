@@ -568,7 +568,7 @@ _NearWidget(
                                   height: height * 0.17,
                                   width: width * 0.6,
                                   fit: BoxFit.fill,
-                                  errorBuilder: (context, url, error) =>
+                                   errorBuilder: (context, url, error) =>
                                       Image.asset(
                                     "assets/img/placeholder.jpg",
                                     fit: BoxFit.fill,

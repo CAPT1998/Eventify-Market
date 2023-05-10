@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:quickie_event/Constant.dart';
 import 'package:quickie_event/Quicke_Events/Providers/EventsProvider.dart';
-import 'package:quickie_event/Quicke_Events/Screens/EventDetails/ContactInformationScreen.dart';
 import 'package:quickie_event/Quicke_Events/Widgets/TextWidget.dart';
 import 'package:rounded_loading_button/rounded_loading_button.dart';
 
@@ -284,37 +283,37 @@ class _BookingTicketState extends State<BookingTicket> {
                     ),
                   ],
                 ),
-                SizedBox(
-                  height: 30,
-                ),
-                ListView.builder(
-                    itemCount: value.getEventTableModel.length,
-                    shrinkWrap: true,
-                    physics: NeverScrollableScrollPhysics(),
-                    itemBuilder: (context, index) {
-                      print(value.getEventTableModel.length);
-                      return Column(
-                        children: [
-                          SizedBox(
-                            height: 200,
-                            width: width,
-                            child: Center(
-                              child: TableWithSeats(
-                                numberOfSeats: 5,
-                                tableSize: 100,
-                                seatPositions: [
-                                  Offset(1, 0),
-                                  Offset(40, 0),
-                                  Offset(80, 0),
-                                  Offset(1, 60),
-                                  Offset(1, 140)
-                                ],
-                              ),
-                            ),
-                          )
-                        ],
-                      );
-                    }),
+                // SizedBox(
+                //   height: 30,
+                // ),
+                // ListView.builder(
+                //     itemCount: value.getEventTableModel.length,
+                //     shrinkWrap: true,
+                //     physics: NeverScrollableScrollPhysics(),
+                //     itemBuilder: (context, index) {
+                //       print(value.getEventTableModel.length);
+                //       return Column(
+                //         children: [
+                //           SizedBox(
+                //             height: 200,
+                //             width: width,
+                //             child: Center(
+                //               child: TableWithSeats(
+                //                 numberOfSeats: 5,
+                //                 tableSize: 100,
+                //                 seatPositions: [
+                //                   Offset(1, 0),
+                //                   Offset(40, 0),
+                //                   Offset(80, 0),
+                //                   Offset(1, 60),
+                //                   Offset(1, 140)
+                //                 ],
+                //               ),
+                //             ),
+                //           )
+                //         ],
+                //       );
+                //     }),
               ],
             ),
           ),

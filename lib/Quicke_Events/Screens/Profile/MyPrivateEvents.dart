@@ -100,7 +100,8 @@ class _MyPrivateEventsState extends State<MyPrivateEvents> {
                             height: 10,
                           ),
                           TextWidget(
-                            title: "${value.getMyPersonalEvent[index].eventTitle}",
+                            title:
+                                "${value.getMyPersonalEvent[index].eventTitle}",
                             size: 16,
                             fontWeight: FontWeight.w700,
                           ),
@@ -115,13 +116,13 @@ class _MyPrivateEventsState extends State<MyPrivateEvents> {
                                 color: greyColor,
                               ),
                               TextWidget(
-                                title: "  ${value.getMyPersonalEvent[index].eventStartDate.toString().split(" ")[0]}  .  ${value.getMyPersonalEvent[index].eventStartTime}",
+                                title:
+                                    "  ${value.getMyPersonalEvent[index].eventStartDate.toString().split(" ")[0]}  .  ${value.getMyPersonalEvent[index].eventStartTime}",
                                 size: 12,
                                 fontWeight: FontWeight.w500,
                                 color: greyColor,
                               ),
                               Spacer(),
-                             
                             ],
                           )
                         ],

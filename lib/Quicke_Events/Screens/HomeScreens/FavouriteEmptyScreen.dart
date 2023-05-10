@@ -34,6 +34,7 @@ class _FavoriteEmptyScreenState extends State<FavoriteEmptyScreen> {
             SizedBox(
               height: 50,
             ),
+            
             Image.asset(
               "assets/img/favourite.png",
               width: width * 0.7,

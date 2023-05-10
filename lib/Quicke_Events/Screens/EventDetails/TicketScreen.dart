@@ -26,6 +26,7 @@ class _TicketScreenState extends State<TicketScreen> {
         .length);
   }
 
+
   @override
   Widget build(BuildContext context) {
     return Consumer<EventProvider>(

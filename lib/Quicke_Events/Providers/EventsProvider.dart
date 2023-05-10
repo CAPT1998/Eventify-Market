@@ -326,6 +326,7 @@ class EventProvider with ChangeNotifier {
       'Authorization':
           'Bearer PivvPlsQWxPl1bB5KrbKNBuraJit0PrUZekQUgtLyTRuyBq921atFtoR1HuA'
     };
+    
     var request = http.MultipartRequest(
         'GET', Uri.parse('http://quickeeapi.pakwexpo.com/api/events/1/find'));
     request.headers.addAll(headers);

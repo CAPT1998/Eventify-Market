@@ -126,6 +126,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       withNavBar: false,
                     );
                   },
+                  
                   leading: Icon(Icons.event_note_outlined),
                   title: TextWidget(
                     title: "My Private Event",
