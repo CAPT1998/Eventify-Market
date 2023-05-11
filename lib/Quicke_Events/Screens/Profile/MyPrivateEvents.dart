@@ -1,7 +1,16 @@
+import 'dart:async';
+import 'dart:io';
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
+import 'package:qr_flutter/qr_flutter.dart';
 import 'package:quickie_event/Constant.dart';
 import 'package:quickie_event/Quicke_Events/Providers/EventsProvider.dart';
+import 'package:rounded_loading_button/rounded_loading_button.dart';
+import 'package:screenshot/screenshot.dart';
+import 'package:share_plus/share_plus.dart';
 
 import '../../Widgets/TextWidget.dart';
 
@@ -13,11 +22,19 @@ class MyPrivateEvents extends StatefulWidget {
 }
 
 class _MyPrivateEventsState extends State<MyPrivateEvents> {
+  ScreenshotController screenshotController = ScreenshotController();
+  RoundedLoadingButtonController buttonController =
+  RoundedLoadingButtonController();
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    Provider.of<EventProvider>(context, listen: false).mPersonalEvents();
+    getPrivateEvents();
+
+  }
+  Future<void> getPrivateEvents() async {
+   await Provider.of<EventProvider>(context, listen: false).mPersonalEvents();
+
   }
 
   @override
@@ -85,14 +102,63 @@ class _MyPrivateEventsState extends State<MyPrivateEvents> {
                                       height: height * 0.2,
                                     ),
                                   )),
-                              Container(
-                                padding: EdgeInsets.symmetric(
-                                    horizontal: 10, vertical: 5),
-                                margin: EdgeInsets.only(top: 10, left: 10),
-                                decoration: BoxDecoration(
-                                    // color: color,
-                                    borderRadius: BorderRadius.circular(5)),
-                                child: Icon(Icons.share),
+                              InkWell(
+                                child: Container(
+                                  padding: EdgeInsets.symmetric(
+                                      horizontal: 10, vertical: 5),
+                                  margin: EdgeInsets.only(top: 10, left: 10),
+                                  decoration: BoxDecoration(
+                                      // color: color,
+                                      borderRadius: BorderRadius.circular(5)),
+                                  child: Icon(Icons.share),
+                                ),
+                                onTap: () async {
+                                  print(value.getMyPersonalEvent[index].id);
+
+                                  await showDialog(
+                                      context: context,
+                                      builder: (context) {
+                                    return AlertDialog(
+                                      actions: [
+                                        RoundedLoadingButton(
+                                          color: appColor,
+                                          borderRadius: 10,
+                                          controller: buttonController,
+                                          onPressed: () {
+                                            print('https://quickeeapi.pakwexpo.com?eventId=${value.getMyPersonalEvent[index].id}');
+                                            _shareQrCode();
+                                            buttonController.reset();
+                                          },
+                                          child: TextWidget(
+                                            title: "Share",
+                                            color: Colors.white,
+                                            size: 15,
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                        ),
+                                     /*   TextButton(
+                                          onPressed: () {
+                                            if (value.getMyPersonalEvent[index].id !=null || value.getMyPersonalEvent[index].id.toString().isEmpty) {
+                                             *//* Scaffold.of(context).showSnackBar(
+                                                  SnackBar(content: Text('Generate your QR code first')));*//*
+                                            } else {
+                                              _shareQrCode();
+                                            }
+                                                                              },
+                                          child: const Text('Send'),
+                                        ),*/
+                                      ],
+                                      content: SizedBox(
+                                        width: 150,
+                                        height: 150,
+                                        child: Center(child: Screenshot(
+                                            controller: screenshotController,
+                                            child: QrImage(data: 'https://quickeeapi.pakwexpo.com?eventId=${value.getMyPersonalEvent[index].id}')),
+                                      ),
+                                    ));
+                                  },
+                                  );
+                                },
                               ),
                             ],
                           ),
@@ -134,6 +200,26 @@ class _MyPrivateEventsState extends State<MyPrivateEvents> {
         ),
       ),
     );
+  }
+
+
+  _shareQrCode() async {
+    final directory = (await getApplicationDocumentsDirectory()).path;
+    screenshotController.capture().then((dynamic image) async {
+      if (image != null) {
+        try {
+          String fileName = DateTime.now().microsecondsSinceEpoch.toString();
+          final imagePath = await File('$directory/$fileName.png').create();
+          if (imagePath != null) {
+            await imagePath.writeAsBytes(image);
+            print(imagePath.path);
+            Share.shareFiles([imagePath.path]);
+          }
+        } catch (error) {}
+      }
+    }).catchError((onError) {
+      print('Error --->> $onError');
+    });
   }
 }
 

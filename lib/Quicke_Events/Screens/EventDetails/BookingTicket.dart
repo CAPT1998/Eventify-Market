@@ -6,6 +6,9 @@ import 'package:quickie_event/Constant.dart';
 import 'package:quickie_event/Quicke_Events/Providers/EventsProvider.dart';
 import 'package:quickie_event/Quicke_Events/Widgets/TextWidget.dart';
 import 'package:rounded_loading_button/rounded_loading_button.dart';
+import 'package:slide_countdown/slide_countdown.dart';
+
+import 'ContactInformationScreen.dart';
 
 class BookingTicket extends StatefulWidget {
   const BookingTicket({super.key});
@@ -17,6 +20,8 @@ class BookingTicket extends StatefulWidget {
 class _BookingTicketState extends State<BookingTicket> {
   RoundedLoadingButtonController buttonController =
       RoundedLoadingButtonController();
+  bool isTimerVisible=false;
+
   @override
   Widget build(BuildContext context) {
     return Consumer<EventProvider>(
@@ -169,6 +174,10 @@ class _BookingTicketState extends State<BookingTicket> {
                                       if (value.reservationModel!.quantity >
                                           value.reservationModel!.seatId!
                                               .length) {
+                                        setState(() {
+                                          isTimerVisible=true;
+
+                                        });
                                         value.mAddSeatList(
                                             id: value.getEventSeatsModel[index]
                                                 .seatingPlanDetails[index12].id,
@@ -181,6 +190,10 @@ class _BookingTicketState extends State<BookingTicket> {
                                             "Add More Ticket to book your seat");
                                       }
                                     } else {
+                                      setState(() {
+                                        isTimerVisible=false;
+
+                                      });
                                       value.mSubtractSeatList(
                                           id: value.getEventSeatsModel[index]
                                               .seatingPlanDetails[index12].id,
@@ -283,37 +296,31 @@ class _BookingTicketState extends State<BookingTicket> {
                     ),
                   ],
                 ),
-                // SizedBox(
-                //   height: 30,
-                // ),
-                // ListView.builder(
-                //     itemCount: value.getEventTableModel.length,
-                //     shrinkWrap: true,
-                //     physics: NeverScrollableScrollPhysics(),
-                //     itemBuilder: (context, index) {
-                //       print(value.getEventTableModel.length);
-                //       return Column(
-                //         children: [
-                //           SizedBox(
-                //             height: 200,
-                //             width: width,
-                //             child: Center(
-                //               child: TableWithSeats(
-                //                 numberOfSeats: 5,
-                //                 tableSize: 100,
-                //                 seatPositions: [
-                //                   Offset(1, 0),
-                //                   Offset(40, 0),
-                //                   Offset(80, 0),
-                //                   Offset(1, 60),
-                //                   Offset(1, 140)
-                //                 ],
-                //               ),
-                //             ),
-                //           )
-                //         ],
-                //       );
-                //     }),
+                Visibility(
+                  visible: isTimerVisible,
+                  child: Center(
+                    child: Container(
+                      decoration: BoxDecoration( borderRadius: BorderRadius.circular(10),
+                     color: appColor ),
+                      margin: EdgeInsets.all(20),
+                      child: SlideCountdown(
+                        duration: const Duration(minutes: 20),
+                        textStyle: TextStyle(color: Colors.white),
+                        decoration: BoxDecoration(color: Colors.transparent),
+                        countUp: false,
+                        onDone: (){
+                          if(isTimerVisible){
+                            setState(() {
+                              isTimerVisible=false;
+                            });
+                          }
+                          print("doneee");
+                        },
+                      ),
+                    ),
+                  ),
+                )
+
               ],
             ),
           ),
@@ -327,7 +334,9 @@ class _BookingTicketState extends State<BookingTicket> {
             borderRadius: 14,
             height: 50,
             onPressed: () async {
-              await value.mAddReservation();
+
+
+        /*       await value.mAddReservation();
               if (value.reservationMessage == "success") {
                 buttonController.success();
                 SuccessFlushbar(context, "Reservation",
@@ -345,11 +354,11 @@ class _BookingTicketState extends State<BookingTicket> {
                 Timer(Duration(seconds: 2), () {
                   buttonController.reset();
                 });
-              }
-              // Navigator.push(
-              //     context,
-              //     MaterialPageRoute(
-              //         builder: (context) => ContactInformationDetailScreen()));
+              }*/
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => ContactInformationDetailScreen()));
             },
             child: TextWidget(
               title: "Continue",
@@ -362,6 +371,7 @@ class _BookingTicketState extends State<BookingTicket> {
       ),
     );
   }
+
 }
 
 class TableWithSeats extends StatelessWidget {
