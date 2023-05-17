@@ -12,9 +12,12 @@ import 'package:quickie_event/Quicke_Events/Models/GetEventsModel.dart';
 import 'package:quickie_event/Quicke_Events/Models/GetMyPersonalEventsModel.dart';
 import 'package:quickie_event/Quicke_Events/Models/ReservationModel.dart';
 
+import '../Models/GetUsersListModel.dart';
+
 class EventProvider with ChangeNotifier {
   List<GetEventsModel> getEventsModel = [];
   bool checkValueEvent = false;
+
   mGetEvents() async {
     List<GetEventsModel> getEventsModel = [];
     var headers = {
@@ -41,6 +44,7 @@ class EventProvider with ChangeNotifier {
 
   List<GetEventTicketsModel> getEventTicketsModel = [];
   bool checkValueEventTicket = false;
+
   mGetEventTickets({required String id}) async {
     List<GetEventTicketsModel> getEventTicketsModel = [];
     this.getEventTicketsModel.clear();
@@ -70,6 +74,7 @@ class EventProvider with ChangeNotifier {
   }
 
   int? selectTicketIndex;
+
   mupdateSelectTicket({required int index}) {
     this.selectTicketIndex = index;
     notifyListeners();
@@ -77,6 +82,7 @@ class EventProvider with ChangeNotifier {
 
   List<GetEventSeatsModel> getEventSeatsModel = [];
   bool checkValueEventSeats = false;
+
   mGetEventSeats({required String id}) async {
     List<GetEventSeatsModel> getEventSeatsModel = [];
     checkValueEventSeats = true;
@@ -105,6 +111,7 @@ class EventProvider with ChangeNotifier {
   }
 
   ReservationModel? reservationModel;
+
   mupdateEventAndTicket(
       {required String eventId, required String ticketId, required int price}) {
     print("12");
@@ -150,6 +157,8 @@ class EventProvider with ChangeNotifier {
   }
 
   String reservationMessage = "";
+  String inviteMessage = "";
+
   mAddReservation() async {
     String reservationMessage = "";
     String seatId = "";
@@ -191,9 +200,50 @@ class EventProvider with ChangeNotifier {
     }
   }
 
+ Future<String> mSendInvitation(String eventId,String userId,String receiverId,String recieverName) async {
+
+    var headers = {
+      "Content-Type": "application/x-www-form-urlencoded",
+      'Authorization':
+      'Bearer PivvPlsQWxPl1bB5KrbKNBuraJit0PrUZekQUgtLyTRuyBq921atFtoR1HuA'
+    };
+    var request = http.MultipartRequest(
+        'POST', Uri.parse('http://quickeeapi.pakwexpo.com/api/invitation'));
+
+    request.fields.addAll({
+      'event_id': '$eventId',
+      'user_id': '$userId',
+      'receiver_id': '$receiverId',
+      'receiver_name': '$recieverName',
+
+    });
+
+    request.headers.addAll(headers);
+    http.StreamedResponse response = await request.send();
+
+    try {
+  if (response.statusCode == 200) {
+    inviteMessage = "success";
+    this.inviteMessage = inviteMessage;
+    notifyListeners();
+    return inviteMessage;
+  } else {
+    print(response.reasonPhrase);
+    inviteMessage = "unsuccess";
+    this.inviteMessage = inviteMessage;
+    notifyListeners();
+    return inviteMessage;
+  }
+}catch(e){
+  print(e);
+  return "unsuccess";
+}
+  }
+
   String? eventFileName;
   var eventFileBytes;
   File? eventFile;
+
   muppdateeventBytes(String eventFileName, var eventFileBytes, File eventFile) {
     this.eventFileName = eventFileName;
     this.eventFileBytes = eventFileBytes;
@@ -202,6 +252,7 @@ class EventProvider with ChangeNotifier {
   }
 
   String checkMessageEventCreate = "";
+
   mCreatePrivateEvent({
     required String eventTitle,
     required String eventStartDate,
@@ -270,6 +321,7 @@ class EventProvider with ChangeNotifier {
 
   List<GetMyPersonalEventsModel> getMyPersonalEvent = [];
   bool checkValueMyEvents = false;
+
   mPersonalEvents() async {
     List<GetMyPersonalEventsModel> getMyPersonalEvent = [];
     checkValueMyEvents = true;
@@ -298,7 +350,57 @@ class EventProvider with ChangeNotifier {
     }
   }
 
+  List<GetUsersListModel> getUserList = [];
+
+  bool checkValueUsers = false;
+
+  mGetUsers() async {
+    List<GetUsersListModel> getUserList = [];
+    checkValueUsers = true;
+    // notifyListeners();
+    var headers = {
+      'Authorization':
+          'Bearer PivvPlsQWxPl1bB5KrbKNBuraJit0PrUZekQUgtLyTRuyBq921atFtoR1HuA'
+    };
+    var response = await http.get(
+        Uri.parse('http://quickeeapi.pakwexpo.com/api/users/list'),headers: headers);
+
+    // var request = http.MultipartRequest(
+    //     'GET', Uri.parse('http://quickeeapi.pakwexpo.com/api/users/list'));
+    //
+    // request.headers.addAll(headers);
+
+    // http.StreamedResponse response = await request.send();
+    try {
+      if (response.statusCode == 200) {
+        // getUserList = getUserListModelFromJson(value);
+        // String value = await response.stream.bytesToString();
+
+        // var body = jsonDecode(response.stream.bytesToString());
+        print(response.body);
+        //
+        //
+        // List jsonResponse = json.decode(response.body);
+        // List<GetUsersListModel> post= jsonResponse.map((job) =>  GetUsersListModel.fromJson(job)).toList();
+
+        List<GetUsersListModel> posts = productsResponseFromJson(response.body);
+        // print(posts[0].name);
+
+        this.getUserList = posts;
+        checkValueUsers = false;
+        notifyListeners();
+      } else {
+        print(response.reasonPhrase);
+        checkValueUsers = false;
+        notifyListeners();
+      }
+    } catch (e) {
+      print(e);
+    }
+  }
+
   List<GetEventTableModel> getEventTableModel = [];
+
   mGetTablesEvent({required String id}) async {
     List<GetEventTableModel> getEventTableModel = [];
     var headers = {
@@ -320,13 +422,14 @@ class EventProvider with ChangeNotifier {
   }
 
   List<GetEventSeatHistoryModel> getEventSeatHsitoryModel = [];
+
   mGetEventSeatHistory() async {
     List<GetEventSeatHistoryModel> getEventSeatHsitoryModel = [];
     var headers = {
       'Authorization':
           'Bearer PivvPlsQWxPl1bB5KrbKNBuraJit0PrUZekQUgtLyTRuyBq921atFtoR1HuA'
     };
-    
+
     var request = http.MultipartRequest(
         'GET', Uri.parse('http://quickeeapi.pakwexpo.com/api/events/1/find'));
     request.headers.addAll(headers);
