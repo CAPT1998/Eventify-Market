@@ -3,6 +3,7 @@ import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
 import 'package:quickie_event/Constant.dart';
 import 'package:quickie_event/Quicke_Events/Screens/Profile/CreateNewEvent.dart';
 import 'package:quickie_event/Quicke_Events/Screens/Profile/FollowingScreen.dart';
+import 'package:quickie_event/Quicke_Events/Screens/Profile/MyEvents.dart';
 import 'package:quickie_event/Quicke_Events/Screens/Profile/MyPrivateEvents.dart';
 import 'package:quickie_event/Quicke_Events/Screens/Profile/NotificationCenterScreen.dart';
 import 'package:quickie_event/Quicke_Events/Screens/Profile/PaymentLinkScreen.dart';
@@ -91,6 +92,25 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   leading: Icon(Icons.folder_copy_outlined),
                   title: TextWidget(
                     title: "Following",
+                    size: 16,
+                    fontWeight: FontWeight.w600,
+                  ),
+                  trailing: Icon(Icons.arrow_forward_ios),
+                ),
+                Divider(
+                  color: greyColor,
+                ),
+                ListTile(
+                  onTap: () {
+                    PersistentNavBarNavigator.pushNewScreen(
+                      context,
+                      screen: MyEvents(),
+                      withNavBar: false,
+                    );
+                  },
+                  leading: Icon(Icons.folder_copy_outlined),
+                  title: TextWidget(
+                    title: "My Events",
                     size: 16,
                     fontWeight: FontWeight.w600,
                   ),

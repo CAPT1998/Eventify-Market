@@ -12,6 +12,7 @@ import 'package:quickie_event/Quicke_Events/Models/GetEventsModel.dart';
 import 'package:quickie_event/Quicke_Events/Models/GetMyPersonalEventsModel.dart';
 import 'package:quickie_event/Quicke_Events/Models/ReservationModel.dart';
 
+import '../Models/GetMyEventsReponseModel.dart';
 import '../Models/GetUsersListModel.dart';
 
 class EventProvider with ChangeNotifier {
@@ -320,6 +321,7 @@ class EventProvider with ChangeNotifier {
   }
 
   List<GetMyPersonalEventsModel> getMyPersonalEvent = [];
+  late GetMyEventsResponseModel getMyEvent ;
   bool checkValueMyEvents = false;
 
   mPersonalEvents() async {
@@ -349,7 +351,39 @@ class EventProvider with ChangeNotifier {
       notifyListeners();
     }
   }
+  mEvents() async {
+   GetMyEventsResponseModel getMyEvent ;
+  /*  checkValueMyEvents = true;
+    notifyListeners();*/
+    var headers = {
+      'Authorization':
+      'Bearer PivvPlsQWxPl1bB5KrbKNBuraJit0PrUZekQUgtLyTRuyBq921atFtoR1HuA'
+    };
+    // var request = http.MultipartRequest('GET',
+    //     Uri.parse('http://quickeeapi.pakwexpo.com/api/invitation'));
+    final response = await http
+        .get(Uri.parse('http://quickeeapi.pakwexpo.com/api/invitation'),headers: headers);
+    // request.headers.addAll(headers);
+try {
+  // http.StreamedResponse response = await request.send();
 
+  if (response.statusCode == 200) {
+    // String value = await response.stream.bytesToString();
+    // getMyEvent = getMyEventsModelFromJson(value);
+    getMyEvent= GetMyEventsResponseModel.fromJson(jsonDecode(response.body));
+
+    this.getMyEvent = getMyEvent;
+    checkValueMyEvents = false;
+    notifyListeners();
+  } else {
+    print(response.reasonPhrase);
+    checkValueMyEvents = false;
+    notifyListeners();
+  }
+}catch(e){
+  print(e);
+}
+  }
   List<GetUsersListModel> getUserList = [];
 
   bool checkValueUsers = false;
