@@ -12,6 +12,7 @@ import 'package:quickie_event/Quicke_Events/Models/GetEventsModel.dart';
 import 'package:quickie_event/Quicke_Events/Models/GetMyPersonalEventsModel.dart';
 import 'package:quickie_event/Quicke_Events/Models/ReservationModel.dart';
 
+import '../../helper/storage_helper.dart';
 import '../Models/GetMyEventsReponseModel.dart';
 import '../Models/GetUsersListModel.dart';
 
@@ -22,8 +23,7 @@ class EventProvider with ChangeNotifier {
   mGetEvents() async {
     List<GetEventsModel> getEventsModel = [];
     var headers = {
-      'Authorization':
-          'Bearer PivvPlsQWxPl1bB5KrbKNBuraJit0PrUZekQUgtLyTRuyBq921atFtoR1HuA'
+      'Authorization': "Bearer " + (Storage.getJWT().isEmpty ? "" : Storage.getJWT())
     };
     var request = http.Request(
         'GET', Uri.parse('http://quickeeapi.pakwexpo.com/api/events/public'));
@@ -54,8 +54,7 @@ class EventProvider with ChangeNotifier {
     print(getEventTicketsModel.length);
     notifyListeners();
     var headers = {
-      'Authorization':
-          'Bearer PivvPlsQWxPl1bB5KrbKNBuraJit0PrUZekQUgtLyTRuyBq921atFtoR1HuA'
+      'Authorization': "Bearer " + (Storage.getJWT().isEmpty ? "" : Storage.getJWT())
     };
     var request = http.MultipartRequest(
         'GET', Uri.parse('http://quickeeapi.pakwexpo.com/api/tickets/$id'));
@@ -88,8 +87,7 @@ class EventProvider with ChangeNotifier {
     List<GetEventSeatsModel> getEventSeatsModel = [];
     checkValueEventSeats = true;
     var headers = {
-      'Authorization':
-          'Bearer PivvPlsQWxPl1bB5KrbKNBuraJit0PrUZekQUgtLyTRuyBq921atFtoR1HuA'
+      'Authorization': "Bearer " + (Storage.getJWT().isEmpty ? "" : Storage.getJWT())
     };
     var request = http.MultipartRequest(
         'GET', Uri.parse('http://quickeeapi.pakwexpo.com/api/seat/$id'));
@@ -168,8 +166,7 @@ class EventProvider with ChangeNotifier {
     });
     var headers = {
       'Content-Type': 'application/json',
-      'Authorization':
-          'Bearer PivvPlsQWxPl1bB5KrbKNBuraJit0PrUZekQUgtLyTRuyBq921atFtoR1HuA'
+      'Authorization': "Bearer " + (Storage.getJWT().isEmpty ? "" : Storage.getJWT())
     };
     var request = http.Request(
         'POST', Uri.parse('http://quickeeapi.pakwexpo.com/api/reservation'));
@@ -205,8 +202,7 @@ class EventProvider with ChangeNotifier {
 
     var headers = {
       "Content-Type": "application/x-www-form-urlencoded",
-      'Authorization':
-      'Bearer PivvPlsQWxPl1bB5KrbKNBuraJit0PrUZekQUgtLyTRuyBq921atFtoR1HuA'
+      'Authorization': "Bearer " + (Storage.getJWT().isEmpty ? "" : Storage.getJWT())
     };
     var request = http.MultipartRequest(
         'POST', Uri.parse('http://quickeeapi.pakwexpo.com/api/invitation'));
@@ -268,8 +264,7 @@ class EventProvider with ChangeNotifier {
     try {
       List<Location> locations = await locationFromAddress("${eventLocation}");
       var headers = {
-        'Authorization':
-            'Bearer PivvPlsQWxPl1bB5KrbKNBuraJit0PrUZekQUgtLyTRuyBq921atFtoR1HuA'
+        'Authorization': "Bearer " + (Storage.getJWT().isEmpty ? "" : Storage.getJWT())
       };
       var request = http.MultipartRequest(
           'POST', Uri.parse('http://quickeeapi.pakwexpo.com/api/events'));
@@ -329,8 +324,7 @@ class EventProvider with ChangeNotifier {
     checkValueMyEvents = true;
     notifyListeners();
     var headers = {
-      'Authorization':
-          'Bearer PivvPlsQWxPl1bB5KrbKNBuraJit0PrUZekQUgtLyTRuyBq921atFtoR1HuA'
+      'Authorization': "Bearer " + (Storage.getJWT().isEmpty ? "" : Storage.getJWT())
     };
     var request = http.MultipartRequest('GET',
         Uri.parse('https://quickeeapi.pakwexpo.com/api/events/1/find/private'));
@@ -356,8 +350,7 @@ class EventProvider with ChangeNotifier {
   /*  checkValueMyEvents = true;
     notifyListeners();*/
     var headers = {
-      'Authorization':
-      'Bearer PivvPlsQWxPl1bB5KrbKNBuraJit0PrUZekQUgtLyTRuyBq921atFtoR1HuA'
+      'Authorization': "Bearer " + (Storage.getJWT().isEmpty ? "" : Storage.getJWT())
     };
     // var request = http.MultipartRequest('GET',
     //     Uri.parse('http://quickeeapi.pakwexpo.com/api/invitation'));
@@ -393,8 +386,7 @@ try {
     checkValueUsers = true;
     // notifyListeners();
     var headers = {
-      'Authorization':
-          'Bearer PivvPlsQWxPl1bB5KrbKNBuraJit0PrUZekQUgtLyTRuyBq921atFtoR1HuA'
+      'Authorization': "Bearer " + (Storage.getJWT().isEmpty ? "" : Storage.getJWT())
     };
     var response = await http.get(
         Uri.parse('http://quickeeapi.pakwexpo.com/api/users/list'),headers: headers);
@@ -438,8 +430,7 @@ try {
   mGetTablesEvent({required String id}) async {
     List<GetEventTableModel> getEventTableModel = [];
     var headers = {
-      'Authorization':
-          'Bearer PivvPlsQWxPl1bB5KrbKNBuraJit0PrUZekQUgtLyTRuyBq921atFtoR1HuA'
+      'Authorization': "Bearer " + (Storage.getJWT().isEmpty ? "" : Storage.getJWT())
     };
     var request = http.MultipartRequest(
         'GET', Uri.parse('http://quickeeapi.pakwexpo.com/api/table/$id'));
@@ -460,8 +451,7 @@ try {
   mGetEventSeatHistory() async {
     List<GetEventSeatHistoryModel> getEventSeatHsitoryModel = [];
     var headers = {
-      'Authorization':
-          'Bearer PivvPlsQWxPl1bB5KrbKNBuraJit0PrUZekQUgtLyTRuyBq921atFtoR1HuA'
+      'Authorization': "Bearer " + (Storage.getJWT().isEmpty ? "" : Storage.getJWT())
     };
 
     var request = http.MultipartRequest(

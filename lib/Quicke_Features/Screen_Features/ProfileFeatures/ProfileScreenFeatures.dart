@@ -10,6 +10,7 @@ import 'package:quickie_event/Quicke_Events/Screens/Profile/PersonalInformationS
 import 'package:quickie_event/Quicke_Events/Screens/SearchingEvents/SearchCategoryScreen.dart';
 import 'package:quickie_event/Quicke_Events/Widgets/TextWidget.dart';
 
+import '../../../helper/storage_helper.dart';
 import '../SearchFeatures/SearchFeatureScreen.dart';
 
 class ProfileScreenFeatures extends StatefulWidget {
@@ -132,6 +133,7 @@ class _ProfileScreenFeaturesState extends State<ProfileScreenFeatures> {
                     ),
                     trailing: Icon(Icons.arrow_forward_ios),
                   ),
+
                 ],
               ),
             ),

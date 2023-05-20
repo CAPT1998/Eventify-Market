@@ -1,11 +1,13 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart' as http;
 import 'package:quickie_event/Constant.dart';
 import 'package:quickie_event/ConstantModels/LoginModel.dart';
 import 'package:quickie_event/Quicke_Features/Screen_Features/BottomNavigationFeatures/BottomNavigationFeatures.dart';
+import 'package:quickie_event/helper/storage_helper.dart';
 
 class AuthProvider with ChangeNotifier {
   String? registerMessage;
@@ -36,6 +38,12 @@ class AuthProvider with ChangeNotifier {
   }
 
   LoginModel? loginModel;
+  bool? isLoggedIn=false;
+  setIsFirstRun(bool value){
+    isLoggedIn=value;
+    notifyListeners();
+  }
+
   String? loginMessage;
   mLoginAuth({
     required String email,
@@ -53,6 +61,8 @@ class AuthProvider with ChangeNotifier {
       print(value);
       loginModel = loginModelFromJson(value);
       this.loginModel = loginModel;
+      Storage.saveUser(loginModel);
+      Storage.saveJWT(loginModel.data.apiToken);
       loginMessage = "success";
       this.loginMessage = loginMessage;
       notifyListeners();

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
+import 'package:provider/provider.dart';
 import 'package:quickie_event/Constant.dart';
 import 'package:quickie_event/Quicke_Events/Screens/Profile/CreateNewEvent.dart';
 import 'package:quickie_event/Quicke_Events/Screens/Profile/FollowingScreen.dart';
@@ -11,6 +12,10 @@ import 'package:quickie_event/Quicke_Events/Screens/Profile/PersonalInformationS
 import 'package:quickie_event/Quicke_Events/Screens/Profile/SelectCategoryForPrivateEvent.dart';
 import 'package:quickie_event/Quicke_Events/Screens/SearchingEvents/SearchCategoryScreen.dart';
 import 'package:quickie_event/Quicke_Events/Widgets/TextWidget.dart';
+
+import '../../../ConstantProviders/AuthProviders.dart';
+import '../../../ConstantScreens/AuthScreens/WelcomeScreen.dart';
+import '../../../helper/storage_helper.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -203,6 +208,27 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   leading: Icon(Icons.payment),
                   title: TextWidget(
                     title: "Payment",
+                    size: 16,
+                    fontWeight: FontWeight.w600,
+                  ),
+                  trailing: Icon(Icons.arrow_forward_ios),
+                ),
+                Divider(
+                  color: greyColor,
+                ),
+                ListTile(
+                  onTap: () {
+                    Storage.saveJWT("");
+
+                    Provider.of<AuthProvider>(context, listen: false).setIsFirstRun(false);
+
+                    Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) =>
+                        WelcomeScreen()), (Route<dynamic> route) => false);
+
+                  },
+                  leading: Icon(Icons.logout),
+                  title: TextWidget(
+                    title: "Logout",
                     size: 16,
                     fontWeight: FontWeight.w600,
                   ),

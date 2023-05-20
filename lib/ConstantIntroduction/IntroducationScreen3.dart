@@ -1,8 +1,14 @@
+
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:quickie_event/Constant.dart';
 import 'package:quickie_event/ConstantScreens/AuthScreens/WelcomeScreen.dart';
 import 'package:quickie_event/Quicke_Events/Widgets/TextWidget.dart';
+import 'package:quickie_event/helper/logging_utils.dart';
+import 'package:quickie_event/helper/storage_helper.dart';
 import 'package:rounded_loading_button/rounded_loading_button.dart';
+
+import '../ConstantProviders/AuthProviders.dart';
 
 class IntrductionScreen3 extends StatelessWidget {
   IntrductionScreen3({super.key});
@@ -46,6 +52,7 @@ class IntrductionScreen3 extends StatelessWidget {
               borderRadius: 10,
               controller: buttonController,
               onPressed: () {
+                Storage.isFirstRun(true);
                 Navigator.push(context,
                     MaterialPageRoute(builder: (context) => WelcomeScreen()));
               },
