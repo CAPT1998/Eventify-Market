@@ -129,7 +129,7 @@ class _MyEventsState extends State<MyEvents> {
                                                 height: height * 0.2,
                                               ),
                                             )),
-                                        InkWell(
+                                       /* InkWell(
                                           child: Container(
                                             padding: EdgeInsets.symmetric(
                                                 horizontal: 10, vertical: 5),
@@ -143,27 +143,7 @@ class _MyEventsState extends State<MyEvents> {
                                           ),
                                           onTap: () async {
                                             print(orderData.getMyEvent.invitations![index].id);
-                                        /*    showDialog(
-                                                context: context,
-                                                builder:
-                                                    (BuildContext context) {
-                                                  return AlertDialog(
-                                                    title: Row(
-                                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                                      children: [
-                                                        Text('Followers'),
-                                                    IconButton(
-                                                      onPressed: () {
-                                                        Navigator.of(context).pop();
-                                                      },
-                                                      icon: Icon(Icons.close),
-                                                    ),
-                                                      ],
-                                                    ),
-                                                    content:
-                                                        setupAlertDialoadContainer(orderData.getMyEvent.invitations![index].userId.toString(),orderData.getMyEvent.invitations![index].id.toString()),
-                                                  );
-                                                });*/
+
                                               await showDialog(
                                       context: context,
                                       builder: (context) {
@@ -186,17 +166,17 @@ class _MyEventsState extends State<MyEvents> {
                                             fontWeight: FontWeight.w600,
                                           ),
                                         ),
-                                      /*   TextButton(
+                                      *//*   TextButton(
                                           onPressed: () {
                                             if (orderData.getMyEvent.invitations![index].id !=null || orderData.getMyEvent.invitations![index].id.toString().isEmpty) {
-                                               *//* Scaffold.of(context).showSnackBar(
-                                                  SnackBar(content: Text('Generate your QR code first')));*//*
+                                               *//**//* Scaffold.of(context).showSnackBar(
+                                                  SnackBar(content: Text('Generate your QR code first')));*//**//*
                                             } else {
                                               _shareQrCode();
                                             }
                                                                               },
                                           child: const Text('Send'),
-                                        ),*/
+                                        ),*//*
                                       ],
                                       content: SizedBox(
                                         width: 150,
@@ -209,7 +189,7 @@ class _MyEventsState extends State<MyEvents> {
                                   },
                                   );
                                           },
-                                        ),
+                                        ),*/
                                       ],
                                     ),
                                     SizedBox(

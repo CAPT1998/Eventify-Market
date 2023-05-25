@@ -7,6 +7,7 @@ import 'package:quickie_event/Quicke_Events/Providers/EventsProvider.dart';
 import 'package:quickie_event/SplashScreen/SplashScreen.dart';
 
 void main(List<String> args) async {
+
   WidgetsFlutterBinding.ensureInitialized();
   // Shared.pref = await SharedPreferences.getInstance();
   await Firebase.initializeApp();
@@ -14,8 +15,9 @@ void main(List<String> args) async {
 }
 
 class MyApp extends StatelessWidget {
+  final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
-   const MyApp({super.key});
+    MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -30,6 +32,8 @@ class MyApp extends StatelessWidget {
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
+        navigatorKey: navigatorKey,
+
         home: SplashScreen(),
       ),
     );

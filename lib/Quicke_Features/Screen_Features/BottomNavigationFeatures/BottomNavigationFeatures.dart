@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
 import 'package:quickie_event/Quicke_Features/Screen_Features/CartFeatures/CartScreenFeatures.dart';
 import 'package:quickie_event/Quicke_Features/Screen_Features/ChatFeatures/ChatScreenFeatures.dart';
@@ -7,6 +8,7 @@ import 'package:quickie_event/Quicke_Features/Screen_Features/ProfileFeatures/Pr
 import '../../../Constant.dart';
 import 'package:flutter/material.dart';
 
+import '../../../helper/firebase_deeplinking.dart';
 import '../ExploreFeatures/ExploreScreenFeatures.dart';
 
 class BottomNavigationFeatures extends StatefulWidget {
@@ -22,7 +24,17 @@ class _BottomNavigationFeaturesState extends State<BottomNavigationFeatures> {
       PersistentTabController(initialIndex: 0);
 
   @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    SchedulerBinding.instance.addPostFrameCallback((_) {
+      FirebaseDeepLink().handleInitialUri(context);
+      FirebaseDeepLink().handleIncomingLinks(context);
+    });
+  }
+  @override
   Widget build(BuildContext context) {
+
     return Scaffold(
       body: Stack(
         children: [

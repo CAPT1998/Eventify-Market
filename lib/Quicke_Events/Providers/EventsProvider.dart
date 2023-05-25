@@ -14,7 +14,9 @@ import 'package:quickie_event/Quicke_Events/Models/ReservationModel.dart';
 
 import '../../helper/storage_helper.dart';
 import '../Models/GetMyEventsReponseModel.dart';
+import '../Models/GetSingleEventReponseModel.dart';
 import '../Models/GetUsersListModel.dart';
+import '../Models/RequestInvitationActionReponseModel.dart';
 
 class EventProvider with ChangeNotifier {
   List<GetEventsModel> getEventsModel = [];
@@ -317,6 +319,7 @@ class EventProvider with ChangeNotifier {
 
   List<GetMyPersonalEventsModel> getMyPersonalEvent = [];
   late GetMyEventsResponseModel getMyEvent ;
+  late GetSingleEventReponseModel getSingleEventDetail ;
   bool checkValueMyEvents = false;
 
   mPersonalEvents() async {
@@ -377,6 +380,81 @@ try {
   print(e);
 }
   }
+
+  getSingleEvent(String eventId) async {
+    GetSingleEventReponseModel getMyEvent ;
+    /*  checkValueMyEvents = true;
+    notifyListeners();*/
+    var headers = {
+      'Authorization': "Bearer " + (Storage.getJWT().isEmpty ? "" : Storage.getJWT())
+    };
+    // var request = http.MultipartRequest('GET',
+    //     Uri.parse('http://quickeeapi.pakwexpo.com/api/invitation'));
+    final response = await http
+        .post(Uri.parse('http://quickeeapi.pakwexpo.com/api/events/find'),headers: headers,body: {
+          "id":eventId,
+          "api_key":(Storage.getJWT().isEmpty ? "" : Storage.getJWT())
+    });
+    // request.headers.addAll(headers);
+    try {
+      // http.StreamedResponse response = await request.send();
+
+      if (response.statusCode == 200) {
+        // String value = await response.stream.bytesToString();
+        // getMyEvent = getMyEventsModelFromJson(value);
+        getMyEvent= GetSingleEventReponseModel.fromJson(jsonDecode(response.body));
+
+        this.getSingleEventDetail = getMyEvent;
+        // checkValueMyEvents = false;
+        notifyListeners();
+      } else {
+        print(response.reasonPhrase);
+        // checkValueMyEvents = false;
+        notifyListeners();
+      }
+    }catch(e){
+      print(e);
+    }
+  }
+ Future<String> postSingleEventAction(String eventId,String status) async {
+    RequestInvitationActionReponseModel getMyEvent ;
+    /*  checkValueMyEvents = true;
+    notifyListeners();*/
+    var headers = {
+      'Authorization': "Bearer " + (Storage.getJWT().isEmpty ? "" : Storage.getJWT())
+    };
+    // var request = http.MultipartRequest('GET',
+    //     Uri.parse('http://quickeeapi.pakwexpo.com/api/invitation'));
+    final response = await http
+        .post(Uri.parse('http://quickeeapi.pakwexpo.com/api/invitation/status'),headers: headers,body: {
+      "id":eventId,
+      "status":status,
+      "api_key":(Storage.getJWT().isEmpty ? "" : Storage.getJWT())
+    });
+    // request.headers.addAll(headers);
+    try {
+      // http.StreamedResponse response = await request.send();
+
+      if (response.statusCode == 200) {
+        // String value = await response.stream.bytesToString();
+        // getMyEvent = getMyEventsModelFromJson(value);
+        print(response.body);
+        getMyEvent= RequestInvitationActionReponseModel.fromJson(jsonDecode(response.body));
+
+        // checkValueMyEvents = false;
+        return "Success";
+      } else {
+        print(response.reasonPhrase);
+        // checkValueMyEvents = false
+        return "Failure";
+
+      }
+    }catch(e){
+      print(e);
+      return "Something went wrong";
+    }
+  }
+
   List<GetUsersListModel> getUserList = [];
 
   bool checkValueUsers = false;

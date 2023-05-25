@@ -146,7 +146,10 @@ class _MyPrivateEventsState extends State<MyPrivateEvents> {
                                           onTap: () async {
                                             print(orderData
                                                 .getMyPersonalEvent[index].id);
-                                            showDialog(
+
+                                            String genterate = 'https://quickeeapi.pakwexpo.com/Events/' + orderData.getMyPersonalEvent[index].id.toString();
+                                            Share.share(genterate, subject: 'Event Invitation');
+                                            /*showDialog(
                                                 context: context,
                                                 builder:
                                                     (BuildContext context) {
@@ -166,7 +169,7 @@ class _MyPrivateEventsState extends State<MyPrivateEvents> {
                                                     content:
                                                         setupAlertDialoadContainer(orderData.getMyPersonalEvent[index].userId.toString(),orderData.getMyPersonalEvent[index].id.toString()),
                                                   );
-                                                });
+                                                });*/
                                             /*  await showDialog(
                                       context: context,
                                       builder: (context) {

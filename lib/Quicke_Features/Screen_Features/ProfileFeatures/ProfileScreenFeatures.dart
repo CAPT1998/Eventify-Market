@@ -37,10 +37,10 @@ class _ProfileScreenFeaturesState extends State<ProfileScreenFeatures> {
                   ListTile(
                     leading: CircleAvatar(
                       radius: 30,
-                      backgroundImage: NetworkImage(value.userData["picture"]),
+                      backgroundImage: NetworkImage(value.userData["picture"]??""),
                     ),
-                    title: TextWidget(title: "${value.userData["username"]}", size: 16),
-                    subtitle: Text("${value.userData["email"]}",),
+                    title: TextWidget(title: "${value.userData["username"]??value.loginModel?.data.name}", size: 16),
+                    subtitle: Text("${value.userData["email"]??value.loginModel?.data.email}",),
                   ),
                   Divider(
                     color: greyColor,
