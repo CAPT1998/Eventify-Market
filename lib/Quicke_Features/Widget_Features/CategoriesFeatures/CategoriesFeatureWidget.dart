@@ -2,25 +2,61 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:quickie_event/Constant.dart';
 
-Widget CategoriesFeatureWidget({required String image,required String title}) {
+Widget CategoriesFeatureWidget({ String? image, String? title}) {
   return AnimatedContainer(
-    margin: EdgeInsets.only(right: 10),
-    width: width * 0.2,
-    height: height * 0.1,
+    padding: EdgeInsets.all( 10),
+
     decoration: BoxDecoration(
       color: Colors.white,
       borderRadius: BorderRadius.circular(5),
     ),
     duration: Duration(milliseconds: 200),
     child: Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
-        SvgPicture.asset("assets/categories/$image.svg",height: 40,),
-        Text(
-          "$title",
-          overflow: TextOverflow.ellipsis,
+        Expanded(
+          flex: 3,
+          child: ClipRRect(
+              borderRadius:
+              BorderRadius.circular(20),
+              child: Image.network(
+                image!,
+                errorBuilder:
+                    (context, url, error) =>
+                    Image.asset(
+                      "assets/img/placeholder.jpg",
+                      fit: BoxFit.cover,
+                      height: height * 0.1,
+                    ),
+              )),
         ),
+         SizedBox(height: 10,),
+         Expanded(
+           flex: 1,
+           child: Text(
+              "$title",
+              overflow: TextOverflow.ellipsis,
+
+        ),
+         ),
       ],
     ),
   );
 }
+
+/*ClipRRect(
+            borderRadius:
+            BorderRadius.circular(20),
+            child: Image.network(
+              image,
+              height: height * 0.2,
+              fit: BoxFit.fill,
+              errorBuilder:
+                  (context, url, error) =>
+                  Image.asset(
+                    "assets/img/placeholder.jpg",
+                    fit: BoxFit.cover,
+                    height: height * 0.2,
+                  ),
+            )),*/

@@ -1,6 +1,7 @@
 import 'package:favorite_button/favorite_button.dart';
 import 'package:flutter/material.dart';
 import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
+import 'package:provider/provider.dart';
 import 'package:quickie_event/Constant.dart';
 import 'package:quickie_event/Quicke_Events/Widgets/TextFormWidget.dart';
 import 'package:quickie_event/Quicke_Features/Screen_Features/Categories/ProductScreen.dart';
@@ -8,7 +9,9 @@ import 'package:quickie_event/Quicke_Features/Screen_Features/Categories/ViewAll
 import 'package:quickie_event/Quicke_Features/Screen_Features/ProductDetail/ProductDetailScreen.dart';
 import 'package:quickie_event/Quicke_Features/Widget_Features/CategoriesFeatures/CategoriesFeatureWidget.dart';
 import 'package:quickie_event/Quicke_Features/Widget_Features/CourselSliderFeatures/CourselSliderFeaturesWidget.dart';
+import 'package:quickie_event/Quicke_Features/providers/HomeProviders.dart';
 
+import '../../Model/ProductCategoryResponseModel.dart';
 import '../Notification/NotificationScreen.dart';
 
 class HomeScreenFeatures extends StatefulWidget {
@@ -19,6 +22,20 @@ class HomeScreenFeatures extends StatefulWidget {
 }
 
 class _HomeScreenFeaturesState extends State<HomeScreenFeatures> {
+  final TextEditingController _searchController = TextEditingController();
+  List<Data> _filteredListReviews = [];
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    // getCategories();
+  }
+
+  getCategories() async {
+    await Provider.of<HomeProvider>(context).getProductCategories();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -71,6 +88,15 @@ class _HomeScreenFeaturesState extends State<HomeScreenFeatures> {
                     child: textfieldProduct(
                       context: context,
                       name: "Search",
+                      onChanged: (value){
+                        _filteredListReviews = Provider.of<HomeProvider>(context, listen: false).getMyCategories!.data!
+                            .where((element) => element.name!
+                            .toLowerCase()
+                            .contains(value.toLowerCase()))
+                            .toList();
+                        setState(() {});
+                      },
+                      controller: _searchController,
                       prefixIcon: Icon(Icons.search),
                     ),
                   ),
@@ -144,6 +170,63 @@ class _HomeScreenFeaturesState extends State<HomeScreenFeatures> {
                       SizedBox(
                         height: 10,
                       ),
+                      FutureBuilder(
+                          future:
+                              Provider.of<HomeProvider>(context, listen: false)
+                                  .getProductCategories(),
+                          builder: (context, dataSnapshot) {
+                            if (dataSnapshot.connectionState ==
+                                ConnectionState.waiting) {
+                              return Center(
+                                child: CircularProgressIndicator(),
+                              );
+                            } else {
+                              if (dataSnapshot.error != null) {
+                                return Center(
+                                  child: Text('An error occured'),
+                                );
+                              } else {
+                                return Consumer<HomeProvider>(
+                                    builder: (context, person, child) {
+                                      if (_searchController.text.isEmpty) {
+                                        _filteredListReviews = person.getMyCategories!.data!;
+                                      }
+                                  return SizedBox(
+                                    height: height / 7,
+
+                                    child: ListView.builder(
+                                      scrollDirection: Axis.horizontal,
+                                      shrinkWrap: true,
+                                      itemCount: _filteredListReviews.length,
+                                      itemBuilder: (context, i) {
+                                        return Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 8.0),
+                                          child: InkWell(
+                                            onTap: () {
+                                              PersistentNavBarNavigator
+                                                  .pushNewScreen(
+                                                context,
+                                                screen: ProductScreen(),
+                                                withNavBar: false,
+                                              );
+                                            },
+                                            child: CategoriesFeatureWidget(
+                                                image:_filteredListReviews[i].media !=null && _filteredListReviews[i].media!.isNotEmpty ?
+                                                _filteredListReviews[i].media![0].url
+                                                    .toString():"abc",
+                                                title:_filteredListReviews[i].name
+                                                    .toString()),
+                                          ),
+                                        );
+                                      },
+                                    ),
+                                  );
+                                });
+                              }
+                            }
+                          }),
+/*
                       SingleChildScrollView(
                         scrollDirection: Axis.horizontal,
                         child: Row(
@@ -182,6 +265,7 @@ class _HomeScreenFeaturesState extends State<HomeScreenFeatures> {
                           ],
                         ),
                       ),
+*/
                       SizedBox(
                         height: 20,
                       ),

@@ -7,11 +7,13 @@ import 'package:provider/provider.dart';
 import 'package:quickie_event/Constant.dart';
 import 'package:quickie_event/Quicke_Events/Providers/EventsProvider.dart';
 import 'package:quickie_event/Quicke_Events/Screens/EventDetails/EventDetailsScreen.dart';
+import 'package:quickie_event/Quicke_Events/Screens/HomeScreens/ExploreNearByEventsScreen.dart';
 import 'package:quickie_event/Quicke_Events/Screens/Notification/NotificationScreen.dart';
 import 'package:quickie_event/Quicke_Events/Screens/VideoPlayer/VideoPlayerScreen.dart';
 import 'package:quickie_event/Quicke_Events/Widgets/SizedBoxWidget.dart';
 import 'package:quickie_event/Quicke_Events/Widgets/TextWidget.dart';
 
+import '../../Models/GetEventsModel.dart';
 import '../../Widgets/TextFormWidget.dart';
 
 class DiscoverScreen extends StatefulWidget {
@@ -23,6 +25,9 @@ class DiscoverScreen extends StatefulWidget {
 
 class _DiscoverScreenState extends State<DiscoverScreen> {
   GoogleMapController? _googleMapController;
+  List<GetEventsModel> _filteredListReviews = [];
+  final TextEditingController _searchController = TextEditingController();
+
   @override
   void initState() {
     // TODO: implement initState
@@ -82,6 +87,15 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
                   textfieldProduct(
                     context: context,
                     name: "Search events",
+                    onChanged: (value){
+                      _filteredListReviews = Provider.of<EventProvider>(context, listen: false).getEventsModel
+                          .where((element) => element.eventTitle!
+                          .toLowerCase()
+                          .contains(value.toLowerCase()))
+                          .toList();
+                      setState(() {});
+                    },
+                    controller: _searchController,
                     prefixIcon: Icon(Icons.search),
                   ),
                   SizedBox(height: 20),
@@ -93,11 +107,18 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
                         size: 16,
                       ),
                       Spacer(),
-                      TextWidget(
-                          title: "See All",
-                          fontWeight: FontWeight.w500,
-                          size: 14,
-                          color: appColor)
+                      InkWell(
+                        onTap: (){
+                          Navigator.push(context,
+                              MaterialPageRoute(builder: (context) => ExploreNearByEventsScreen( )));
+
+                        },
+                        child: TextWidget(
+                            title: "See All",
+                            fontWeight: FontWeight.w500,
+                            size: 14,
+                            color: appColor),
+                      )
                     ],
                   ),
                   SizedBox(
@@ -114,11 +135,14 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
                               //   screen: VideoPlayerScreen(),
                               //   withNavBar: false,
                               // );
+
                             },
                             child: _NearWidget(
                                 img: "1",
                                 title: "Today",
                                 color: greenColor,
+                                filteredListReviews: _filteredListReviews,
+                                searchController: _searchController,
                                 value: value)),
                       ],
                     ),
@@ -215,6 +239,8 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
                             img: "3",
                             title: "",
                             color: Colors.transparent,
+                            filteredListReviews: _filteredListReviews,
+                            searchController: _searchController,
                             value: value),
                       ],
                     ),
@@ -425,6 +451,8 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
                             img: "1",
                             title: "Today",
                             color: greenColor,
+                            filteredListReviews: _filteredListReviews,
+                            searchController: _searchController,
                             value: value),
                       ],
                     ),
@@ -531,24 +559,29 @@ _NearWidget(
     {required String img,
     required String title,
     dynamic color,
+     required TextEditingController searchController,
+      required List<GetEventsModel> filteredListReviews,
     required EventProvider value}) {
+  if (searchController.text.isEmpty) {
+    filteredListReviews = value.getEventsModel;
+  }
   return SizedBox(
     height: height * 0.25,
     child: value.checkValueEvent == false
         ? Image.asset("assets/img/loading.gif")
-        : value.getEventsModel.length == 0
+        : filteredListReviews.length == 0
             ? TextWidget(title: "No Event Available")
             : ListView.builder(
                 shrinkWrap: true,
                 scrollDirection: Axis.horizontal,
-                itemCount: value.getEventsModel.length,
+                itemCount: filteredListReviews.length,
                 itemBuilder: (context, index) {
                   return InkWell(
                     onTap: () {
                       PersistentNavBarNavigator.pushNewScreen(
                         context,
                         screen: EventDetailsScreen(
-                          model: value.getEventsModel[index],
+                          model: filteredListReviews[index],
                         ),
                         withNavBar: false,
                       );
@@ -564,7 +597,7 @@ _NearWidget(
                               ClipRRect(
                                 borderRadius: BorderRadius.circular(10),
                                 child: Image.network(
-                                  "${value.getEventsModel[index].eventsPic}",
+                                  "${filteredListReviews[index].eventsPic}",
                                   height: height * 0.17,
                                   width: width * 0.6,
                                   fit: BoxFit.fill,
@@ -597,7 +630,7 @@ _NearWidget(
                             height: 10,
                           ),
                           TextWidget(
-                            title: "${value.getEventsModel[index].eventTitle}",
+                            title: "${filteredListReviews[index].eventTitle}",
                             size: 16,
                             fontWeight: FontWeight.w700,
                           ),
@@ -613,7 +646,7 @@ _NearWidget(
                               ),
                               TextWidget(
                                 title:
-                                    "  ${value.getEventsModel[index].eventStartDate.toString().split(" ")[0]}  .  ${value.getEventsModel[index].eventStartTime}",
+                                    "  ${filteredListReviews[index].eventStartDate.toString().split(" ")[0]}  .  ${filteredListReviews[index].eventStartTime}",
                                 size: 12,
                                 fontWeight: FontWeight.w500,
                                 color: greyColor,
@@ -621,7 +654,7 @@ _NearWidget(
                               Spacer(),
                               TextWidget(
                                 title:
-                                    "\$ ${value.getEventsModel[index].price}",
+                                    "\$ ${filteredListReviews[index].price}",
                                 size: 12,
                                 fontWeight: FontWeight.w500,
                                 color: darkPurpleColor,

@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:quickie_event/Quicke_Features/Widget_Features/CategoriesFeatures/CategoriesFeatureWidget.dart';
+
+import '../../providers/HomeProviders.dart';
 
 class ViewAllCategories extends StatefulWidget {
   const ViewAllCategories({super.key});
@@ -32,50 +35,29 @@ class _ViewAllCategoriesState extends State<ViewAllCategories> {
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(20.0),
-          child: Column(
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  CategoriesFeatureWidget(image: "001-whisky", title: "Wiskhy"),
-                  CategoriesFeatureWidget(
-                      image: "002-tequila", title: "Tequila"),
-                  CategoriesFeatureWidget(
-                      image: "003-cigarro", title: "Cigarro"),
-                ],
+          child: Consumer<HomeProvider>(builder: (context, person, child) {
+            return GridView.builder(
+              physics: NeverScrollableScrollPhysics(),
+              shrinkWrap: true,
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 3,
+                crossAxisSpacing: 30.0,
+                mainAxisSpacing: 30.0,
               ),
-              SizedBox(
-                height: 20,
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  CategoriesFeatureWidget(
-                      image: "004-cigarrillos", title: "Cigarrillos"),
-                  CategoriesFeatureWidget(image: "005-ron", title: "Ron"),
-                  CategoriesFeatureWidget(image: "006-vodka", title: "Vodka"),
-                ],
-              ),
-              SizedBox(
-                height: 20,
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  CategoriesFeatureWidget(
-                      image: "007-cerveza", title: "Cerveza"),
-                  CategoriesFeatureWidget(
-                      image: "008-vaso-de-plastico", title: "Vaso"),
-                  CategoriesFeatureWidget(
-                      image: "009-softdrinks", title: "SoftDrink"),
-                ],
-              ),
-              SizedBox(
-                height: 20,
-              ),
-              CategoriesFeatureWidget(image: "010-bag", title: "Bag"),
-            ],
-          ),
+              itemCount: person.getMyCategories!.data!.length,
+              itemBuilder: (context, i) {
+                return CategoriesFeatureWidget(
+                    image:person.getMyCategories
+                        ?.data![i].media !=null && person.getMyCategories!.data![i].media!.isNotEmpty ?
+                    person.getMyCategories
+                        ?.data![i].media![0].url
+                        .toString():"abc",
+                    title: person.getMyCategories
+                        ?.data![i].name
+                        .toString());
+              },
+            );
+          }),
         ),
       ),
     );
