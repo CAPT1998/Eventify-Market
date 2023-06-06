@@ -13,6 +13,7 @@ import 'package:quickie_event/Quicke_Events/Models/GetMyPersonalEventsModel.dart
 import 'package:quickie_event/Quicke_Events/Models/ReservationModel.dart';
 
 import '../../helper/storage_helper.dart';
+import '../Models/GetEventOrganizerResponseModel.dart';
 import '../Models/GetMyEventsReponseModel.dart';
 import '../Models/GetSingleEventReponseModel.dart';
 import '../Models/GetUsersListModel.dart';
@@ -320,6 +321,7 @@ class EventProvider with ChangeNotifier {
   List<GetMyPersonalEventsModel> getMyPersonalEvent = [];
   late GetMyEventsResponseModel getMyEvent ;
   late GetSingleEventReponseModel getSingleEventDetail ;
+   GetEventOrganizerResponseModel? getEventOrganizer ;
   bool checkValueMyEvents = false;
 
   mPersonalEvents() async {
@@ -414,6 +416,39 @@ try {
       }
     }catch(e){
       print(e);
+    }
+  }
+  getEventOrganizers() async {
+    GetEventOrganizerResponseModel getMyEvent ;
+    /*  checkValueMyEvents = true;
+    notifyListeners();*/
+    var headers = {
+      'Authorization': "Bearer " + (Storage.getJWT().isEmpty ? "" : Storage.getJWT())
+    };
+    // var request = http.MultipartRequest('GET',
+    //     Uri.parse('http://quickeeapi.pakwexpo.com/api/invitation'));
+    final response = await http
+        .get(Uri.parse('http://quickeeapi.pakwexpo.com/api/organizer'),headers: headers);
+    // request.headers.addAll(headers);
+    try {
+      // http.StreamedResponse response = await request.send();
+
+      if (response.statusCode == 200) {
+
+        // String value = await response.stream.bytesToString();
+        // getMyEvent = getMyEventsModelFromJson(value);
+        getMyEvent= GetEventOrganizerResponseModel.fromJson(jsonDecode(response.body));
+
+        this.getEventOrganizer = getMyEvent;
+        // checkValueMyEvents = false;
+        notifyListeners();
+      } else {
+        print(response.reasonPhrase);
+        // checkValueMyEvents = false;
+        notifyListeners();
+      }
+    }catch(e){
+      print("Exception: "+e.toString());
     }
   }
  Future<String> postSingleEventAction(String eventId,String status) async {

@@ -4,14 +4,13 @@ import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
 import 'package:provider/provider.dart';
 import 'package:quickie_event/Constant.dart';
 import 'package:quickie_event/Quicke_Events/Widgets/TextFormWidget.dart';
+import 'package:quickie_event/Quicke_Features/Model/ProductScreenResponseModel.dart';
 import 'package:quickie_event/Quicke_Features/Screen_Features/Categories/ProductScreen.dart';
 import 'package:quickie_event/Quicke_Features/Screen_Features/Categories/ViewAllCategory.dart';
-import 'package:quickie_event/Quicke_Features/Screen_Features/ProductDetail/ProductDetailScreen.dart';
 import 'package:quickie_event/Quicke_Features/Widget_Features/CategoriesFeatures/CategoriesFeatureWidget.dart';
 import 'package:quickie_event/Quicke_Features/Widget_Features/CourselSliderFeatures/CourselSliderFeaturesWidget.dart';
 import 'package:quickie_event/Quicke_Features/providers/HomeProviders.dart';
 
-import '../../Model/ProductCategoryResponseModel.dart';
 import '../Notification/NotificationScreen.dart';
 
 class HomeScreenFeatures extends StatefulWidget {
@@ -23,7 +22,7 @@ class HomeScreenFeatures extends StatefulWidget {
 
 class _HomeScreenFeaturesState extends State<HomeScreenFeatures> {
   final TextEditingController _searchController = TextEditingController();
-  List<Data> _filteredListReviews = [];
+  List<Categories> _filteredListReviews = [];
 
   @override
   void initState() {
@@ -33,7 +32,7 @@ class _HomeScreenFeaturesState extends State<HomeScreenFeatures> {
   }
 
   getCategories() async {
-    await Provider.of<HomeProvider>(context).getProductCategories();
+    await Provider.of<HomeProvider>(context).getProductScreenDate();
   }
 
   @override
@@ -43,7 +42,7 @@ class _HomeScreenFeaturesState extends State<HomeScreenFeatures> {
         backgroundColor: appColor,
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
+          children: const [
             Text(
               "􀆬 MI CASA",
               style: TextStyle(
@@ -66,19 +65,20 @@ class _HomeScreenFeaturesState extends State<HomeScreenFeatures> {
               onPressed: () {
                 PersistentNavBarNavigator.pushNewScreen(
                   context,
-                  screen: NotificationScreen(),
+                  screen: const NotificationScreen(),
                   withNavBar: false,
                 );
               },
-              icon: Icon(Icons.notifications_on))
+              icon: const Icon(Icons.notifications_on))
         ],
       ),
-      drawer: Drawer(),
+      drawer: const Drawer(),
       body: SingleChildScrollView(
+        physics: const ScrollPhysics(),
         child: Column(
-          children: [
+          children: <Widget>[
             Container(
-              padding: EdgeInsets.all(20),
+              padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
                 color: appColor,
               ),
@@ -88,12 +88,16 @@ class _HomeScreenFeaturesState extends State<HomeScreenFeatures> {
                     child: textfieldProduct(
                       context: context,
                       name: "Search",
-                      onChanged: (value){
-                        _filteredListReviews = Provider.of<HomeProvider>(context, listen: false).getMyCategories!.data!
-                            .where((element) => element.name!
-                            .toLowerCase()
-                            .contains(value.toLowerCase()))
-                            .toList();
+                      onChanged: (value) {
+                        _filteredListReviews =
+                            Provider.of<HomeProvider>(context, listen: false)
+                                .getProductScreenData!
+                                .data!
+                                .categories!
+                                .where((element) => element.name!
+                                    .toLowerCase()
+                                    .contains(value.toLowerCase()))
+                                .toList();
                         setState(() {});
                       },
                       controller: _searchController,
@@ -118,7 +122,8 @@ class _HomeScreenFeaturesState extends State<HomeScreenFeatures> {
                 ],
               ),
             ),
-            CourselSliderFeatures(context),
+            SizedBox(
+                height: height * 0.2, child: CourselSliderFeatures(context)),
             Stack(
               children: [
                 Container(
@@ -173,7 +178,7 @@ class _HomeScreenFeaturesState extends State<HomeScreenFeatures> {
                       FutureBuilder(
                           future:
                               Provider.of<HomeProvider>(context, listen: false)
-                                  .getProductCategories(),
+                                  .getProductScreenDate(),
                           builder: (context, dataSnapshot) {
                             if (dataSnapshot.connectionState ==
                                 ConnectionState.waiting) {
@@ -183,17 +188,20 @@ class _HomeScreenFeaturesState extends State<HomeScreenFeatures> {
                             } else {
                               if (dataSnapshot.error != null) {
                                 return Center(
-                                  child: Text('An error occured'),
+                                  child: Text('An error occured' +
+                                      dataSnapshot.error.toString()),
                                 );
                               } else {
                                 return Consumer<HomeProvider>(
                                     builder: (context, person, child) {
-                                      if (_searchController.text.isEmpty) {
-                                        _filteredListReviews = person.getMyCategories!.data!;
-                                      }
+                                  if (_searchController.text.isEmpty) {
+                                    _filteredListReviews = person
+                                        .getProductScreenData!
+                                        .data!
+                                        .categories!;
+                                  }
                                   return SizedBox(
                                     height: height / 7,
-
                                     child: ListView.builder(
                                       scrollDirection: Axis.horizontal,
                                       shrinkWrap: true,
@@ -207,15 +215,28 @@ class _HomeScreenFeaturesState extends State<HomeScreenFeatures> {
                                               PersistentNavBarNavigator
                                                   .pushNewScreen(
                                                 context,
-                                                screen: ProductScreen(),
+                                                screen: ProductScreen(
+                                                    _filteredListReviews[i]
+                                                        .id
+                                                        .toString()),
                                                 withNavBar: false,
                                               );
                                             },
                                             child: CategoriesFeatureWidget(
-                                                image:_filteredListReviews[i].media !=null && _filteredListReviews[i].media!.isNotEmpty ?
-                                                _filteredListReviews[i].media![0].url
-                                                    .toString():"abc",
-                                                title:_filteredListReviews[i].name
+                                                context: context,
+                                                image: _filteredListReviews[i]
+                                                                .media !=
+                                                            null &&
+                                                        _filteredListReviews[i]
+                                                            .media!
+                                                            .isNotEmpty
+                                                    ? _filteredListReviews[i]
+                                                        .media![0]
+                                                        .url
+                                                        .toString()
+                                                    : "abc",
+                                                title: _filteredListReviews[i]
+                                                    .name
                                                     .toString()),
                                           ),
                                         );
@@ -265,11 +286,305 @@ class _HomeScreenFeaturesState extends State<HomeScreenFeatures> {
                           ],
                         ),
                       ),
+
+
+
+
 */
+
                       SizedBox(
                         height: 20,
                       ),
-                      Row(
+                      _filteredListReviews == null &&
+                              _filteredListReviews.isNotEmpty
+                          ? SizedBox.shrink()
+                          : Consumer<HomeProvider>(
+                              builder: (context, person, child) {
+                              if (_searchController.text.isEmpty) {
+                                _filteredListReviews =
+                                    person.getProductScreenData != null
+                                        ? person.getProductScreenData!.data!
+                                            .categories!
+                                        : [];
+                              }
+                              return SizedBox(
+                                height: height / 1,
+                                child: ListView.builder(
+                                  shrinkWrap: true,
+                                  itemCount: _filteredListReviews.length,
+                                  itemBuilder: (context, index) {
+                                    return Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 8.0),
+                                      child: InkWell(
+                                        onTap: () {
+                                          PersistentNavBarNavigator
+                                              .pushNewScreen(
+                                            context,
+                                            screen: ProductScreen(
+                                                _filteredListReviews[index]
+                                                    .id
+                                                    .toString()),
+                                            withNavBar: false,
+                                          );
+                                        },
+                                        child: Column(
+                                          children: [
+                                            Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment
+                                                      .spaceBetween,
+                                              children: [
+                                                Text(
+                                                  _filteredListReviews[index]
+                                                      .name!,
+                                                  style: TextStyle(
+                                                    fontSize: 15,
+                                                    fontWeight: FontWeight.w600,
+                                                  ),
+                                                ),
+                                                Text(
+                                                  "Ver Todos",
+                                                  style: TextStyle(
+                                                    fontSize: 12,
+                                                    fontWeight: FontWeight.w500,
+                                                    color: Color(0XFF828588),
+                                                  ),
+                                                )
+                                              ],
+                                            ),
+                                            SizedBox(
+                                              height: 10,
+                                            ),
+                                            Consumer<HomeProvider>(builder:
+                                                (context, person, child) {
+                                              if (_searchController
+                                                  .text.isEmpty) {
+                                                _filteredListReviews = person
+                                                    .getProductScreenData!
+                                                    .data!
+                                                    .categories!;
+                                              }
+                                              return Container(
+                                                height:
+                                                    _filteredListReviews[index]
+                                                            .products!
+                                                            .isNotEmpty
+                                                        ? height / 3
+                                                        : height / 30,
+                                                child: _filteredListReviews[
+                                                            index]
+                                                        .products!
+                                                        .isNotEmpty
+                                                    ? ListView.builder(
+                                                        scrollDirection:
+                                                            Axis.horizontal,
+                                                        shrinkWrap: true,
+                                                        // primary: false,
+                                                        // physics: NeverScrollableScrollPhysics(),
+                                                        itemCount:
+                                                            _filteredListReviews[
+                                                                    index]
+                                                                .products!
+                                                                .length,
+                                                        itemBuilder:
+                                                            (context, i) {
+                                                          return Column(
+                                                            children: [
+                                                              Container(
+                                                                width: width *
+                                                                    0.43,
+                                                                // height: height * 0.3,
+                                                                margin: EdgeInsets
+                                                                    .only(
+                                                                        right:
+                                                                            10),
+                                                                decoration: BoxDecoration(
+                                                                    color: Colors
+                                                                        .white,
+                                                                    borderRadius:
+                                                                        BorderRadius
+                                                                            .circular(8),
+                                                                    boxShadow: [
+                                                                      BoxShadow(
+                                                                        blurRadius:
+                                                                            4,
+                                                                        spreadRadius:
+                                                                            0,
+                                                                        offset: Offset(
+                                                                            0,
+                                                                            2),
+                                                                        color: Color(0XFFA2AAB8)
+                                                                            .withOpacity(0.25),
+                                                                      )
+                                                                    ]),
+                                                                child: Column(
+                                                                  mainAxisSize:
+                                                                      MainAxisSize
+                                                                          .min,
+                                                                  children: [
+                                                                    Stack(
+                                                                      children: [
+                                                                        Image
+                                                                            .asset(
+                                                                          "assets/img/Bitmap.png",
+                                                                          width:
+                                                                              width * 0.42,
+                                                                          height:
+                                                                              height * 0.15,
+                                                                          fit: BoxFit
+                                                                              .contain,
+                                                                        ),
+                                                                        Positioned(
+                                                                            right:
+                                                                                5,
+                                                                            top:
+                                                                                5,
+                                                                            child:
+                                                                                FavoriteButton(
+                                                                              iconSize: 40,
+                                                                              isFavorite: true,
+                                                                              valueChanged: (_isFavorite) {
+                                                                                print('Is Favorite $_isFavorite)');
+                                                                              },
+                                                                            ))
+                                                                      ],
+                                                                    ),
+                                                                    SizedBox(
+                                                                      height:
+                                                                          height *
+                                                                              0.02,
+                                                                    ),
+                                                                    SizedBox(
+                                                                      width:
+                                                                          width *
+                                                                              0.4,
+                                                                      child:
+                                                                          Padding(
+                                                                        padding:
+                                                                            const EdgeInsets.symmetric(horizontal: 10),
+                                                                        child:
+                                                                            Text(
+                                                                          _filteredListReviews[index]
+                                                                              .products![i]
+                                                                              .name
+                                                                              .toString(),
+                                                                          maxLines:
+                                                                              2,
+                                                                          overflow:
+                                                                              TextOverflow.ellipsis,
+                                                                          style:
+                                                                              const TextStyle(
+                                                                            fontSize:
+                                                                                13,
+                                                                            fontWeight:
+                                                                                FontWeight.w400,
+                                                                          ),
+                                                                        ),
+                                                                      ),
+                                                                    ),
+                                                                    SizedBox(
+                                                                      height:
+                                                                          10,
+                                                                    ),
+                                                                    SizedBox(
+                                                                      width:
+                                                                          width *
+                                                                              0.4,
+                                                                      child:
+                                                                          Padding(
+                                                                        padding:
+                                                                            const EdgeInsets.symmetric(horizontal: 10),
+                                                                        child:
+                                                                            Row(
+                                                                          children: [
+                                                                            Text(
+                                                                              "\$${_filteredListReviews[index].products![i].price}",
+                                                                              style: TextStyle(
+                                                                                fontSize: 17,
+                                                                                fontWeight: FontWeight.w600,
+                                                                              ),
+                                                                            ),
+                                                                            Spacer(),
+                                                                            Text(
+                                                                              _filteredListReviews[index].products![i].discountPrice != null ? _filteredListReviews[index].products![i].discountPrice.toString() : "-0.0%",
+                                                                              style: TextStyle(
+                                                                                fontSize: 11,
+                                                                                fontWeight: FontWeight.w400,
+                                                                                color: Color(0XFF12B39A),
+                                                                              ),
+                                                                            ),
+                                                                          ],
+                                                                        ),
+                                                                      ),
+                                                                    ),
+                                                                    SizedBox(
+                                                                      height:
+                                                                          10,
+                                                                    ),
+                                                                    SizedBox(
+                                                                      width:
+                                                                          width *
+                                                                              0.4,
+                                                                      child:
+                                                                          Padding(
+                                                                        padding:
+                                                                            const EdgeInsets.symmetric(horizontal: 10),
+                                                                        child:
+                                                                            Row(
+                                                                          mainAxisAlignment:
+                                                                              MainAxisAlignment.spaceBetween,
+                                                                          children: [
+                                                                            Icon(
+                                                                              Icons.remove_circle_outline,
+                                                                              color: Color(0XFFB8BCBF),
+                                                                            ),
+                                                                            Text(
+                                                                              "1",
+                                                                              style: TextStyle(
+                                                                                fontSize: 17,
+                                                                                fontWeight: FontWeight.w600,
+                                                                              ),
+                                                                            ),
+                                                                            Icon(
+                                                                              Icons.add_circle_outline_outlined,
+                                                                              color: Color(0XFFB8BCBF),
+                                                                            ),
+                                                                          ],
+                                                                        ),
+                                                                      ),
+                                                                    ),
+                                                                    SizedBox(
+                                                                      height:
+                                                                          10,
+                                                                    ),
+                                                                  ],
+                                                                ),
+                                                              ),
+                                                              SizedBox(
+                                                                height: 10,
+                                                              )
+                                                            ],
+                                                          );
+                                                        })
+                                                    : const Center(
+                                                        child: Text(
+                                                            "No item found")),
+                                              );
+                                            }),
+                                            SizedBox(
+                                              height: 100,
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                ),
+                              );
+                            }),
+
+                      /*  Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
@@ -351,14 +666,14 @@ class _HomeScreenFeaturesState extends State<HomeScreenFeatures> {
                             _products(),
                           ],
                         ),
-                      ),
+                      ),*/
                     ],
                   ),
                 ),
               ],
             ),
-            CourselSliderFeatures(context),
-            Padding(
+            // CourselSliderFeatures(context),
+            /* Padding(
               padding: EdgeInsets.all(20),
               child: Column(
                 children: [
@@ -442,7 +757,7 @@ class _HomeScreenFeaturesState extends State<HomeScreenFeatures> {
                   ),
                 ],
               ),
-            ),
+            ),*/
           ],
         ),
       ),

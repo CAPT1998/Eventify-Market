@@ -1,0 +1,464 @@
+class ProductScreenResponseModel {
+  bool? success;
+  Data? data;
+  String? message;
+
+  ProductScreenResponseModel({this.success, this.data, this.message});
+
+  ProductScreenResponseModel.fromJson(Map<String, dynamic> json) {
+    success = json['success'];
+    data = json['data'] != null ? new Data.fromJson(json['data']) : null;
+    message = json['message'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['success'] = this.success;
+    if (this.data != null) {
+      data['data'] = this.data!.toJson();
+    }
+    data['message'] = this.message;
+    return data;
+  }
+}
+
+class Data {
+  FirstCategory? firstCategory;
+  List<Categories>? categories;
+
+  Data({this.firstCategory, this.categories});
+
+  Data.fromJson(Map<String, dynamic> json) {
+    firstCategory = json['first_category'] != null
+        ? new FirstCategory.fromJson(json['first_category'])
+        : null;
+    if (json['categories'] != null) {
+      categories = <Categories>[];
+      json['categories'].forEach((v) {
+        categories!.add(new Categories.fromJson(v));
+      });
+    }
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    if (this.firstCategory != null) {
+      data['first_category'] = this.firstCategory!.toJson();
+    }
+    if (this.categories != null) {
+      data['categories'] = this.categories!.map((v) => v.toJson()).toList();
+    }
+    return data;
+  }
+}
+
+class FirstCategory {
+  int? id;
+  String? name;
+  String? description;
+  String? createdAt;
+  String? updatedAt;
+  bool? hasMedia;
+  List<Products>? products;
+  List<Media>? media;
+
+  FirstCategory(
+      {this.id,
+        this.name,
+        this.description,
+        this.createdAt,
+        this.updatedAt,
+        this.hasMedia,
+        this.products,
+        this.media});
+
+  FirstCategory.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
+    name = json['name'];
+    description = json['description'];
+    createdAt = json['created_at'];
+    updatedAt = json['updated_at'];
+
+    hasMedia = json['has_media'];
+    if (json['products'] != null) {
+      products = <Products>[];
+      json['products'].forEach((v) {
+        products!.add(new Products.fromJson(v));
+      });
+    }
+    if (json['media'] != null) {
+      media = <Media>[];
+      json['media'].forEach((v) {
+        media!.add(new Media.fromJson(v));
+      });
+    }
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['id'] = this.id;
+    data['name'] = this.name;
+    data['description'] = this.description;
+    data['created_at'] = this.createdAt;
+    data['updated_at'] = this.updatedAt;
+
+    data['has_media'] = this.hasMedia;
+    if (this.products != null) {
+      data['products'] = this.products!.map((v) => v.toJson()).toList();
+    }
+    if (this.media != null) {
+      data['media'] = this.media!.map((v) => v.toJson()).toList();
+    }
+    return data;
+  }
+}
+class Categories {
+  int? id;
+  String? name;
+  String? description;
+  String? createdAt;
+  String? updatedAt;
+  List<Null>? customFields;
+  bool? hasMedia;
+  List<Products>? products;
+  List<Media>? media;
+
+  Categories(
+      {this.id,
+        this.name,
+        this.description,
+        this.createdAt,
+        this.updatedAt,
+        this.customFields,
+        this.hasMedia,
+        this.products,
+        this.media});
+
+  Categories.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
+    name = json['name'];
+    description = json['description'];
+    createdAt = json['created_at'];
+    updatedAt = json['updated_at'];
+
+    hasMedia = json['has_media'];
+    if (json['products'] != null) {
+      products = <Products>[];
+      json['products'].forEach((v) {
+        products!.add(new Products.fromJson(v));
+      });
+    }
+    if (json['media'] != null) {
+      media = <Media>[];
+      json['media'].forEach((v) {
+        media!.add(new Media.fromJson(v));
+      });
+    }
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['id'] = this.id;
+    data['name'] = this.name;
+    data['description'] = this.description;
+    data['created_at'] = this.createdAt;
+    data['updated_at'] = this.updatedAt;
+
+    data['has_media'] = this.hasMedia;
+    if (this.products != null) {
+      data['products'] = this.products!.map((v) => v.toJson()).toList();
+    }
+    if (this.media != null) {
+      data['media'] = this.media!.map((v) => v.toJson()).toList();
+    }
+    return data;
+  }
+}
+class Products {
+  int? id;
+  String? name;
+  int? price;
+  int? discountPrice;
+  String? description;
+  int? capacity;
+  int? packageItemsCount;
+  String? unit;
+  Null? rate;
+  String? itemsAvailable;
+  bool? featured;
+  bool? deliverable;
+  int? storeId;
+  int? categoryId;
+  int? brandId;
+  String? createdAt;
+  String? updatedAt;
+  bool? hasMedia;
+  Store? store;
+  List<Media>? media;
+
+  Products(
+      {this.id,
+        this.name,
+        this.price,
+        this.discountPrice,
+        this.description,
+        this.capacity,
+        this.packageItemsCount,
+        this.unit,
+        this.rate,
+        this.itemsAvailable,
+        this.featured,
+        this.deliverable,
+        this.storeId,
+        this.categoryId,
+        this.brandId,
+        this.createdAt,
+        this.updatedAt,
+        this.hasMedia,
+        this.store,
+        this.media});
+
+  Products.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
+    name = json['name'];
+    price = json['price'];
+    discountPrice = json['discount_price'];
+    description = json['description'];
+    capacity = json['capacity'];
+    packageItemsCount = json['package_items_count'];
+    unit = json['unit'];
+    rate = json['rate'];
+    itemsAvailable = json['itemsAvailable'];
+    featured = json['featured'];
+    deliverable = json['deliverable'];
+    storeId = json['store_id'];
+    categoryId = json['category_id'];
+    brandId = json['brand_id'];
+    createdAt = json['created_at'];
+    updatedAt = json['updated_at'];
+
+    hasMedia = json['has_media'];
+    store = json['store'] != null ? new Store.fromJson(json['store']) : null;
+    if (json['media'] != null) {
+      media = <Media>[];
+      json['media'].forEach((v) {
+        media!.add(new Media.fromJson(v));
+      });
+    }
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['id'] = this.id;
+    data['name'] = this.name;
+    data['price'] = this.price;
+    data['discount_price'] = this.discountPrice;
+    data['description'] = this.description;
+    data['capacity'] = this.capacity;
+    data['package_items_count'] = this.packageItemsCount;
+    data['unit'] = this.unit;
+    data['rate'] = this.rate;
+    data['itemsAvailable'] = this.itemsAvailable;
+    data['featured'] = this.featured;
+    data['deliverable'] = this.deliverable;
+    data['store_id'] = this.storeId;
+    data['category_id'] = this.categoryId;
+    data['brand_id'] = this.brandId;
+    data['created_at'] = this.createdAt;
+    data['updated_at'] = this.updatedAt;
+
+    data['has_media'] = this.hasMedia;
+    if (this.store != null) {
+      data['store'] = this.store!.toJson();
+    }
+    if (this.media != null) {
+      data['media'] = this.media!.map((v) => v.toJson()).toList();
+    }
+    return data;
+  }
+}
+
+class Store {
+  int? id;
+  String? name;
+  int? deliveryFee;
+  String? phone;
+  bool? hasMedia;
+  Null? rate;
+  List<Media>? media;
+
+  Store(
+      {this.id,
+        this.name,
+        this.deliveryFee,
+        this.phone,
+        this.hasMedia,
+        this.rate,
+        this.media});
+
+  Store.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
+    name = json['name'];
+    deliveryFee = json['delivery_fee'];
+    phone = json['phone'];
+
+    hasMedia = json['has_media'];
+    rate = json['rate'];
+    if (json['media'] != null) {
+      media = <Media>[];
+      json['media'].forEach((v) {
+        media!.add(new Media.fromJson(v));
+      });
+    }
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['id'] = this.id;
+    data['name'] = this.name;
+    data['delivery_fee'] = this.deliveryFee;
+    data['phone'] = this.phone;
+
+    data['has_media'] = this.hasMedia;
+    data['rate'] = this.rate;
+    if (this.media != null) {
+      data['media'] = this.media!.map((v) => v.toJson()).toList();
+    }
+    return data;
+  }
+}
+
+class Media {
+  int? id;
+  String? modelType;
+  String? modelId;
+  String? collectionName;
+  String? name;
+  String? fileName;
+  String? mimeType;
+  String? disk;
+  String? size;
+  CustomProperties? customProperties;
+  String? orderColumn;
+  String? createdAt;
+  String? updatedAt;
+  String? url;
+  String? thumb;
+  String? icon;
+  String? formatedSize;
+
+  Media(
+      {this.id,
+        this.modelType,
+        this.modelId,
+        this.collectionName,
+        this.name,
+        this.fileName,
+        this.mimeType,
+        this.disk,
+        this.size,
+        this.customProperties,
+        this.orderColumn,
+        this.createdAt,
+        this.updatedAt,
+        this.url,
+        this.thumb,
+        this.icon,
+        this.formatedSize});
+
+  Media.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
+    modelType = json['model_type'];
+    modelId = json['model_id'];
+    collectionName = json['collection_name'];
+    name = json['name'];
+    fileName = json['file_name'];
+    mimeType = json['mime_type'];
+    disk = json['disk'];
+    size = json['size'];
+
+    customProperties = json['custom_properties'] != null
+        ? new CustomProperties.fromJson(json['custom_properties'])
+        : null;
+
+    orderColumn = json['order_column'];
+    createdAt = json['created_at'];
+    updatedAt = json['updated_at'];
+    url = json['url'];
+    thumb = json['thumb'];
+    icon = json['icon'];
+    formatedSize = json['formated_size'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['id'] = this.id;
+    data['model_type'] = this.modelType;
+    data['model_id'] = this.modelId;
+    data['collection_name'] = this.collectionName;
+    data['name'] = this.name;
+    data['file_name'] = this.fileName;
+    data['mime_type'] = this.mimeType;
+    data['disk'] = this.disk;
+    data['size'] = this.size;
+
+    if (this.customProperties != null) {
+      data['custom_properties'] = this.customProperties!.toJson();
+    }
+
+    data['order_column'] = this.orderColumn;
+    data['created_at'] = this.createdAt;
+    data['updated_at'] = this.updatedAt;
+    data['url'] = this.url;
+    data['thumb'] = this.thumb;
+    data['icon'] = this.icon;
+    data['formated_size'] = this.formatedSize;
+    return data;
+  }
+}
+
+class CustomProperties {
+  String? uuid;
+  int? userId;
+  GeneratedConversions? generatedConversions;
+
+  CustomProperties({this.uuid, this.userId, this.generatedConversions});
+
+  CustomProperties.fromJson(Map<String, dynamic> json) {
+    uuid = json['uuid'];
+    userId = json['user_id'];
+    generatedConversions = json['generated_conversions'] != null
+        ? new GeneratedConversions.fromJson(json['generated_conversions'])
+        : null;
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['uuid'] = this.uuid;
+    data['user_id'] = this.userId;
+    if (this.generatedConversions != null) {
+      data['generated_conversions'] = this.generatedConversions!.toJson();
+    }
+    return data;
+  }
+}
+
+class GeneratedConversions {
+  bool? thumb;
+  bool? icon;
+
+  GeneratedConversions({this.thumb, this.icon});
+
+  GeneratedConversions.fromJson(Map<String, dynamic> json) {
+    thumb = json['thumb'];
+    icon = json['icon'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['thumb'] = this.thumb;
+    data['icon'] = this.icon;
+    return data;
+  }
+}
+

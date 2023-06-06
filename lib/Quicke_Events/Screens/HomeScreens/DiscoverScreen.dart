@@ -7,6 +7,7 @@ import 'package:provider/provider.dart';
 import 'package:quickie_event/Constant.dart';
 import 'package:quickie_event/Quicke_Events/Providers/EventsProvider.dart';
 import 'package:quickie_event/Quicke_Events/Screens/EventDetails/EventDetailsScreen.dart';
+import 'package:quickie_event/Quicke_Events/Screens/HomeScreens/EventsOrganizersScreen.dart';
 import 'package:quickie_event/Quicke_Events/Screens/HomeScreens/ExploreNearByEventsScreen.dart';
 import 'package:quickie_event/Quicke_Events/Screens/Notification/NotificationScreen.dart';
 import 'package:quickie_event/Quicke_Events/Screens/VideoPlayer/VideoPlayerScreen.dart';
@@ -32,8 +33,15 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    Provider.of<EventProvider>(context, listen: false).mGetEvents();
+    WidgetsBinding.instance
+        .addPostFrameCallback((_) =>     getRequests(context)
+    );
   }
+
+getRequests(BuildContext context) async {
+ await Provider.of<EventProvider>(context, listen: false).mGetEvents();
+ await Provider.of<EventProvider>(context, listen: false).getEventOrganizers();
+}
 
   @override
   Widget build(BuildContext context) {
@@ -87,12 +95,14 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
                   textfieldProduct(
                     context: context,
                     name: "Search events",
-                    onChanged: (value){
-                      _filteredListReviews = Provider.of<EventProvider>(context, listen: false).getEventsModel
-                          .where((element) => element.eventTitle!
-                          .toLowerCase()
-                          .contains(value.toLowerCase()))
-                          .toList();
+                    onChanged: (value) {
+                      _filteredListReviews =
+                          Provider.of<EventProvider>(context, listen: false)
+                              .getEventsModel
+                              .where((element) => element.eventTitle!
+                                  .toLowerCase()
+                                  .contains(value.toLowerCase()))
+                              .toList();
                       setState(() {});
                     },
                     controller: _searchController,
@@ -108,10 +118,12 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
                       ),
                       Spacer(),
                       InkWell(
-                        onTap: (){
-                          Navigator.push(context,
-                              MaterialPageRoute(builder: (context) => ExploreNearByEventsScreen( )));
-
+                        onTap: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                      ExploreNearByEventsScreen()));
                         },
                         child: TextWidget(
                             title: "See All",
@@ -135,7 +147,6 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
                               //   screen: VideoPlayerScreen(),
                               //   withNavBar: false,
                               // );
-
                             },
                             child: _NearWidget(
                                 img: "1",
@@ -155,13 +166,13 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
                         fontWeight: FontWeight.w700,
                         size: 16,
                       ),
-                      Spacer(),
+                      /*   Spacer(),
                       TextWidget(
                         title: "See All",
                         fontWeight: FontWeight.w500,
                         size: 14,
                         color: appColor,
-                      ),
+                      ),*/
                     ],
                   ),
                   SizedBox(
@@ -216,16 +227,25 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
                   Row(
                     children: [
                       TextWidget(
-                        title: "Trending Categories",
+                        title: "Trending Events",
                         fontWeight: FontWeight.w700,
                         size: 16,
                       ),
                       Spacer(),
-                      TextWidget(
-                          title: "See All",
-                          fontWeight: FontWeight.w500,
-                          size: 14,
-                          color: appColor)
+                      InkWell(
+                        onTap: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                      ExploreNearByEventsScreen()));
+                        },
+                        child: TextWidget(
+                            title: "See All",
+                            fontWeight: FontWeight.w500,
+                            size: 14,
+                            color: appColor),
+                      )
                     ],
                   ),
                   SizedBox(
@@ -433,11 +453,20 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
                         size: 16,
                       ),
                       Spacer(),
-                      TextWidget(
-                          title: "See All",
-                          fontWeight: FontWeight.w500,
-                          size: 14,
-                          color: appColor)
+                      InkWell(
+                        onTap: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                      ExploreNearByEventsScreen()));
+                        },
+                        child: TextWidget(
+                            title: "See All",
+                            fontWeight: FontWeight.w500,
+                            size: 14,
+                            color: appColor),
+                      )
                     ],
                   ),
                   SizedBox(
@@ -492,26 +521,38 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
                         size: 16,
                       ),
                       Spacer(),
-                      TextWidget(
-                          title: "See All",
-                          fontWeight: FontWeight.w500,
-                          size: 14,
-                          color: appColor)
+                      InkWell(
+                        onTap: (){
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                      EventsOrganizersScreen()));
+                        },
+                        child: TextWidget(
+                            title: "See All",
+                            fontWeight: FontWeight.w500,
+                            size: 14,
+                            color: appColor),
+                      )
                     ],
                   ),
                   SizedBox(
                     height: 20,
                   ),
-                  SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: Row(
-                      children: [
-                        OrganizerWidget(),
-                        OrganizerWidget(),
-                        OrganizerWidget(),
-                      ],
-                    ),
-                  ),
+
+                                  SizedBox(
+                                    height: 150,
+                                    child: ListView.builder(
+                                      shrinkWrap: true,
+                                      scrollDirection: Axis.horizontal,
+                                      itemCount: value.getEventOrganizer?.organizer?.length,
+                                      itemBuilder: (context, index) {
+                                        return OrganizerWidget(value.getEventOrganizer?.organizer?[index]);
+                                      },
+                                    ),
+                                  ),
+
                   SizedBox(
                     height: 50,
                   ),
@@ -525,7 +566,7 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
   }
 }
 
-Widget OrganizerWidget() {
+Widget OrganizerWidget(String? organize) {
   return Container(
     padding: EdgeInsets.only(left: 20, right: 20, top: 30, bottom: 40),
     margin: EdgeInsets.only(right: 20),
@@ -537,6 +578,7 @@ Widget OrganizerWidget() {
       borderRadius: BorderRadius.circular(10),
     ),
     child: Column(
+
       children: [
         ClipRRect(
             borderRadius: BorderRadius.circular(10),
@@ -549,7 +591,7 @@ Widget OrganizerWidget() {
         SizedBox(
           height: 10,
         ),
-        TextWidget(title: "Brooklyn Nav")
+        TextWidget(title: organize.toString())
       ],
     ),
   );
@@ -559,8 +601,8 @@ _NearWidget(
     {required String img,
     required String title,
     dynamic color,
-     required TextEditingController searchController,
-      required List<GetEventsModel> filteredListReviews,
+    required TextEditingController searchController,
+    required List<GetEventsModel> filteredListReviews,
     required EventProvider value}) {
   if (searchController.text.isEmpty) {
     filteredListReviews = value.getEventsModel;
@@ -589,79 +631,80 @@ _NearWidget(
                     child: Container(
                       margin: EdgeInsets.only(right: 10, bottom: 10),
                       width: width * 0.6,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Stack(
-                            children: [
-                              ClipRRect(
-                                borderRadius: BorderRadius.circular(10),
-                                child: Image.network(
-                                  "${filteredListReviews[index].eventsPic}",
-                                  height: height * 0.17,
-                                  width: width * 0.6,
-                                  fit: BoxFit.fill,
-                                   errorBuilder: (context, url, error) =>
-                                      Image.asset(
-                                    "assets/img/placeholder.jpg",
-                                    fit: BoxFit.fill,
+                      child: SingleChildScrollView(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Stack(
+                              children: [
+                                ClipRRect(
+                                  borderRadius: BorderRadius.circular(10),
+                                  child: Image.network(
+                                    "${filteredListReviews[index].eventsPic}",
                                     height: height * 0.17,
                                     width: width * 0.6,
+                                    fit: BoxFit.fill,
+                                    errorBuilder: (context, url, error) =>
+                                        Image.asset(
+                                      "assets/img/placeholder.jpg",
+                                      fit: BoxFit.fill,
+                                      height: height * 0.17,
+                                      width: width * 0.6,
+                                    ),
                                   ),
                                 ),
-                              ),
-                              Container(
-                                padding: EdgeInsets.symmetric(
-                                    horizontal: 10, vertical: 5),
-                                margin: EdgeInsets.only(top: 10, left: 10),
-                                decoration: BoxDecoration(
-                                    color: color,
-                                    borderRadius: BorderRadius.circular(5)),
-                                child: TextWidget(
-                                  title: "$title",
-                                  fontWeight: FontWeight.w700,
-                                  size: 8,
-                                  color: Colors.white,
+                                Container(
+                                  padding: EdgeInsets.symmetric(
+                                      horizontal: 10, vertical: 5),
+                                  margin: EdgeInsets.only(top: 10, left: 10),
+                                  decoration: BoxDecoration(
+                                      color: color,
+                                      borderRadius: BorderRadius.circular(5)),
+                                  child: TextWidget(
+                                    title: "$title",
+                                    fontWeight: FontWeight.w700,
+                                    size: 8,
+                                    color: Colors.white,
+                                  ),
                                 ),
-                              ),
-                            ],
-                          ),
-                          SizedBox(
-                            height: 10,
-                          ),
-                          TextWidget(
-                            title: "${filteredListReviews[index].eventTitle}",
-                            size: 16,
-                            fontWeight: FontWeight.w700,
-                          ),
-                          SizedBox(
-                            height: 10,
-                          ),
-                          Row(
-                            children: [
-                              Icon(
-                                Icons.calendar_month_outlined,
-                                size: 15,
-                                color: greyColor,
-                              ),
-                              TextWidget(
-                                title:
-                                    "  ${filteredListReviews[index].eventStartDate.toString().split(" ")[0]}  .  ${filteredListReviews[index].eventStartTime}",
-                                size: 12,
-                                fontWeight: FontWeight.w500,
-                                color: greyColor,
-                              ),
-                              Spacer(),
-                              TextWidget(
-                                title:
-                                    "\$ ${filteredListReviews[index].price}",
-                                size: 12,
-                                fontWeight: FontWeight.w500,
-                                color: darkPurpleColor,
-                              ),
-                            ],
-                          )
-                        ],
+                              ],
+                            ),
+                            SizedBox(
+                              height: 10,
+                            ),
+                            TextWidget(
+                              title: "${filteredListReviews[index].eventTitle}",
+                              size: 16,
+                              fontWeight: FontWeight.w700,
+                            ),
+                            SizedBox(
+                              height: 10,
+                            ),
+                            Row(
+                              children: [
+                                Icon(
+                                  Icons.calendar_month_outlined,
+                                  size: 15,
+                                  color: greyColor,
+                                ),
+                                TextWidget(
+                                  title:
+                                      "  ${filteredListReviews[index].eventStartDate.toString().split(" ")[0]}  .  ${filteredListReviews[index].eventStartTime}",
+                                  size: 12,
+                                  fontWeight: FontWeight.w500,
+                                  color: greyColor,
+                                ),
+                                Spacer(),
+                                TextWidget(
+                                  title: "\$ ${filteredListReviews[index].price}",
+                                  size: 12,
+                                  fontWeight: FontWeight.w500,
+                                  color: darkPurpleColor,
+                                ),
+                              ],
+                            )
+                          ],
+                        ),
                       ),
                     ),
                   );

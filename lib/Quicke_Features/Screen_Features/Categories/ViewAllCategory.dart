@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
 import 'package:provider/provider.dart';
 import 'package:quickie_event/Quicke_Features/Widget_Features/CategoriesFeatures/CategoriesFeatureWidget.dart';
 
 import '../../providers/HomeProviders.dart';
+import 'ProductScreen.dart';
 
 class ViewAllCategories extends StatefulWidget {
   const ViewAllCategories({super.key});
@@ -44,17 +46,26 @@ class _ViewAllCategoriesState extends State<ViewAllCategories> {
                 crossAxisSpacing: 30.0,
                 mainAxisSpacing: 30.0,
               ),
-              itemCount: person.getMyCategories!.data!.length,
+              itemCount:person.getProductScreenData!.data!.categories!.length,
               itemBuilder: (context, i) {
-                return CategoriesFeatureWidget(
-                    image:person.getMyCategories
-                        ?.data![i].media !=null && person.getMyCategories!.data![i].media!.isNotEmpty ?
-                    person.getMyCategories
-                        ?.data![i].media![0].url
-                        .toString():"abc",
-                    title: person.getMyCategories
-                        ?.data![i].name
-                        .toString());
+                return InkWell(
+                  onTap: (){
+                    PersistentNavBarNavigator
+                        .pushNewScreen(
+                      context,
+                      screen: ProductScreen(person.getProductScreenData!.data!.categories![i].id.toString()),
+                      withNavBar: false,
+                    );
+
+                  },
+                  child: CategoriesFeatureWidget(
+                    context: context,
+                      image:person.getProductScreenData!.data!.categories![i].media !=null && person.getProductScreenData!.data!.categories![i].media!.isNotEmpty ?
+                      person.getProductScreenData!.data!.categories![i].media![0].url
+                          .toString():"abc",
+                      title: person.getProductScreenData!.data!.categories![i].name
+                          .toString()),
+                );
               },
             );
           }),
