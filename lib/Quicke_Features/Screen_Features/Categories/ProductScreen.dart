@@ -6,6 +6,7 @@ import 'package:quickie_event/Quicke_Events/Widgets/TextFormWidget.dart';
 
 import '../../Model/ProductDetailResponseModel.dart';
 import '../../providers/HomeProviders.dart';
+import '../ProductDetail/ProductDetailScreen.dart';
 
 class ProductScreen extends StatefulWidget {
   String productId;
@@ -120,8 +121,20 @@ class _ProductScreenState extends State<ProductScreen> {
                                               childAspectRatio: 0.75),
                                       itemCount: _filteredListReviews!.length,
                                       itemBuilder: (context, i) {
-                                        return _products(
-                                            _filteredListReviews![i]);
+                                        return InkWell(
+                                          onTap: () {
+                                            Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                    builder: (context) =>
+                                                        PRoductDetailScreen(
+                                                          _filteredListReviews![
+                                                              i],
+                                                        )));
+                                          },
+                                          child: _products(
+                                              _filteredListReviews![i]),
+                                        );
                                       })
                                   : const Center(child: Text("Not item found")),
                               const SizedBox(
@@ -166,12 +179,20 @@ Widget _products(Product product) {
             children: [
               Stack(
                 children: [
-                  Image.asset(
-                    "assets/img/Bitmap.png",
-                    width: width * 0.42,
-                    height: height * 0.15,
-                    fit: BoxFit.contain,
-                  ),
+                  product.media! != null && product.media!.isNotEmpty
+                      ? Image.network(
+                          // "assets/img/Bitmap.png",
+                          product.media![0].url!,
+                          width: width * 0.42,
+                          height: height * 0.15,
+                          fit: BoxFit.contain,
+                        )
+                      : Image.asset(
+                          "assets/img/Bitmap.png",
+                          width: width * 0.42,
+                          height: height * 0.15,
+                          fit: BoxFit.contain,
+                        ),
                   Positioned(
                       right: 5,
                       top: 5,
@@ -220,7 +241,9 @@ Widget _products(Product product) {
                       ),
                       Spacer(),
                       Text(
-                        product.discountPrice ?? "-0.0 %",
+                        product.discountPrice != null
+                            ? product.discountPrice.toString() ?? "-0.0 %"
+                            : "-0.0 %",
                         style: TextStyle(
                           fontSize: 11,
                           fontWeight: FontWeight.w400,

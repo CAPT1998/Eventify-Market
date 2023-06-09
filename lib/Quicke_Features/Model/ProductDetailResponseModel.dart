@@ -27,7 +27,7 @@ class Product {
   int? id;
   String? name;
   int? price;
-  String? discountPrice;
+  int? discountPrice;
   String? description;
   int? capacity;
   int? packageItemsCount;

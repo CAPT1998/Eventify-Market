@@ -1,3 +1,5 @@
+import 'ProductDetailResponseModel.dart';
+
 class ProductScreenResponseModel {
   bool? success;
   Data? data;
@@ -120,7 +122,7 @@ class Categories {
   String? updatedAt;
   List<Null>? customFields;
   bool? hasMedia;
-  List<Products>? products;
+  List<Product>? products;
   List<Media>? media;
 
   Categories(
@@ -143,9 +145,9 @@ class Categories {
 
     hasMedia = json['has_media'];
     if (json['products'] != null) {
-      products = <Products>[];
+      products = <Product>[];
       json['products'].forEach((v) {
-        products!.add(new Products.fromJson(v));
+        products!.add(new Product.fromJson(v));
       });
     }
     if (json['media'] != null) {

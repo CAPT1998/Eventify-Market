@@ -1,9 +1,13 @@
+
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:quickie_event/Constant.dart';
+import 'package:quickie_event/Quicke_Features/Model/ProductDetailResponseModel.dart';
 
 class PRoductDetailScreen extends StatefulWidget {
-  const PRoductDetailScreen({super.key});
+  final Product product;
+
+  const PRoductDetailScreen(this.product, {super.key});
 
   @override
   State<PRoductDetailScreen> createState() => _PRoductDetailScreenState();
@@ -16,7 +20,7 @@ class _PRoductDetailScreenState extends State<PRoductDetailScreen> {
         appBar: AppBar(
           centerTitle: true,
           title: Text(
-            "Product Name",
+            widget.product.name!,
             style: TextStyle(color: Colors.black),
           ),
           backgroundColor: Colors.grey[50],
@@ -43,41 +47,54 @@ class _PRoductDetailScreenState extends State<PRoductDetailScreen> {
                 AspectRatio(
                   aspectRatio: 4 / 3,
                   child: Container(
-                      margin: EdgeInsets.only(bottom: 20),
-                      // color: Colors.grey[50],
-                      child: Image.asset(
-                        "assets/img/Bitmap.png",
-                        fit: BoxFit.contain,
-                      )
-                      // ClipRRect(
-                      //   borderRadius: BorderRadius.circular(15),
-                      //   child: FadeInImage(
-                      //     fit: BoxFit.cover,
-                      //     height: 60,
-                      //     width: 60,
-                      //     image: NetworkImage("image"),
-                      //     placeholder: AssetImage(
-                      //       'assets/img/loading.gif',
-                      //     ),
-                      //   ),
-                      // ),
-                      ),
+                    margin: EdgeInsets.only(bottom: 20),
+                    // color: Colors.grey[50],
+                    child: widget.product.media! != null &&
+                            widget.product.media!.isNotEmpty
+                        ? Image.network(
+                            // "assets/img/Bitmap.png",
+                            widget.product.media![0].url!,
+                            width: width * 0.42,
+                            height: height * 0.15,
+                            fit: BoxFit.contain,
+                          )
+                        : Image.asset(
+                            "assets/img/Bitmap.png",
+                            width: width * 0.42,
+                            height: height * 0.15,
+                            fit: BoxFit.contain,
+                          ),
+                    // ClipRRect(
+                    //   borderRadius: BorderRadius.circular(15),
+                    //   child: FadeInImage(
+                    //     fit: BoxFit.cover,
+                    //     height: 60,
+                    //     width: 60,
+                    //     image: NetworkImage("image"),
+                    //     placeholder: AssetImage(
+                    //       'assets/img/loading.gif',
+                    //     ),
+                    //   ),
+                    // ),
+                  ),
                 ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      "Product Name",
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.w600,
+                    Expanded(
+                      child: Text(
+                        widget.product.name!,
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
                     ),
                     Column(
                       children: [
                         Text(
-                          "Product Price",
+                          "\$${widget.product.price}",
                           style: TextStyle(
                             color: Color(0XFF00ADF4),
                             fontSize: 20,
@@ -85,7 +102,10 @@ class _PRoductDetailScreenState extends State<PRoductDetailScreen> {
                           ),
                         ),
                         Text(
-                          "Product Discount",
+                          widget.product.discountPrice != null
+                              ? widget.product.discountPrice.toString() ??
+                                  "-0.0 %"
+                              : "-0.0 %",
                           style: TextStyle(
                             color: Colors.grey,
                             fontSize: 13,
@@ -153,20 +173,32 @@ class _PRoductDetailScreenState extends State<PRoductDetailScreen> {
                                       mainAxisSize: MainAxisSize.min,
                                       children: [
                                         Container(
-                                            decoration: BoxDecoration(
-                                                color: Colors.white,
-                                                boxShadow: [
-                                                  BoxShadow(
-                                                      spreadRadius: 0,
-                                                      blurRadius: 2,
-                                                      offset: Offset(0, 2),
-                                                      color: Colors.grey
-                                                          .withOpacity(0.5))
-                                                ]),
-                                            child: Image.asset(
-                                              "assets/img/Bitmap.png",
-                                              height: height * 0.1,
-                                            )),
+                                          decoration: BoxDecoration(
+                                              color: Colors.white,
+                                              boxShadow: [
+                                                BoxShadow(
+                                                    spreadRadius: 0,
+                                                    blurRadius: 2,
+                                                    offset: Offset(0, 2),
+                                                    color: Colors.grey
+                                                        .withOpacity(0.5))
+                                              ]),
+                                          child: widget.product.media! !=
+                                                      null &&
+                                                  widget
+                                                      .product.media!.isNotEmpty
+                                              ? Image.network(
+                                                  // "assets/img/Bitmap.png",
+                                                  widget.product.media![0].url!,
+                                                  height: height * 0.1,
+                                                  fit: BoxFit.contain,
+                                                )
+                                              : Image.asset(
+                                                  "assets/img/Bitmap.png",
+                                                  height: height * 0.1,
+                                                  fit: BoxFit.contain,
+                                                ),
+                                        ),
                                         SizedBox(
                                           width: 10,
                                         ),
@@ -175,25 +207,26 @@ class _PRoductDetailScreenState extends State<PRoductDetailScreen> {
                                               CrossAxisAlignment.start,
                                           children: [
                                             Text(
-                                              "Product Name",
+                                              widget.product.name!,
                                               style: TextStyle(
                                                 fontSize: 15,
                                                 fontWeight: FontWeight.w600,
                                               ),
                                             ),
                                             Text(
-                                              "Description".toString(),
+                                              widget.product.description!,
                                               style: TextStyle(
                                                 fontSize: 15,
                                                 color: Colors.grey,
                                                 fontWeight: FontWeight.w600,
                                               ),
                                             ),
+
                                             SizedBox(
                                               height: 10,
                                             ),
                                             Text(
-                                              "Price",
+                                              "\$${widget.product.price}",
                                               style: TextStyle(
                                                 color: Color(0XFF00ADF4),
                                                 fontSize: 20,

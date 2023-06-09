@@ -4,6 +4,7 @@ import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
 import 'package:provider/provider.dart';
 import 'package:quickie_event/Constant.dart';
 import 'package:quickie_event/Quicke_Events/Widgets/TextFormWidget.dart';
+import 'package:quickie_event/Quicke_Features/Model/ProductDetailResponseModel.dart';
 import 'package:quickie_event/Quicke_Features/Model/ProductScreenResponseModel.dart';
 import 'package:quickie_event/Quicke_Features/Screen_Features/Categories/ProductScreen.dart';
 import 'package:quickie_event/Quicke_Features/Screen_Features/Categories/ViewAllCategory.dart';
@@ -12,6 +13,7 @@ import 'package:quickie_event/Quicke_Features/Widget_Features/CourselSliderFeatu
 import 'package:quickie_event/Quicke_Features/providers/HomeProviders.dart';
 
 import '../Notification/NotificationScreen.dart';
+import '../ProductDetail/ProductDetailScreen.dart';
 
 class HomeScreenFeatures extends StatefulWidget {
   const HomeScreenFeatures({super.key});
@@ -391,182 +393,210 @@ class _HomeScreenFeaturesState extends State<HomeScreenFeatures> {
                                                               .length,
                                                       itemBuilder:
                                                           (context, i) {
-                                                        return Column(
-                                                          children: [
-                                                            Container(
-                                                              width: width *
-                                                                  0.43,
-                                                              // height: height * 0.3,
-                                                              margin: EdgeInsets
-                                                                  .only(
-                                                                      right:
-                                                                          10),
-                                                              decoration: BoxDecoration(
-                                                                  color: Colors
-                                                                      .white,
-                                                                  borderRadius:
-                                                                      BorderRadius
-                                                                          .circular(8),
-                                                                  boxShadow: [
-                                                                    BoxShadow(
-                                                                      blurRadius:
-                                                                          4,
-                                                                      spreadRadius:
-                                                                          0,
-                                                                      offset: Offset(
-                                                                          0,
-                                                                          2),
-                                                                      color: Color(0XFFA2AAB8)
-                                                                          .withOpacity(0.25),
-                                                                    )
-                                                                  ]),
-                                                              child: Column(
-                                                                mainAxisSize:
-                                                                    MainAxisSize
-                                                                        .min,
-                                                                children: [
-                                                                  Stack(
-                                                                    children: [
-                                                                      Image
-                                                                          .asset(
-                                                                        "assets/img/Bitmap.png",
-                                                                        width:
-                                                                            width * 0.42,
-                                                                        height:
-                                                                            height * 0.15,
-                                                                        fit: BoxFit
-                                                                            .contain,
-                                                                      ),
-                                                                      Positioned(
-                                                                          right:
-                                                                              5,
-                                                                          top:
-                                                                              5,
-                                                                          child:
-                                                                              FavoriteButton(
-                                                                            iconSize: 40,
-                                                                            isFavorite: true,
-                                                                            valueChanged: (_isFavorite) {
-                                                                              print('Is Favorite $_isFavorite)');
-                                                                            },
-                                                                          ))
-                                                                    ],
-                                                                  ),
-                                                                  SizedBox(
-                                                                    height:
-                                                                        height *
-                                                                            0.02,
-                                                                  ),
-                                                                  SizedBox(
-                                                                    width:
-                                                                        width *
-                                                                            0.4,
-                                                                    child:
-                                                                        Padding(
-                                                                      padding:
-                                                                          const EdgeInsets.symmetric(horizontal: 10),
-                                                                      child:
-                                                                          Text(
+                                                        return InkWell(
+                                                          onTap: (){
+                                                            Navigator.push(
+                                                                context,
+                                                                MaterialPageRoute(
+                                                                    builder: (context) =>
+                                                                        PRoductDetailScreen(
+                                                                          _filteredListReviews[
+                                                                          index]
+                                                                              .products![
+                                                                          i],
+                                                                        )));
+                                                          },
+                                                          child: Column(
+                                                            children: [
+                                                              Container(
+                                                                width: width *
+                                                                    0.43,
+                                                                // height: height * 0.3,
+                                                                margin: EdgeInsets
+                                                                    .only(
+                                                                        right:
+                                                                            10),
+                                                                decoration: BoxDecoration(
+                                                                    color: Colors
+                                                                        .white,
+                                                                    borderRadius:
+                                                                        BorderRadius
+                                                                            .circular(8),
+                                                                    boxShadow: [
+                                                                      BoxShadow(
+                                                                        blurRadius:
+                                                                            4,
+                                                                        spreadRadius:
+                                                                            0,
+                                                                        offset: Offset(
+                                                                            0,
+                                                                            2),
+                                                                        color: Color(0XFFA2AAB8)
+                                                                            .withOpacity(0.25),
+                                                                      )
+                                                                    ]),
+                                                                child: Column(
+                                                                  mainAxisSize:
+                                                                      MainAxisSize
+                                                                          .min,
+                                                                  children: [
+                                                                    Stack(
+                                                                      children: [
                                                                         _filteredListReviews[index]
-                                                                            .products![i]
-                                                                            .name
-                                                                            .toString(),
-                                                                        maxLines:
-                                                                            2,
-                                                                        overflow:
-                                                                            TextOverflow.ellipsis,
-                                                                        style:
-                                                                            const TextStyle(
-                                                                          fontSize:
-                                                                              13,
-                                                                          fontWeight:
-                                                                              FontWeight.w400,
+                                                                            .products![i].media!!=null && _filteredListReviews[index]
+                                                                            .products![i].media!.isNotEmpty?  Image
+                                                                            .network(
+                                                                          // "assets/img/Bitmap.png",
+                                                                          _filteredListReviews[index]
+                                                                              .products![i].media![0].url!,
+                                                                          width:
+                                                                              width * 0.42,
+                                                                          height:
+                                                                              height * 0.15,
+                                                                          fit: BoxFit
+                                                                              .contain,
+                                                                        ): Image
+                                                                            .asset(
+                                                                          "assets/img/Bitmap.png",
+
+                                                                          width:
+                                                                          width * 0.42,
+                                                                          height:
+                                                                          height * 0.15,
+                                                                          fit: BoxFit
+                                                                              .contain,
+                                                                        ),
+                                                                        Positioned(
+                                                                            right:
+                                                                                5,
+                                                                            top:
+                                                                                5,
+                                                                            child:
+                                                                                FavoriteButton(
+                                                                              iconSize: 40,
+                                                                              isFavorite: true,
+                                                                              valueChanged: (_isFavorite) {
+                                                                                print('Is Favorite $_isFavorite)');
+                                                                              },
+                                                                            ))
+                                                                      ],
+                                                                    ),
+                                                                    SizedBox(
+                                                                      height:
+                                                                          height *
+                                                                              0.02,
+                                                                    ),
+                                                                    SizedBox(
+                                                                      width:
+                                                                          width *
+                                                                              0.4,
+                                                                      child:
+                                                                          Padding(
+                                                                        padding:
+                                                                            const EdgeInsets.symmetric(horizontal: 10),
+                                                                        child:
+                                                                            Text(
+                                                                          _filteredListReviews[index]
+                                                                              .products![i]
+                                                                              .name
+                                                                              .toString(),
+                                                                          maxLines:
+                                                                              2,
+                                                                          overflow:
+                                                                              TextOverflow.ellipsis,
+                                                                          style:
+                                                                              const TextStyle(
+                                                                            fontSize:
+                                                                                13,
+                                                                            fontWeight:
+                                                                                FontWeight.w400,
+                                                                          ),
                                                                         ),
                                                                       ),
                                                                     ),
-                                                                  ),
-                                                                  SizedBox(
-                                                                    height:
-                                                                        10,
-                                                                  ),
-                                                                  SizedBox(
-                                                                    width:
-                                                                        width *
-                                                                            0.4,
-                                                                    child:
-                                                                        Padding(
-                                                                      padding:
-                                                                          const EdgeInsets.symmetric(horizontal: 10),
+                                                                    SizedBox(
+                                                                      height:
+                                                                          10,
+                                                                    ),
+                                                                    SizedBox(
+                                                                      width:
+                                                                          width *
+                                                                              0.4,
                                                                       child:
-                                                                          Row(
-                                                                        children: [
-                                                                          Text(
-                                                                            "\$${_filteredListReviews[index].products![i].price}",
-                                                                            style: TextStyle(
-                                                                              fontSize: 17,
-                                                                              fontWeight: FontWeight.w600,
+                                                                          Padding(
+                                                                        padding:
+                                                                            const EdgeInsets.symmetric(horizontal: 10),
+                                                                        child:
+                                                                            Row(
+                                                                          children: [
+                                                                            Text(
+                                                                              "\$${_filteredListReviews[index].products![i].price}",
+                                                                              style: TextStyle(
+                                                                                fontSize: 17,
+                                                                                fontWeight: FontWeight.w600,
+                                                                              ),
                                                                             ),
-                                                                          ),
-                                                                          Spacer(),
-                                                                          Text(
-                                                                            _filteredListReviews[index].products![i].discountPrice != null ? _filteredListReviews[index].products![i].discountPrice.toString() : "-0.0%",
-                                                                            style: TextStyle(
-                                                                              fontSize: 11,
-                                                                              fontWeight: FontWeight.w400,
-                                                                              color: Color(0XFF12B39A),
+                                                                            Spacer(),
+                                                                            Text(
+                                                                              _filteredListReviews[index].products![i].discountPrice != null ? _filteredListReviews[index].products![i].discountPrice.toString() : "-0.0%",
+                                                                              style: TextStyle(
+                                                                                fontSize: 11,
+                                                                                fontWeight: FontWeight.w400,
+                                                                                color: Color(0XFF12B39A),
+                                                                              ),
                                                                             ),
-                                                                          ),
-                                                                        ],
+                                                                          ],
+                                                                        ),
                                                                       ),
                                                                     ),
-                                                                  ),
-                                                                  SizedBox(
-                                                                    height:
-                                                                        10,
-                                                                  ),
-                                                                  SizedBox(
-                                                                    width:
-                                                                        width *
-                                                                            0.4,
-                                                                    child:
-                                                                        Padding(
-                                                                      padding:
-                                                                          const EdgeInsets.symmetric(horizontal: 10),
+                                                                    SizedBox(
+                                                                      height:
+                                                                          10,
+                                                                    ),
+                                                                    SizedBox(
+                                                                      width:
+                                                                          width *
+                                                                              0.4,
                                                                       child:
-                                                                          Row(
-                                                                        mainAxisAlignment:
-                                                                            MainAxisAlignment.spaceBetween,
-                                                                        children: const [
-                                                                          Icon(
-                                                                            Icons.remove_circle_outline,
-                                                                            color: Color(0XFFB8BCBF),
-                                                                          ),
-                                                                          Text(
-                                                                            "1",
-                                                                            style: TextStyle(
-                                                                              fontSize: 17,
-                                                                              fontWeight: FontWeight.w600,
+                                                                          Padding(
+                                                                        padding:
+                                                                            const EdgeInsets.symmetric(horizontal: 10),
+                                                                        child:
+                                                                            Row(
+                                                                          mainAxisAlignment:
+                                                                              MainAxisAlignment.spaceBetween,
+                                                                          children: const [
+                                                                            Icon(
+                                                                              Icons.remove_circle_outline,
+                                                                              color: Color(0XFFB8BCBF),
                                                                             ),
-                                                                          ),
-                                                                          Icon(
-                                                                            Icons.add_circle_outline_outlined,
-                                                                            color: Color(0XFFB8BCBF),
-                                                                          ),
-                                                                        ],
+                                                                            Text(
+                                                                              "1",
+                                                                              style: TextStyle(
+                                                                                fontSize: 17,
+                                                                                fontWeight: FontWeight.w600,
+                                                                              ),
+                                                                            ),
+                                                                            Icon(
+                                                                              Icons.add_circle_outline_outlined,
+                                                                              color: Color(0XFFB8BCBF),
+                                                                            ),
+                                                                          ],
+                                                                        ),
                                                                       ),
                                                                     ),
-                                                                  ),
-                                                                  SizedBox(
-                                                                    height:
-                                                                        10,
-                                                                  ),
-                                                                ],
+                                                                    SizedBox(
+                                                                      height:
+                                                                          10,
+                                                                    ),
+                                                                  ],
+                                                                ),
                                                               ),
-                                                            ),
-                                                            SizedBox(
-                                                              height: 10,
-                                                            )
-                                                          ],
+                                                              SizedBox(
+                                                                height: 10,
+                                                              )
+                                                            ],
+                                                          ),
                                                         );
                                                       })
                                                   : const Center(
