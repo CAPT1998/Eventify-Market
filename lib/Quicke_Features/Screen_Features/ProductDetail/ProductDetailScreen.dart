@@ -214,7 +214,7 @@ class _PRoductDetailScreenState extends State<PRoductDetailScreen> {
                                               ),
                                             ),
                                             Text(
-                                              widget.product.description!,
+                                              widget.product.description??"",
                                               style: TextStyle(
                                                 fontSize: 15,
                                                 color: Colors.grey,
