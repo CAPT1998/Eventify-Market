@@ -1,3 +1,5 @@
+// ignore_for_file: prefer_const_constructors
+
 import 'package:favorite_button/favorite_button.dart';
 import 'package:flutter/material.dart';
 import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
@@ -11,9 +13,14 @@ import 'package:quickie_event/Quicke_Features/Screen_Features/Categories/ViewAll
 import 'package:quickie_event/Quicke_Features/Widget_Features/CategoriesFeatures/CategoriesFeatureWidget.dart';
 import 'package:quickie_event/Quicke_Features/Widget_Features/CourselSliderFeatures/CourselSliderFeaturesWidget.dart';
 import 'package:quickie_event/Quicke_Features/providers/HomeProviders.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../../ConstantProviders/cartitemsprovider.dart';
+import '../CartFeatures/CartScreenFeatures.dart';
 import '../Notification/NotificationScreen.dart';
 import '../ProductDetail/ProductDetailScreen.dart';
+import '../barcodescannerFeatures/scanner.dart';
+import 'address.dart';
 
 class HomeScreenFeatures extends StatefulWidget {
   const HomeScreenFeatures({super.key});
@@ -25,16 +32,111 @@ class HomeScreenFeatures extends StatefulWidget {
 class _HomeScreenFeaturesState extends State<HomeScreenFeatures> {
   final TextEditingController _searchController = TextEditingController();
   List<Categories> _filteredListReviews = [];
+  List<Product> _filteredListReviews2 = [];
+  int _selectedAddressIndex = -1;
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     // getCategories();
+    _loadAddress();
   }
 
   getCategories() async {
     await Provider.of<HomeProvider>(context).getProductScreenDate();
+  }
+
+  Future<void> _loadAddress() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? address = prefs.getString('address') ?? " ";
+    if (address != null) {
+      setState(() {
+        _addressController!.text = address;
+      });
+    }
+  }
+
+  Future<void> _saveAddress(String address) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString('address', address);
+  }
+
+  TextEditingController _addressController = TextEditingController();
+
+  void _showAddressBottomSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      builder: (BuildContext context) {
+        return SingleChildScrollView(child: AddressBottomSheetWidget());
+      },
+    );
+  }
+
+  void _clearAddresses() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.remove('addresses');
+  }
+
+  void _selectAddress(String selectedAddress) async {
+    final addresses = await _getSavedAddresses();
+    final selectedIndex = addresses.indexOf(selectedAddress);
+    print('Selected Address: $selectedAddress');
+    setState(() {
+      _selectedAddressIndex = selectedIndex;
+    });
+    print('Selected Address: $selectedAddress');
+  }
+
+  Future<List<String>> _getSavedAddresses() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final addressesJson = prefs.getStringList('addresses');
+    if (addressesJson != null) {
+      return addressesJson;
+    }
+    return [];
+  }
+
+  Future<void> _saveAddresses(List<String> addresses) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setStringList('addresses', addresses);
+  }
+
+  Future<void> _addNewAddress() async {
+    // Prompt user to enter a new address
+    final newAddress = await showDialog<String>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Enter New Address'),
+          content: TextField(
+            controller: _addressController,
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context, _addressController!.text);
+              },
+              child: Text('Save'),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (newAddress != null) {
+      final addresses = await _getSavedAddresses();
+      addresses.add(newAddress);
+
+      await _saveAddresses(addresses);
+      setState(() {
+        _selectedAddressIndex = addresses.length - 1;
+      });
+    }
   }
 
   @override
@@ -44,19 +146,33 @@ class _HomeScreenFeaturesState extends State<HomeScreenFeatures> {
         backgroundColor: appColor,
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: const [
-            Text(
-              "􀆬 MI CASA",
-              style: TextStyle(
-                fontSize: 17,
-                fontWeight: FontWeight.w600,
+          children: [
+            SizedBox(
+              width: 100,
+            ),
+            GestureDetector(
+              onTap: () {
+                _showAddressBottomSheet(context);
+              },
+              child: Text(
+                " MI CASA",
+                style: TextStyle(
+                  fontSize: 15,
+                  color: Colors.white,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
             ),
-            Text(
-              "Express Shopping",
-              style: TextStyle(
-                fontSize: 17,
-                fontWeight: FontWeight.w600,
+            GestureDetector(
+              onTap: () {
+                _showAddressBottomSheet(context);
+              },
+              child: Text(
+                "Express Shopping",
+                style: TextStyle(
+                  fontSize: 17,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
             )
           ],
@@ -74,7 +190,6 @@ class _HomeScreenFeaturesState extends State<HomeScreenFeatures> {
               icon: const Icon(Icons.notifications_on))
         ],
       ),
-      drawer: const Drawer(),
       body: SingleChildScrollView(
         physics: const ScrollPhysics(),
         child: Column(
@@ -91,6 +206,10 @@ class _HomeScreenFeaturesState extends State<HomeScreenFeatures> {
                       context: context,
                       name: "Search",
                       onChanged: (value) {
+                        _filteredListReviews2 =
+                            Provider.of<HomeProvider>(context, listen: false)
+                                .getProductDetailScreenData!
+                                .product!;
                         _filteredListReviews =
                             Provider.of<HomeProvider>(context, listen: false)
                                 .getProductScreenData!
@@ -114,7 +233,13 @@ class _HomeScreenFeaturesState extends State<HomeScreenFeatures> {
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(5)),
                     child: IconButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        PersistentNavBarNavigator.pushNewScreen(
+                          context,
+                          screen: QrScanner(),
+                          withNavBar: false,
+                        );
+                      },
                       icon: Icon(
                         Icons.document_scanner_outlined,
                         color: appColor,
@@ -206,7 +331,6 @@ class _HomeScreenFeaturesState extends State<HomeScreenFeatures> {
                                     height: height / 7,
                                     child: ListView.builder(
                                       scrollDirection: Axis.horizontal,
-
                                       shrinkWrap: true,
                                       primary: false,
                                       itemCount: _filteredListReviews.length,
@@ -223,7 +347,7 @@ class _HomeScreenFeaturesState extends State<HomeScreenFeatures> {
                                                     _filteredListReviews[i]
                                                         .id
                                                         .toString()),
-                                                withNavBar: false,
+                                                withNavBar: true,
                                               );
                                             },
                                             child: CategoriesFeatureWidget(
@@ -251,7 +375,7 @@ class _HomeScreenFeaturesState extends State<HomeScreenFeatures> {
                               }
                             }
                           }),
-/*
+                      /*
                       SingleChildScrollView(
                         scrollDirection: Axis.horizontal,
                         child: Row(
@@ -294,7 +418,7 @@ class _HomeScreenFeaturesState extends State<HomeScreenFeatures> {
 
 
 
-*/
+ */
 
                       SizedBox(
                         height: 20,
@@ -322,8 +446,7 @@ class _HomeScreenFeaturesState extends State<HomeScreenFeatures> {
                                         horizontal: 8.0),
                                     child: InkWell(
                                       onTap: () {
-                                        PersistentNavBarNavigator
-                                            .pushNewScreen(
+                                        PersistentNavBarNavigator.pushNewScreen(
                                           context,
                                           screen: ProductScreen(
                                               _filteredListReviews[index]
@@ -336,8 +459,7 @@ class _HomeScreenFeaturesState extends State<HomeScreenFeatures> {
                                         children: [
                                           Row(
                                             mainAxisAlignment:
-                                                MainAxisAlignment
-                                                    .spaceBetween,
+                                                MainAxisAlignment.spaceBetween,
                                             children: [
                                               Text(
                                                 _filteredListReviews[index]
@@ -376,8 +498,7 @@ class _HomeScreenFeaturesState extends State<HomeScreenFeatures> {
                                                           .isNotEmpty
                                                       ? height / 3
                                                       : height / 30,
-                                              child: _filteredListReviews[
-                                                          index]
+                                              child: _filteredListReviews[index]
                                                       .products!
                                                       .isNotEmpty
                                                   ? ListView.builder(
@@ -394,18 +515,7 @@ class _HomeScreenFeaturesState extends State<HomeScreenFeatures> {
                                                       itemBuilder:
                                                           (context, i) {
                                                         return InkWell(
-                                                          onTap: (){
-                                                            Navigator.push(
-                                                                context,
-                                                                MaterialPageRoute(
-                                                                    builder: (context) =>
-                                                                        PRoductDetailScreen(
-                                                                          _filteredListReviews[
-                                                                          index]
-                                                                              .products![
-                                                                          i],
-                                                                        )));
-                                                          },
+                                                          onTap: () {},
                                                           child: Column(
                                                             children: [
                                                               Container(
@@ -440,46 +550,47 @@ class _HomeScreenFeaturesState extends State<HomeScreenFeatures> {
                                                                       MainAxisSize
                                                                           .min,
                                                                   children: [
-                                                                    Stack(
-                                                                      children: [
-                                                                        _filteredListReviews[index]
-                                                                            .products![i].media!!=null && _filteredListReviews[index]
-                                                                            .products![i].media!.isNotEmpty?  Image
-                                                                            .network(
-                                                                          // "assets/img/Bitmap.png",
-                                                                          _filteredListReviews[index]
-                                                                              .products![i].media![0].url!,
-                                                                          width:
-                                                                              width * 0.42,
-                                                                          height:
-                                                                              height * 0.15,
-                                                                          fit: BoxFit
-                                                                              .contain,
-                                                                        ): Image
-                                                                            .asset(
-                                                                          "assets/img/Bitmap.png",
-
-                                                                          width:
-                                                                          width * 0.42,
-                                                                          height:
-                                                                          height * 0.15,
-                                                                          fit: BoxFit
-                                                                              .contain,
-                                                                        ),
-                                                                        Positioned(
-                                                                            right:
-                                                                                5,
-                                                                            top:
-                                                                                5,
-                                                                            child:
-                                                                                FavoriteButton(
-                                                                              iconSize: 40,
-                                                                              isFavorite: true,
-                                                                              valueChanged: (_isFavorite) {
-                                                                                print('Is Favorite $_isFavorite)');
-                                                                              },
-                                                                            ))
-                                                                      ],
+                                                                    GestureDetector(
+                                                                      onTap:
+                                                                          () {
+                                                                        Navigator.push(
+                                                                            context,
+                                                                            MaterialPageRoute(
+                                                                                builder: (context) => PRoductDetailScreen(
+                                                                                      _filteredListReviews[index].products![i],
+                                                                                      _filteredListReviews[index].products!,
+                                                                                      _filteredListReviews,
+                                                                                    )));
+                                                                      },
+                                                                      child:
+                                                                          Stack(
+                                                                        children: [
+                                                                          _filteredListReviews[index].products![i].media! != null && _filteredListReviews[index].products![i].media!.isNotEmpty
+                                                                              ? Image.network(
+                                                                                  // "assets/img/Bitmap.png",
+                                                                                  _filteredListReviews[index].products![i].media![0].url!,
+                                                                                  width: width * 0.42,
+                                                                                  height: height * 0.15,
+                                                                                  fit: BoxFit.contain,
+                                                                                )
+                                                                              : Image.asset(
+                                                                                  "assets/img/Bitmap.png",
+                                                                                  width: width * 0.42,
+                                                                                  height: height * 0.15,
+                                                                                  fit: BoxFit.contain,
+                                                                                ),
+                                                                          Positioned(
+                                                                              right: 5,
+                                                                              top: 5,
+                                                                              child: FavoriteButton(
+                                                                                iconSize: 40,
+                                                                                isFavorite: true,
+                                                                                valueChanged: (_isFavorite) {
+                                                                                  print('Is Favorite $_isFavorite)');
+                                                                                },
+                                                                              ))
+                                                                        ],
+                                                                      ),
                                                                     ),
                                                                     SizedBox(
                                                                       height:
@@ -555,35 +666,38 @@ class _HomeScreenFeaturesState extends State<HomeScreenFeatures> {
                                                                     ),
                                                                     SizedBox(
                                                                       width:
-                                                                          width *
-                                                                              0.4,
-                                                                      child:
-                                                                          Padding(
-                                                                        padding:
-                                                                            const EdgeInsets.symmetric(horizontal: 10),
-                                                                        child:
-                                                                            Row(
-                                                                          mainAxisAlignment:
-                                                                              MainAxisAlignment.spaceBetween,
-                                                                          children: const [
-                                                                            Icon(
-                                                                              Icons.remove_circle_outline,
-                                                                              color: Color(0XFFB8BCBF),
-                                                                            ),
-                                                                            Text(
-                                                                              "1",
-                                                                              style: TextStyle(
-                                                                                fontSize: 17,
-                                                                                fontWeight: FontWeight.w600,
-                                                                              ),
-                                                                            ),
-                                                                            Icon(
-                                                                              Icons.add_circle_outline_outlined,
-                                                                              color: Color(0XFFB8BCBF),
-                                                                            ),
-                                                                          ],
-                                                                        ),
-                                                                      ),
+                                                                          150,
+                                                                    ),
+                                                                    QuantityButtonsVerticalHome(
+                                                                      decrement:
+                                                                          () {
+                                                                        setState(
+                                                                            () {
+                                                                          _filteredListReviews[index]
+                                                                              .products![
+                                                                                  i]
+                                                                              .quantity = _filteredListReviews[index].products![i].quantity !=
+                                                                                  null
+                                                                              ? _filteredListReviews[index].products![i].quantity! - 1
+                                                                              : 0;
+                                                                        });
+                                                                      },
+                                                                      increment:
+                                                                          () {
+                                                                        setState(
+                                                                            () {
+                                                                          _filteredListReviews[index]
+                                                                              .products![
+                                                                                  i]
+                                                                              .quantity = _filteredListReviews[index].products![i].quantity !=
+                                                                                  null
+                                                                              ? _filteredListReviews[index].products![i].quantity! + 1
+                                                                              : 1;
+                                                                        });
+                                                                      },
+                                                                      product: _filteredListReviews[
+                                                                              index]
+                                                                          .products![i],
                                                                     ),
                                                                     SizedBox(
                                                                       height:
@@ -917,4 +1031,127 @@ Widget _products() {
       ],
     ),
   );
+}
+
+class QuantityButtonsVerticalHome extends StatefulWidget {
+  const QuantityButtonsVerticalHome({
+    Key? key,
+    required this.product,
+    required this.decrement,
+    required this.increment,
+  }) : super(key: key);
+
+  final Function decrement;
+  final Function increment;
+  final Product product;
+
+  @override
+  _QuantityState createState() => _QuantityState();
+}
+
+class _QuantityState extends State<QuantityButtonsVerticalHome> {
+  int? quantity;
+
+  @override
+  void initState() {
+    super.initState();
+    quantity = 0; // Initialize the quantity from the widget's initial value
+  }
+
+  void addToCart(Product product, quantity) {
+    final cartProvider = Provider.of<CartProvider>(context, listen: false);
+    cartProvider.addToCart(product, quantity!);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Spacer(),
+        _RoundedButton(
+          icon: quantity == 1 ? Icons.delete : Icons.remove_rounded,
+          onTap: () {
+            setState(() {
+              if (quantity! > 0) {
+                widget.decrement();
+                quantity = quantity != null ? quantity! - 1 : 0;
+              }
+            });
+          },
+        ),
+        Text(
+          "   ${quantity!.round().toString()}   ",
+          style: TextStyle(
+            fontSize: 17,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        _RoundedButton(
+          icon: Icons.add_rounded,
+          onTap: () {
+            setState(() {
+              if (quantity! >= 0) {
+                widget.increment();
+                quantity = quantity != null ? quantity! + 1 : 1;
+              }
+            });
+            Future.delayed(Duration(seconds: 5), () {
+              addToCart(widget.product, quantity!);
+              SuccessFlushbar(context, "Success", "Item added to cart");
+            });
+          },
+        ),
+        Spacer(),
+      ],
+    );
+  }
+}
+
+class _RoundedButton extends StatefulWidget {
+  const _RoundedButton({
+    Key? key,
+    required this.onTap,
+    required this.icon,
+  }) : super(key: key);
+
+  final Function onTap;
+  final IconData icon;
+
+  @override
+  __RoundedButtonState createState() => __RoundedButtonState();
+}
+
+class __RoundedButtonState extends State<_RoundedButton> {
+  bool _isSelected = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          widget.onTap();
+        });
+      },
+      child: Container(
+        height: 30,
+        width: 30,
+        decoration: BoxDecoration(
+          color: _isSelected
+              ? Theme.of(context).colorScheme.secondary
+              : Colors.transparent,
+          borderRadius: BorderRadius.circular(50),
+          border: Border.all(
+            color: Theme.of(context).colorScheme.secondary,
+          ),
+        ),
+        child: Icon(
+          widget.icon,
+          size: 20,
+          color: _isSelected
+              ? Colors.white
+              : Theme.of(context).colorScheme.secondary,
+        ),
+      ),
+    );
+  }
 }

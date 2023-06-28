@@ -26,7 +26,8 @@ class EventProvider with ChangeNotifier {
   mGetEvents() async {
     List<GetEventsModel> getEventsModel = [];
     var headers = {
-      'Authorization': "Bearer " + (Storage.getJWT().isEmpty ? "" : Storage.getJWT())
+      'Authorization':
+          "Bearer " + (Storage.getJWT().isEmpty ? "" : Storage.getJWT())
     };
     var request = http.Request(
         'GET', Uri.parse('http://quickeeapi.pakwexpo.com/api/events/public'));
@@ -55,9 +56,10 @@ class EventProvider with ChangeNotifier {
     checkValueEventTicket = true;
     print(id);
     print(getEventTicketsModel.length);
-    notifyListeners();
+    //notifyListeners();
     var headers = {
-      'Authorization': "Bearer " + (Storage.getJWT().isEmpty ? "" : Storage.getJWT())
+      'Authorization':
+          "Bearer " + (Storage.getJWT().isEmpty ? "" : Storage.getJWT())
     };
     var request = http.MultipartRequest(
         'GET', Uri.parse('http://quickeeapi.pakwexpo.com/api/tickets/$id'));
@@ -90,7 +92,8 @@ class EventProvider with ChangeNotifier {
     List<GetEventSeatsModel> getEventSeatsModel = [];
     checkValueEventSeats = true;
     var headers = {
-      'Authorization': "Bearer " + (Storage.getJWT().isEmpty ? "" : Storage.getJWT())
+      'Authorization':
+          "Bearer " + (Storage.getJWT().isEmpty ? "" : Storage.getJWT())
     };
     var request = http.MultipartRequest(
         'GET', Uri.parse('http://quickeeapi.pakwexpo.com/api/seat/$id'));
@@ -169,7 +172,8 @@ class EventProvider with ChangeNotifier {
     });
     var headers = {
       'Content-Type': 'application/json',
-      'Authorization': "Bearer " + (Storage.getJWT().isEmpty ? "" : Storage.getJWT())
+      'Authorization':
+          "Bearer " + (Storage.getJWT().isEmpty ? "" : Storage.getJWT())
     };
     var request = http.Request(
         'POST', Uri.parse('http://quickeeapi.pakwexpo.com/api/reservation'));
@@ -201,11 +205,12 @@ class EventProvider with ChangeNotifier {
     }
   }
 
- Future<String> mSendInvitation(String eventId,String userId,String receiverId,String recieverName) async {
-
+  Future<String> mSendInvitation(String eventId, String userId,
+      String receiverId, String recieverName) async {
     var headers = {
       "Content-Type": "application/x-www-form-urlencoded",
-      'Authorization': "Bearer " + (Storage.getJWT().isEmpty ? "" : Storage.getJWT())
+      'Authorization':
+          "Bearer " + (Storage.getJWT().isEmpty ? "" : Storage.getJWT())
     };
     var request = http.MultipartRequest(
         'POST', Uri.parse('http://quickeeapi.pakwexpo.com/api/invitation'));
@@ -215,29 +220,28 @@ class EventProvider with ChangeNotifier {
       'user_id': '$userId',
       'receiver_id': '$receiverId',
       'receiver_name': '$recieverName',
-
     });
 
     request.headers.addAll(headers);
     http.StreamedResponse response = await request.send();
 
     try {
-  if (response.statusCode == 200) {
-    inviteMessage = "success";
-    this.inviteMessage = inviteMessage;
-    notifyListeners();
-    return inviteMessage;
-  } else {
-    print(response.reasonPhrase);
-    inviteMessage = "unsuccess";
-    this.inviteMessage = inviteMessage;
-    notifyListeners();
-    return inviteMessage;
-  }
-}catch(e){
-  print(e);
-  return "unsuccess";
-}
+      if (response.statusCode == 200) {
+        inviteMessage = "success";
+        this.inviteMessage = inviteMessage;
+        notifyListeners();
+        return inviteMessage;
+      } else {
+        print(response.reasonPhrase);
+        inviteMessage = "unsuccess";
+        this.inviteMessage = inviteMessage;
+        notifyListeners();
+        return inviteMessage;
+      }
+    } catch (e) {
+      print(e);
+      return "unsuccess";
+    }
   }
 
   String? eventFileName;
@@ -267,7 +271,8 @@ class EventProvider with ChangeNotifier {
     try {
       List<Location> locations = await locationFromAddress("${eventLocation}");
       var headers = {
-        'Authorization': "Bearer " + (Storage.getJWT().isEmpty ? "" : Storage.getJWT())
+        'Authorization':
+            "Bearer " + (Storage.getJWT().isEmpty ? "" : Storage.getJWT())
       };
       var request = http.MultipartRequest(
           'POST', Uri.parse('http://quickeeapi.pakwexpo.com/api/events'));
@@ -319,9 +324,9 @@ class EventProvider with ChangeNotifier {
   }
 
   List<GetMyPersonalEventsModel> getMyPersonalEvent = [];
-  late GetMyEventsResponseModel getMyEvent ;
-  late GetSingleEventReponseModel getSingleEventDetail ;
-   GetEventOrganizerResponseModel? getEventOrganizer ;
+  late GetMyEventsResponseModel getMyEvent;
+  late GetSingleEventReponseModel getSingleEventDetail;
+  GetEventOrganizerResponseModel? getEventOrganizer;
   bool checkValueMyEvents = false;
 
   mPersonalEvents() async {
@@ -329,7 +334,8 @@ class EventProvider with ChangeNotifier {
     checkValueMyEvents = true;
     notifyListeners();
     var headers = {
-      'Authorization': "Bearer " + (Storage.getJWT().isEmpty ? "" : Storage.getJWT())
+      'Authorization':
+          "Bearer " + (Storage.getJWT().isEmpty ? "" : Storage.getJWT())
     };
     var request = http.MultipartRequest('GET',
         Uri.parse('https://quickeeapi.pakwexpo.com/api/events/1/find/private'));
@@ -350,53 +356,20 @@ class EventProvider with ChangeNotifier {
       notifyListeners();
     }
   }
+
   mEvents() async {
-   GetMyEventsResponseModel getMyEvent ;
-  /*  checkValueMyEvents = true;
-    notifyListeners();*/
-    var headers = {
-      'Authorization': "Bearer " + (Storage.getJWT().isEmpty ? "" : Storage.getJWT())
-    };
-    // var request = http.MultipartRequest('GET',
-    //     Uri.parse('http://quickeeapi.pakwexpo.com/api/invitation'));
-    final response = await http
-        .get(Uri.parse('http://quickeeapi.pakwexpo.com/api/invitation'),headers: headers);
-    // request.headers.addAll(headers);
-try {
-  // http.StreamedResponse response = await request.send();
-
-  if (response.statusCode == 200) {
-    // String value = await response.stream.bytesToString();
-    // getMyEvent = getMyEventsModelFromJson(value);
-    getMyEvent= GetMyEventsResponseModel.fromJson(jsonDecode(response.body));
-
-    this.getMyEvent = getMyEvent;
-    checkValueMyEvents = false;
-    notifyListeners();
-  } else {
-    print(response.reasonPhrase);
-    checkValueMyEvents = false;
-    notifyListeners();
-  }
-}catch(e){
-  print(e);
-}
-  }
-
-  getSingleEvent(String eventId) async {
-    GetSingleEventReponseModel getMyEvent ;
+    GetMyEventsResponseModel getMyEvent;
     /*  checkValueMyEvents = true;
     notifyListeners();*/
     var headers = {
-      'Authorization': "Bearer " + (Storage.getJWT().isEmpty ? "" : Storage.getJWT())
+      'Authorization':
+          "Bearer " + (Storage.getJWT().isEmpty ? "" : Storage.getJWT())
     };
     // var request = http.MultipartRequest('GET',
     //     Uri.parse('http://quickeeapi.pakwexpo.com/api/invitation'));
-    final response = await http
-        .post(Uri.parse('http://quickeeapi.pakwexpo.com/api/events/find'),headers: headers,body: {
-          "id":eventId,
-          "api_key":(Storage.getJWT().isEmpty ? "" : Storage.getJWT())
-    });
+    final response = await http.get(
+        Uri.parse('http://quickeeapi.pakwexpo.com/api/invitation'),
+        headers: headers);
     // request.headers.addAll(headers);
     try {
       // http.StreamedResponse response = await request.send();
@@ -404,7 +377,48 @@ try {
       if (response.statusCode == 200) {
         // String value = await response.stream.bytesToString();
         // getMyEvent = getMyEventsModelFromJson(value);
-        getMyEvent= GetSingleEventReponseModel.fromJson(jsonDecode(response.body));
+        getMyEvent =
+            GetMyEventsResponseModel.fromJson(jsonDecode(response.body));
+
+        this.getMyEvent = getMyEvent;
+        checkValueMyEvents = false;
+        notifyListeners();
+      } else {
+        print(response.reasonPhrase);
+        checkValueMyEvents = false;
+        notifyListeners();
+      }
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  getSingleEvent(String eventId) async {
+    GetSingleEventReponseModel getMyEvent;
+    /*  checkValueMyEvents = true;
+    notifyListeners();*/
+    var headers = {
+      'Authorization':
+          "Bearer " + (Storage.getJWT().isEmpty ? "" : Storage.getJWT())
+    };
+    // var request = http.MultipartRequest('GET',
+    //     Uri.parse('http://quickeeapi.pakwexpo.com/api/invitation'));
+    final response = await http.post(
+        Uri.parse('http://quickeeapi.pakwexpo.com/api/events/find'),
+        headers: headers,
+        body: {
+          "id": eventId,
+          "api_key": (Storage.getJWT().isEmpty ? "" : Storage.getJWT())
+        });
+    // request.headers.addAll(headers);
+    try {
+      // http.StreamedResponse response = await request.send();
+
+      if (response.statusCode == 200) {
+        // String value = await response.stream.bytesToString();
+        // getMyEvent = getMyEventsModelFromJson(value);
+        getMyEvent =
+            GetSingleEventReponseModel.fromJson(jsonDecode(response.body));
 
         this.getSingleEventDetail = getMyEvent;
         // checkValueMyEvents = false;
@@ -414,30 +428,33 @@ try {
         // checkValueMyEvents = false;
         notifyListeners();
       }
-    }catch(e){
+    } catch (e) {
       print(e);
     }
   }
+
   getEventOrganizers() async {
-    GetEventOrganizerResponseModel getMyEvent ;
+    GetEventOrganizerResponseModel getMyEvent;
     /*  checkValueMyEvents = true;
     notifyListeners();*/
     var headers = {
-      'Authorization': "Bearer " + (Storage.getJWT().isEmpty ? "" : Storage.getJWT())
+      'Authorization':
+          "Bearer " + (Storage.getJWT().isEmpty ? "" : Storage.getJWT())
     };
     // var request = http.MultipartRequest('GET',
     //     Uri.parse('http://quickeeapi.pakwexpo.com/api/invitation'));
-    final response = await http
-        .get(Uri.parse('http://quickeeapi.pakwexpo.com/api/organizer'),headers: headers);
+    final response = await http.get(
+        Uri.parse('http://quickeeapi.pakwexpo.com/api/organizer'),
+        headers: headers);
     // request.headers.addAll(headers);
     try {
       // http.StreamedResponse response = await request.send();
 
       if (response.statusCode == 200) {
-
         // String value = await response.stream.bytesToString();
         // getMyEvent = getMyEventsModelFromJson(value);
-        getMyEvent= GetEventOrganizerResponseModel.fromJson(jsonDecode(response.body));
+        getMyEvent =
+            GetEventOrganizerResponseModel.fromJson(jsonDecode(response.body));
 
         this.getEventOrganizer = getMyEvent;
         // checkValueMyEvents = false;
@@ -447,25 +464,29 @@ try {
         // checkValueMyEvents = false;
         notifyListeners();
       }
-    }catch(e){
-      print("Exception: "+e.toString());
+    } catch (e) {
+      print("Exception: " + e.toString());
     }
   }
- Future<String> postSingleEventAction(String eventId,String status) async {
-    RequestInvitationActionReponseModel getMyEvent ;
+
+  Future<String> postSingleEventAction(String eventId, String status) async {
+    RequestInvitationActionReponseModel getMyEvent;
     /*  checkValueMyEvents = true;
     notifyListeners();*/
     var headers = {
-      'Authorization': "Bearer " + (Storage.getJWT().isEmpty ? "" : Storage.getJWT())
+      'Authorization':
+          "Bearer " + (Storage.getJWT().isEmpty ? "" : Storage.getJWT())
     };
     // var request = http.MultipartRequest('GET',
     //     Uri.parse('http://quickeeapi.pakwexpo.com/api/invitation'));
-    final response = await http
-        .post(Uri.parse('http://quickeeapi.pakwexpo.com/api/invitation/status'),headers: headers,body: {
-      "id":eventId,
-      "status":status,
-      "api_key":(Storage.getJWT().isEmpty ? "" : Storage.getJWT())
-    });
+    final response = await http.post(
+        Uri.parse('http://quickeeapi.pakwexpo.com/api/invitation/status'),
+        headers: headers,
+        body: {
+          "id": eventId,
+          "status": status,
+          "api_key": (Storage.getJWT().isEmpty ? "" : Storage.getJWT())
+        });
     // request.headers.addAll(headers);
     try {
       // http.StreamedResponse response = await request.send();
@@ -474,7 +495,8 @@ try {
         // String value = await response.stream.bytesToString();
         // getMyEvent = getMyEventsModelFromJson(value);
         print(response.body);
-        getMyEvent= RequestInvitationActionReponseModel.fromJson(jsonDecode(response.body));
+        getMyEvent = RequestInvitationActionReponseModel.fromJson(
+            jsonDecode(response.body));
 
         // checkValueMyEvents = false;
         return "Success";
@@ -482,9 +504,8 @@ try {
         print(response.reasonPhrase);
         // checkValueMyEvents = false
         return "Failure";
-
       }
-    }catch(e){
+    } catch (e) {
       print(e);
       return "Something went wrong";
     }
@@ -499,10 +520,12 @@ try {
     checkValueUsers = true;
     // notifyListeners();
     var headers = {
-      'Authorization': "Bearer " + (Storage.getJWT().isEmpty ? "" : Storage.getJWT())
+      'Authorization':
+          "Bearer " + (Storage.getJWT().isEmpty ? "" : Storage.getJWT())
     };
     var response = await http.get(
-        Uri.parse('http://quickeeapi.pakwexpo.com/api/users/list'),headers: headers);
+        Uri.parse('http://quickeeapi.pakwexpo.com/api/users/list'),
+        headers: headers);
 
     // var request = http.MultipartRequest(
     //     'GET', Uri.parse('http://quickeeapi.pakwexpo.com/api/users/list'));
@@ -543,7 +566,8 @@ try {
   mGetTablesEvent({required String id}) async {
     List<GetEventTableModel> getEventTableModel = [];
     var headers = {
-      'Authorization': "Bearer " + (Storage.getJWT().isEmpty ? "" : Storage.getJWT())
+      'Authorization':
+          "Bearer " + (Storage.getJWT().isEmpty ? "" : Storage.getJWT())
     };
     var request = http.MultipartRequest(
         'GET', Uri.parse('http://quickeeapi.pakwexpo.com/api/table/$id'));
@@ -564,7 +588,8 @@ try {
   mGetEventSeatHistory() async {
     List<GetEventSeatHistoryModel> getEventSeatHsitoryModel = [];
     var headers = {
-      'Authorization': "Bearer " + (Storage.getJWT().isEmpty ? "" : Storage.getJWT())
+      'Authorization':
+          "Bearer " + (Storage.getJWT().isEmpty ? "" : Storage.getJWT())
     };
 
     var request = http.MultipartRequest(

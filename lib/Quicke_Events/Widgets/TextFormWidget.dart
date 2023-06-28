@@ -2,11 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:quickie_event/Constant.dart';
 
-
 Widget textfieldProduct({
   TextEditingController? controller,
- required BuildContext context,
- required String name,
+  required BuildContext context,
+  required String name,
   TextInputType? inputtype,
   double? width,
   bool? isread,
@@ -23,6 +22,7 @@ Widget textfieldProduct({
     keyboardType: inputtype ?? TextInputType.text,
     initialValue: value,
     readOnly: isread ?? false,
+    autofocus: false,
     maxLines: maxline ?? 1,
     onChanged: onChanged ?? (value) {},
     style: TextStyle(
@@ -52,17 +52,17 @@ Widget textfieldProduct({
       fillColor: Colors.grey[50],
       border: InputBorder.none,
       errorBorder: OutlineInputBorder(
-            borderRadius: const BorderRadius.all(Radius.circular(10.0)),
-            borderSide: BorderSide(color: Colors.red)),
-        focusedErrorBorder: OutlineInputBorder(
-            borderRadius: const BorderRadius.all(const Radius.circular(10.0)),
-            borderSide: BorderSide(color: appColor)),
-        enabledBorder: OutlineInputBorder(
-            borderRadius: const BorderRadius.all(const Radius.circular(10.0)),
-            borderSide: BorderSide(color: Color(0XFFB8BCBF))),
-        focusedBorder: OutlineInputBorder(
-            borderRadius: const BorderRadius.all(Radius.circular(10.0)),
-            borderSide: BorderSide(color: appColor)),
+          borderRadius: const BorderRadius.all(Radius.circular(10.0)),
+          borderSide: BorderSide(color: Colors.red)),
+      focusedErrorBorder: OutlineInputBorder(
+          borderRadius: const BorderRadius.all(const Radius.circular(10.0)),
+          borderSide: BorderSide(color: appColor)),
+      enabledBorder: OutlineInputBorder(
+          borderRadius: const BorderRadius.all(const Radius.circular(10.0)),
+          borderSide: BorderSide(color: Color(0XFFB8BCBF))),
+      focusedBorder: OutlineInputBorder(
+          borderRadius: const BorderRadius.all(Radius.circular(10.0)),
+          borderSide: BorderSide(color: appColor)),
     ),
   );
 }

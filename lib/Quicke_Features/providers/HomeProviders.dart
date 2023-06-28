@@ -17,24 +17,25 @@ import '../Model/ProductCategoryResponseModel.dart';
 import '../Model/ProductDetailResponseModel.dart';
 import '../Model/ProductScreenResponseModel.dart';
 
-
 class HomeProvider with ChangeNotifier {
-  ProductCategoryResponseModel? getMyCategories ;
-  ProductScreenResponseModel? getProductScreenData ;
-  ProductDetailResponseModel? getProductDetailScreenData ;
+  ProductCategoryResponseModel? getMyCategories;
+  ProductScreenResponseModel? getProductScreenData;
+  ProductDetailResponseModel? getProductDetailScreenData;
   bool checkValueEvent = false;
 
   getProductCategories() async {
-    ProductCategoryResponseModel getMyCategories ;
+    ProductCategoryResponseModel getMyCategories;
     /*  checkValueMyEvents = true;
     notifyListeners();*/
     var headers = {
-      'Authorization': "Bearer " + (Storage.getJWT().isEmpty ? "" : Storage.getJWT())
+      'Authorization':
+          "Bearer " + (Storage.getJWT().isEmpty ? "" : Storage.getJWT())
     };
     // var request = http.MultipartRequest('GET',
     //     Uri.parse('http://quickeeapi.pakwexpo.com/api/invitation'));
-    final response = await http
-        .get(Uri.parse('http://quickeeapi.pakwexpo.com/api/categories'),headers: headers);
+    final response = await http.get(
+        Uri.parse('http://quickeeapi.pakwexpo.com/api/categories'),
+        headers: headers);
     // request.headers.addAll(headers);
     try {
       // http.StreamedResponse response = await request.send();
@@ -42,7 +43,8 @@ class HomeProvider with ChangeNotifier {
       if (response.statusCode == 200) {
         // String value = await response.stream.bytesToString();
         // getMyEvent = getMyEventsModelFromJson(value);
-        getMyCategories= ProductCategoryResponseModel.fromJson(jsonDecode(response.body));
+        getMyCategories =
+            ProductCategoryResponseModel.fromJson(jsonDecode(response.body));
         print(jsonDecode(response.body));
 
         this.getMyCategories = getMyCategories;
@@ -53,21 +55,24 @@ class HomeProvider with ChangeNotifier {
         // checkValueMyEvents = false;
         notifyListeners();
       }
-    }catch(e){
+    } catch (e) {
       print(e);
     }
   }
+
   getProductScreenDate() async {
-    ProductScreenResponseModel getProductScreenData ;
+    ProductScreenResponseModel getProductScreenData;
     /*  checkValueMyEvents = true;
     notifyListeners();*/
     var headers = {
-      'Authorization': "Bearer " + (Storage.getJWT().isEmpty ? "" : Storage.getJWT())
+      'Authorization':
+          "Bearer " + (Storage.getJWT().isEmpty ? "" : Storage.getJWT())
     };
     // var request = http.MultipartRequest('GET',
     //     Uri.parse('http://quickeeapi.pakwexpo.com/api/invitation'));
-    final response = await http
-        .get(Uri.parse('http://quickeeapi.pakwexpo.com/api/products/cate'),headers: headers);
+    final response = await http.get(
+        Uri.parse('http://quickeeapi.pakwexpo.com/api/products/cate'),
+        headers: headers);
     // request.headers.addAll(headers);
     try {
       // http.StreamedResponse response = await request.send();
@@ -75,7 +80,8 @@ class HomeProvider with ChangeNotifier {
       if (response.statusCode == 200) {
         // String value = await response.stream.bytesToString();
         // getMyEvent = getMyEventsModelFromJson(value);
-        getProductScreenData= ProductScreenResponseModel.fromJson(jsonDecode(response.body));
+        getProductScreenData =
+            ProductScreenResponseModel.fromJson(jsonDecode(response.body));
         print(jsonDecode(response.body));
 
         this.getProductScreenData = getProductScreenData;
@@ -86,22 +92,25 @@ class HomeProvider with ChangeNotifier {
         // checkValueMyEvents = false;
         notifyListeners();
       }
-    }catch(e){
+    } catch (e) {
       print(e);
     }
   }
 
   getProductDetailScreenDate(String productId) async {
-    ProductDetailResponseModel getProductDetailScreenData ;
+    ProductDetailResponseModel getProductDetailScreenData;
     /*  checkValueMyEvents = true;
     notifyListeners();*/
     var headers = {
-      'Authorization': "Bearer " + (Storage.getJWT().isEmpty ? "" : Storage.getJWT())
+      'Authorization':
+          "Bearer " + (Storage.getJWT().isEmpty ? "" : Storage.getJWT())
     };
     // var request = http.MultipartRequest('GET',
     //     Uri.parse('http://quickeeapi.pakwexpo.com/api/invitation'));
-    final response = await http
-        .get(Uri.parse('http://quickeeapi.pakwexpo.com/api/products/category_id/'+productId),headers: headers);
+    final response = await http.get(
+        Uri.parse('http://quickeeapi.pakwexpo.com/api/products/category_id/' +
+            productId),
+        headers: headers);
     // request.headers.addAll(headers);
     try {
       // http.StreamedResponse response = await request.send();
@@ -109,7 +118,8 @@ class HomeProvider with ChangeNotifier {
       if (response.statusCode == 200) {
         // String value = await response.stream.bytesToString();
         // getMyEvent = getMyEventsModelFromJson(value);
-        getProductDetailScreenData= ProductDetailResponseModel.fromJson(jsonDecode(response.body));
+        getProductDetailScreenData =
+            ProductDetailResponseModel.fromJson(jsonDecode(response.body));
         print(jsonDecode(response.body));
 
         this.getProductDetailScreenData = getProductDetailScreenData;
@@ -120,9 +130,8 @@ class HomeProvider with ChangeNotifier {
         // checkValueMyEvents = false;
         notifyListeners();
       }
-    }catch(e){
+    } catch (e) {
       print(e);
     }
   }
-
 }

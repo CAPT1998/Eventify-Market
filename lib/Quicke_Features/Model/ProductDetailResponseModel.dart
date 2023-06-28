@@ -23,10 +23,12 @@ class ProductDetailResponseModel {
     return data;
   }
 }
+
 class Product {
   int? id;
   String? name;
   int? price;
+  int? quantity;
   int? discountPrice;
   String? description;
   int? capacity;
@@ -47,25 +49,26 @@ class Product {
 
   Product(
       {this.id,
-        this.name,
-        this.price,
-        this.discountPrice,
-        this.description,
-        this.capacity,
-        this.packageItemsCount,
-        this.unit,
-        this.rate,
-        this.itemsAvailable,
-        this.featured,
-        this.deliverable,
-        this.storeId,
-        this.categoryId,
-        this.brandId,
-        this.createdAt,
-        this.updatedAt,
-        this.hasMedia,
-        this.store,
-        this.media});
+      this.name,
+      this.price,
+      this.discountPrice,
+      this.description,
+      this.quantity,
+      this.capacity,
+      this.packageItemsCount,
+      this.unit,
+      this.rate,
+      this.itemsAvailable,
+      this.featured,
+      this.deliverable,
+      this.storeId,
+      this.categoryId,
+      this.brandId,
+      this.createdAt,
+      this.updatedAt,
+      this.hasMedia,
+      this.store,
+      this.media});
 
   Product.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -138,12 +141,12 @@ class Store {
 
   Store(
       {this.id,
-        this.name,
-        this.deliveryFee,
-        this.phone,
-        this.hasMedia,
-        this.rate,
-        this.media});
+      this.name,
+      this.deliveryFee,
+      this.phone,
+      this.hasMedia,
+      this.rate,
+      this.media});
 
   Store.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -176,6 +179,7 @@ class Store {
     return data;
   }
 }
+
 class Media {
   int? id;
   String? modelType;
@@ -197,22 +201,22 @@ class Media {
 
   Media(
       {this.id,
-        this.modelType,
-        this.modelId,
-        this.collectionName,
-        this.name,
-        this.fileName,
-        this.mimeType,
-        this.disk,
-        this.size,
-        this.customProperties,
-        this.orderColumn,
-        this.createdAt,
-        this.updatedAt,
-        this.url,
-        this.thumb,
-        this.icon,
-        this.formatedSize});
+      this.modelType,
+      this.modelId,
+      this.collectionName,
+      this.name,
+      this.fileName,
+      this.mimeType,
+      this.disk,
+      this.size,
+      this.customProperties,
+      this.orderColumn,
+      this.createdAt,
+      this.updatedAt,
+      this.url,
+      this.thumb,
+      this.icon,
+      this.formatedSize});
 
   Media.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -264,6 +268,7 @@ class Media {
     return data;
   }
 }
+
 class CustomProperties {
   String? uuid;
   int? userId;

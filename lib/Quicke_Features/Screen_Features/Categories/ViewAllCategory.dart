@@ -46,24 +46,31 @@ class _ViewAllCategoriesState extends State<ViewAllCategories> {
                 crossAxisSpacing: 30.0,
                 mainAxisSpacing: 30.0,
               ),
-              itemCount:person.getProductScreenData!.data!.categories!.length,
+              itemCount: person.getProductScreenData!.data!.categories!.length,
               itemBuilder: (context, i) {
                 return InkWell(
-                  onTap: (){
-                    PersistentNavBarNavigator
-                        .pushNewScreen(
+                  onTap: () {
+                    PersistentNavBarNavigator.pushNewScreen(
                       context,
-                      screen: ProductScreen(person.getProductScreenData!.data!.categories![i].id.toString()),
+                      screen: ProductScreen(person
+                          .getProductScreenData!.data!.categories![i].id
+                          .toString()),
                       withNavBar: false,
                     );
-
                   },
                   child: CategoriesFeatureWidget(
-                    context: context,
-                      image:person.getProductScreenData!.data!.categories![i].media !=null && person.getProductScreenData!.data!.categories![i].media!.isNotEmpty ?
-                      person.getProductScreenData!.data!.categories![i].media![0].url
-                          .toString():"abc",
-                      title: person.getProductScreenData!.data!.categories![i].name
+                      context: context,
+                      image: person.getProductScreenData!.data!.categories![i]
+                                      .media !=
+                                  null &&
+                              person.getProductScreenData!.data!.categories![i]
+                                  .media!.isNotEmpty
+                          ? person.getProductScreenData!.data!.categories![i]
+                              .media![0].url
+                              .toString()
+                          : "abc",
+                      title: person
+                          .getProductScreenData!.data!.categories![i].name
                           .toString()),
                 );
               },

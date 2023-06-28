@@ -34,7 +34,7 @@ class PromoSection extends StatelessWidget {
           border: InputBorder.none,
           suffix: TextButton(
             style: TextButton.styleFrom(
-              backgroundColor: Theme.of(context).accentColor,
+              backgroundColor: Theme.of(context).colorScheme.secondary,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(50),
               ),

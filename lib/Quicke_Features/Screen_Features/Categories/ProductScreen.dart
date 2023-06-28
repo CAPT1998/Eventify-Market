@@ -6,6 +6,7 @@ import 'package:quickie_event/Quicke_Events/Widgets/TextFormWidget.dart';
 
 import '../../Model/ProductDetailResponseModel.dart';
 import '../../providers/HomeProviders.dart';
+import '../HomeFeatures/HomeScreenFeatures.dart';
 import '../ProductDetail/ProductDetailScreen.dart';
 
 class ProductScreen extends StatefulWidget {
@@ -20,7 +21,7 @@ class ProductScreen extends StatefulWidget {
 
 class _ProductScreenState extends State<ProductScreen> {
   TextEditingController? _searchController;
-
+  List<dynamic>? relatedcategories = [];
   List<Product>? _filteredListReviews = [];
 
   @override
@@ -36,117 +37,125 @@ class _ProductScreenState extends State<ProductScreen> {
     print("Product id: " + widget.productId);
     return SafeArea(
       child: Scaffold(
-          body: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              Container(
-                decoration: BoxDecoration(
-                    // color: appColor,
-                    ),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: textfieldProduct(
-                        context: context,
-                        name: "Search",
-                        controller: _searchController,
-                        onChanged: (value) {
-                          _filteredListReviews =
-                              Provider.of<HomeProvider>(context, listen: false)
-                                  .getProductDetailScreenData!
-                                  .product!
-                                  .where((element) => element.name!
-                                      .toLowerCase()
-                                      .contains(value.toLowerCase()))
-                                  .toList();
-                          setState(() {});
-                        },
-                        prefixIcon: Icon(Icons.search),
+          body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: SingleChildScrollView(
+            child: Column(
+              children: [
+                Container(
+                  decoration: BoxDecoration(
+                      // color: appColor,
                       ),
-                    ),
-                    SizedBox(
-                      width: 20,
-                    ),
-                    Container(
-                      decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(5)),
-                      child: IconButton(
-                        onPressed: () {},
-                        icon: Icon(
-                          Icons.document_scanner_outlined,
-                          color: appColor,
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: textfieldProduct(
+                          context: context,
+                          name: "Search",
+                          controller: _searchController,
+                          onChanged: (value) {
+                            _filteredListReviews = Provider.of<HomeProvider>(
+                                    context,
+                                    listen: false)
+                                .getProductDetailScreenData!
+                                .product!
+                                .where((element) => element.name!
+                                    .toLowerCase()
+                                    .contains(value.toLowerCase()))
+                                .toList();
+                            setState(() {});
+                          },
+                          prefixIcon: Icon(Icons.search),
                         ),
                       ),
-                    ),
-                  ],
+                      SizedBox(
+                        width: 20,
+                      ),
+                      Container(
+                        decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(5)),
+                        child: IconButton(
+                          onPressed: () {},
+                          icon: Icon(
+                            Icons.document_scanner_outlined,
+                            color: appColor,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-              const SizedBox(
-                height: 10,
-              ),
-              FutureBuilder(
-                  future: Provider.of<HomeProvider>(context, listen: false)
-                      .getProductDetailScreenDate(widget.productId),
-                  builder: (context, dataSnapshot) {
-                    if (dataSnapshot.connectionState ==
-                        ConnectionState.waiting) {
-                      return Center(
-                        child: CircularProgressIndicator(),
-                      );
-                    } else {
-                      if (dataSnapshot.error != null) {
+                const SizedBox(
+                  height: 10,
+                ),
+                FutureBuilder(
+                    future: Provider.of<HomeProvider>(context, listen: false)
+                        .getProductDetailScreenDate(widget.productId),
+                    builder: (context, dataSnapshot) {
+                      if (dataSnapshot.connectionState ==
+                          ConnectionState.waiting) {
                         return Center(
-                          child: Text('An error occured' +
-                              dataSnapshot.error.toString()),
+                          child: CircularProgressIndicator(),
                         );
                       } else {
-                        return Consumer<HomeProvider>(
-                            builder: (context, person, child) {
-                          if (_searchController!.text.isEmpty) {
-                            _filteredListReviews =
-                                person.getProductDetailScreenData!.product;
-                          }
-                          return Column(
-                            children: [
-                              _filteredListReviews!.isNotEmpty
-                                  ? GridView.builder(
-                                      shrinkWrap: true,
-                                      physics: ScrollPhysics(),
-                                      gridDelegate:
-                                          const SliverGridDelegateWithFixedCrossAxisCount(
-                                              crossAxisCount: 2,
-                                              childAspectRatio: 0.75),
-                                      itemCount: _filteredListReviews!.length,
-                                      itemBuilder: (context, i) {
-                                        return InkWell(
-                                          onTap: () {
-                                            Navigator.push(
-                                                context,
-                                                MaterialPageRoute(
-                                                    builder: (context) =>
-                                                        PRoductDetailScreen(
-                                                          _filteredListReviews![
-                                                              i],
-                                                        )));
-                                          },
-                                          child: _products(
-                                              _filteredListReviews![i]),
-                                        );
-                                      })
-                                  : const Center(child: Text("Not item found")),
-                              const SizedBox(
-                                height: 20,
-                              ),
-                            ],
+                        if (dataSnapshot.error != null) {
+                          return Center(
+                            child: Text('An error occured' +
+                                dataSnapshot.error.toString()),
                           );
-                        });
+                        } else {
+                          return Consumer<HomeProvider>(
+                              builder: (context, person, child) {
+                            if (_searchController!.text.isEmpty) {
+                              _filteredListReviews =
+                                  person.getProductDetailScreenData!.product;
+                              relatedcategories = person
+                                  .getProductScreenData!.data!.categories!;
+                            }
+                            return Column(
+                              children: [
+                                _filteredListReviews!.isNotEmpty
+                                    ? GridView.builder(
+                                        shrinkWrap: true,
+                                        physics: NeverScrollableScrollPhysics(),
+                                        gridDelegate:
+                                            const SliverGridDelegateWithFixedCrossAxisCount(
+                                                crossAxisCount: 2,
+                                                childAspectRatio: 0.75),
+                                        itemCount: _filteredListReviews!.length,
+                                        itemBuilder: (context, i) {
+                                          return InkWell(
+                                            onTap: () {
+                                              Navigator.push(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                      builder: (context) =>
+                                                          PRoductDetailScreen(
+                                                            _filteredListReviews![
+                                                                i],
+                                                            _filteredListReviews!,
+                                                            relatedcategories!,
+                                                          )));
+                                            },
+                                            child: ProductsWidget(
+                                                _filteredListReviews![i]),
+                                          );
+                                        })
+                                    : const Center(
+                                        child: Text("Not item found")),
+                                const SizedBox(
+                                  height: 20,
+                                ),
+                              ],
+                            );
+                          });
+                        }
                       }
-                    }
-                  })
-            ],
+                    })
+              ],
+            ),
           ),
         ),
       )),
@@ -154,35 +163,47 @@ class _ProductScreenState extends State<ProductScreen> {
   }
 }
 
-Widget _products(Product product) {
-  return SingleChildScrollView(
-    child: Column(
+class ProductsWidget extends StatefulWidget {
+  final Product product;
+
+  ProductsWidget(this.product);
+
+  @override
+  _ProductsWidgetState createState() => _ProductsWidgetState();
+}
+
+class _ProductsWidgetState extends State<ProductsWidget> {
+  @override
+  Widget build(BuildContext context) {
+    return Column(
       mainAxisSize: MainAxisSize.max,
       children: [
         Container(
           width: width * 0.43,
           // height: height * 0.3,
-          margin: EdgeInsets.only(right: 10),
+          margin: const EdgeInsets.only(right: 10, left: 10),
           decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(8),
-              boxShadow: [
-                BoxShadow(
-                  blurRadius: 4,
-                  spreadRadius: 0,
-                  offset: Offset(0, 2),
-                  color: Color(0XFFA2AAB8).withOpacity(0.25),
-                )
-              ]),
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(8),
+            boxShadow: [
+              BoxShadow(
+                blurRadius: 4,
+                spreadRadius: 0,
+                offset: Offset(0, 2),
+                color: Color(0XFFA2AAB8).withOpacity(0.25),
+              )
+            ],
+          ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               Stack(
                 children: [
-                  product.media! != null && product.media!.isNotEmpty
+                  widget.product.media != null &&
+                          widget.product.media!.isNotEmpty
                       ? Image.network(
                           // "assets/img/Bitmap.png",
-                          product.media![0].url!,
+                          widget.product.media![0].url!,
                           width: width * 0.42,
                           height: height * 0.15,
                           fit: BoxFit.contain,
@@ -194,15 +215,16 @@ Widget _products(Product product) {
                           fit: BoxFit.contain,
                         ),
                   Positioned(
-                      right: 5,
-                      top: 5,
-                      child: FavoriteButton(
-                        iconSize: 40,
-                        isFavorite: true,
-                        valueChanged: (_isFavorite) {
-                          print('Is Favorite $_isFavorite)');
-                        },
-                      ))
+                    right: 5,
+                    top: 5,
+                    child: FavoriteButton(
+                      iconSize: 40,
+                      isFavorite: true,
+                      valueChanged: (_isFavorite) {
+                        print('Is Favorite $_isFavorite)');
+                      },
+                    ),
+                  ),
                 ],
               ),
               SizedBox(
@@ -213,7 +235,7 @@ Widget _products(Product product) {
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 10),
                   child: Text(
-                    product.name.toString(),
+                    widget.product.name.toString(),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                     style: const TextStyle(
@@ -224,7 +246,7 @@ Widget _products(Product product) {
                 ),
               ),
               SizedBox(
-                height: 10,
+                height: 5,
               ),
               SizedBox(
                 width: width * 0.4,
@@ -233,7 +255,7 @@ Widget _products(Product product) {
                   child: Row(
                     children: [
                       Text(
-                        "\$${product.price}",
+                        "\$${widget.product.price}",
                         style: TextStyle(
                           fontSize: 17,
                           fontWeight: FontWeight.w600,
@@ -241,8 +263,9 @@ Widget _products(Product product) {
                       ),
                       Spacer(),
                       Text(
-                        product.discountPrice != null
-                            ? product.discountPrice.toString() ?? "-0.0 %"
+                        widget.product.discountPrice != null
+                            ? widget.product.discountPrice.toString() ??
+                                "-0.0 %"
                             : "-0.0 %",
                         style: TextStyle(
                           fontSize: 11,
@@ -255,31 +278,30 @@ Widget _products(Product product) {
                 ),
               ),
               SizedBox(
-                height: 10,
+                height: 5,
               ),
               SizedBox(
                 width: width * 0.4,
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 10),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Icon(
-                        Icons.remove_circle_outline,
-                        color: Color(0XFFB8BCBF),
-                      ),
-                      Text(
-                        "1",
-                        style: TextStyle(
-                          fontSize: 17,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      Icon(
-                        Icons.add_circle_outline_outlined,
-                        color: Color(0XFFB8BCBF),
-                      ),
-                    ],
+                  child: QuantityButtonsVerticalHome(
+                    decrement: () {
+                      setState(() {
+                        widget.product.quantity =
+                            widget.product.quantity != null
+                                ? widget.product.quantity! - 1
+                                : 0;
+                      });
+                    },
+                    increment: () {
+                      setState(() {
+                        widget.product.quantity =
+                            widget.product.quantity != null
+                                ? widget.product.quantity! + 1
+                                : 1;
+                      });
+                    },
+                    product: widget.product,
                   ),
                 ),
               ),
@@ -291,8 +313,8 @@ Widget _products(Product product) {
         ),
         SizedBox(
           height: 10,
-        )
+        ),
       ],
-    ),
-  );
+    );
+  }
 }

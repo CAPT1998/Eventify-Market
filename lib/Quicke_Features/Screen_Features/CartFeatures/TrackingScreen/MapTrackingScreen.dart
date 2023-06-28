@@ -12,68 +12,77 @@ class MapTrackingScreen extends StatefulWidget {
 }
 
 class _MapTrackingScreenState extends State<MapTrackingScreen> {
+  bool showContainer = false; // Define the showContainer variable
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      body: Column(
+      body: Stack(
         children: [
-          Expanded(
-            child: GoogleMap(
-                initialCameraPosition: CameraPosition(
+          GoogleMap(
+            initialCameraPosition: CameraPosition(
               target: LatLng(37.42796133580664, -122.085749655962),
               zoom: 14.4746,
-            )),
-          ),
-          Container(
-            height: height * 0.34,
-            child: VerticalStepper(
-              dashLength: 5,
-              steps: [
-                Step(
-                  title: "Oreder Placed",
-                  isExpanded: true,
-                  content: "We have received your order",
-                  iconStyle: Colors.green,
-                  onExpansion: (istrue) {},
-                  shimmer: false,
-                ),
-                Step(
-                  title: "Confirmed",
-                  isExpanded: false,
-                  content: "Your order has been confirmed",
-                  iconStyle: Colors.green,
-                  onExpansion: (istrue) {},
-                  shimmer: false,
-                ),
-                Step(
-                  title: "Order Shipped",
-                  isExpanded: false,
-                  content: "Your Package off for delivery ",
-                  iconStyle: Colors.green,
-                  onExpansion: (istrue) {},
-                  shimmer: false,
-                ),
-                Step(
-                  title: "Out for Delivery",
-                  isExpanded: false,
-                  content: "Estimated for 13 Feb, 2024",
-                  iconStyle: Colors.white,
-                  onExpansion: (istrue) {},
-                  shimmer: false,
-                ),
-              ],
-              iconColor: Colors.green,
             ),
           ),
-          Step(
-            title: "Delivered",
-            isExpanded: false,
-            content: "Estimated for 13 Feb, 2024",
-            iconStyle: Colors.white,
-            onExpansion: (istrue) {},
-            shimmer: false,
-          ),
+          if (showContainer)
+            Positioned(
+              bottom: 0,
+              left: 0,
+              right: 0,
+              child: Container(
+                height: height * 0.34,
+                child: SingleChildScrollView(
+                  child: VerticalStepper(
+                    dashLength: 5,
+                    steps: [
+                      Step(
+                        title: "Order Placed",
+                        isExpanded: true,
+                        content: "We have received your order",
+                        iconStyle: Colors.green,
+                        onExpansion: (istrue) {},
+                        shimmer: false,
+                      ),
+                      Step(
+                        title: "Confirmed",
+                        isExpanded: false,
+                        content: "Your order has been confirmed",
+                        iconStyle: Colors.green,
+                        onExpansion: (istrue) {},
+                        shimmer: false,
+                      ),
+                      Step(
+                        title: "Order Shipped",
+                        isExpanded: false,
+                        content: "Your Package off for delivery",
+                        iconStyle: Colors.green,
+                        onExpansion: (istrue) {},
+                        shimmer: false,
+                      ),
+                      Step(
+                        title: "Out for Delivery",
+                        isExpanded: false,
+                        content: "Estimated for 13 Feb, 2024",
+                        iconStyle: Colors.white,
+                        onExpansion: (istrue) {},
+                        shimmer: false,
+                      ),
+                      Step(
+                        title: "Delivered",
+                        isExpanded: false,
+                        content: "Estimated for 13 Feb, 2024",
+                        iconStyle: Colors.white,
+                        onExpansion: (istrue) {},
+                        shimmer: false,
+                      ),
+                    ],
+                    iconColor: Colors.green,
+                  ),
+                ),
+              ),
+            ),
         ],
       ),
     );

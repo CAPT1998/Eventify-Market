@@ -65,7 +65,7 @@ class _TrackingScreenState extends State<TrackingScreen> {
               dashLength: 5,
               steps: [
                 Step(
-                  title: "Oreder Placed",
+                  title: "Order Placed",
                   isExpanded: true,
                   content: "We have received your order",
                   iconStyle: Colors.green,

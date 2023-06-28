@@ -1,20 +1,63 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../../../../Constant.dart';
+import '../../../../ConstantProviders/cartitemsprovider.dart';
+import '../../../Model/ProductDetailResponseModel.dart';
 import '../Widgets/BillWidget.dart';
 import '../Widgets/TotalBillWidget.dart';
 import 'PaymentScreen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class CheckoutScreen extends StatefulWidget {
-  CheckoutScreen({
-    Key? key,
-  }) : super(key: key);
+  final Product product;
+
+  CheckoutScreen({Key? key, required this.product}) : super(key: key);
   @override
   State<CheckoutScreen> createState() => _CheckoutScreenState();
 }
 
 class _CheckoutScreenState extends State<CheckoutScreen> {
+  TextEditingController? _addressController;
+
+  @override
+  void initState() {
+    super.initState();
+    _addressController = TextEditingController();
+    _loadAddress();
+  }
+
+  @override
+  void dispose() {
+    _addressController!.dispose();
+    super.dispose();
+  }
+
+  Future<void> _loadAddress() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? address = prefs.getString('address') ?? " ";
+    if (address != null) {
+      setState(() {
+        _addressController!.text = address;
+      });
+    }
+  }
+
+  Future<void> _saveAddress(String address) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString('address', address);
+  }
+
   @override
   Widget build(BuildContext context) {
+    final cartProvider = Provider.of<CartProvider>(context);
+    final cartItems = cartProvider.cartItems;
+    double productPrice = 0;
+
+    num itemPrice = widget.product.price! * (widget.product.quantity ?? 1);
+    productPrice += itemPrice;
+
+    double shippingFees = 5; // Assuming fixed shipping fees of $5
+    double totalCost = productPrice + shippingFees;
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.grey[50],
@@ -48,7 +91,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
               SizedBox(
                 height: height * 0.11,
                 child: ListView.builder(
-                    itemCount: 10,
+                    itemCount: 1,
                     shrinkWrap: true,
                     scrollDirection: Axis.horizontal,
                     itemBuilder: (context, index) {
@@ -87,13 +130,22 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
               SizedBox(
                 height: 10,
               ),
-              Text(
-                "Rifat Sarkar, (+1) 917-860-0816\nJackie Auto Rice Mill, 719 Bohemia Court,\nNorth Tonawanda, NY 14120, USA",
+              TextFormField(
+                controller: _addressController,
+                minLines: 3,
+                maxLines: 5,
                 style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w400,
-                  color: greyColor,
+                  color: Colors.grey,
                 ),
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(),
+                  hintText: "Enter your address",
+                ),
+                onChanged: (value) {
+                  _saveAddress(value); // Save the address whenever it changes
+                },
               ),
               SizedBox(
                 height: 20,
@@ -131,12 +183,14 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
               SizedBox(
                 height: 10,
               ),
-              BillItem(title: "Products Price", price: '50'),
+              BillItem(
+                  title: "Products Price",
+                  price: productPrice.toStringAsFixed(2)),
               BillItem(title: "Shipping Fees", price: '5'),
               TotalItem(
                 title: "Total Cost",
-                price: '55',
-                quantity: '3',
+                price: totalCost.toStringAsFixed(2),
+                quantity: cartItems.length.toString(),
               ),
               MaterialButton(
                 shape: RoundedRectangleBorder(

@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
 import 'package:quickie_event/Quicke_Features/Screen_Features/CartFeatures/TrackingScreen/TrackingScreens.dart';
 
 import '../../../../Constant.dart';
+import '../../BottomNavigationFeatures/BottomNavigationFeatures.dart';
+import '../../HomeFeatures/HomeScreenFeatures.dart';
 
 class SuccessOrderScreen extends StatefulWidget {
   const SuccessOrderScreen({Key? key}) : super(key: key);
@@ -106,7 +109,13 @@ class _SuccessOrderScreenState extends State<SuccessOrderScreen> {
                 height: height * 0.07,
                 color: appColor,
                 minWidth: width,
-                onPressed: () {},
+                onPressed: () {
+                  PersistentNavBarNavigator.pushNewScreen(
+                    context,
+                    screen: const BottomNavigationFeatures(),
+                    withNavBar: true,
+                  );
+                },
                 child: Text(
                   "Continue Shopping",
                   style: TextStyle(

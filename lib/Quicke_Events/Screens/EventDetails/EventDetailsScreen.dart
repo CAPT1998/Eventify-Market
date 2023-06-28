@@ -1,6 +1,7 @@
 import 'package:favorite_button/favorite_button.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
 import 'package:provider/provider.dart';
 import 'package:quickie_event/Constant.dart';
 import 'package:quickie_event/Quicke_Events/Models/GetEventsModel.dart';
@@ -21,6 +22,8 @@ class EventDetailsScreen extends StatefulWidget {
 
 class _EventDetailsScreenState extends State<EventDetailsScreen> {
   GoogleMapController? _googleMapController;
+  List<GetEventsModel> _filteredListReviews = [];
+
   @override
   void initState() {
     // TODO: implement initState
@@ -221,7 +224,7 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
                                       double.parse(
                                           widget.model.location.split(",")[0]),
                                       double.parse(
-                                          widget.model.location.split(",")[1])),
+                                          widget.model.location.split(",")[0])),
                                   zoom: 16.0,
                                 ),
                               ),
@@ -309,9 +312,9 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
                     SizedBox(
                       height: 10,
                     ),
-                    _OrganizerWidget(),
-                    _OrganizerWidget(),
-                    _OrganizerWidget(),
+                    OrganizerWidget(),
+                    OrganizerWidget(),
+                    OrganizerWidget(),
                     SizedBox(height: 20),
                     Row(
                       children: [
@@ -335,9 +338,13 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
                       scrollDirection: Axis.horizontal,
                       child: Row(
                         children: [
-                          _NearWidget(
-                              img: "3", title: "", color: Colors.transparent),
-                          _NearWidget(
+                          _NearWidget(context,
+                              img: "3",
+                              title: "",
+                              color: Colors.transparent,
+                              filteredListReviews: _filteredListReviews),
+                          _NearWidget(context,
+                              filteredListReviews: _filteredListReviews,
                               img: "4",
                               title: "Flash Deal",
                               color: yellowColor),
@@ -398,109 +405,138 @@ Widget _TagWidget(String title) {
   );
 }
 
-Widget _OrganizerWidget() {
-  return Container(
-    margin: EdgeInsets.only(bottom: 10),
-    width: width,
-    padding: EdgeInsets.all(5),
-    decoration: BoxDecoration(
-      border: Border.all(color: lightGreyColor),
-      borderRadius: BorderRadius.circular(10),
-    ),
-    child: ListTile(
-      title: TextWidget(
-        title: "Living Gallery",
-        size: 14,
-        fontWeight: FontWeight.w500,
-      ),
-      subtitle: TextWidget(
-        title: "10.5K Followers",
-        size: 12,
-        color: greyColor.withOpacity(0.5),
-        fontWeight: FontWeight.w500,
-      ),
-      leading: Image.asset(
-        "assets/img/f1.png",
-      ),
-      trailing: MaterialButton(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-        color: appColor,
-        onPressed: () {},
-        child: TextWidget(
-          title: "Follow",
-          size: 12,
-          fontWeight: FontWeight.w700,
-          color: Colors.white,
-        ),
-      ),
-    ),
-  );
+class OrganizerWidget extends StatefulWidget {
+  @override
+  _OrganizerWidgetState createState() => _OrganizerWidgetState();
 }
 
-Widget _NearWidget(
-    {required String img, required String title, dynamic color}) {
-  return Container(
-    margin: EdgeInsets.only(right: 10, bottom: 10),
-    width: width * 0.6,
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Stack(
-          children: [
-            ClipRRect(
-                borderRadius: BorderRadius.circular(10),
-                child: Image.asset("assets/img/$img.png",
-                    height: height * 0.17,
-                    width: width * 0.6,
-                    fit: BoxFit.fill)),
-            Container(
-              padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-              margin: EdgeInsets.only(top: 10, left: 10),
-              decoration: BoxDecoration(
-                  color: color, borderRadius: BorderRadius.circular(5)),
-              child: TextWidget(
-                title: "$title",
-                fontWeight: FontWeight.w700,
-                size: 8,
-                color: Colors.white,
+class _OrganizerWidgetState extends State<OrganizerWidget> {
+  bool isFollowing = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: EdgeInsets.only(bottom: 10),
+      width: width,
+      padding: EdgeInsets.all(5),
+      decoration: BoxDecoration(
+        border: Border.all(color: lightGreyColor),
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: ListTile(
+        title: TextWidget(
+          title: "Living Gallery",
+          size: 14,
+          fontWeight: FontWeight.w500,
+        ),
+        subtitle: TextWidget(
+          title: "10.5K Followers",
+          size: 12,
+          color: greyColor.withOpacity(0.5),
+          fontWeight: FontWeight.w500,
+        ),
+        leading: Image.asset(
+          "assets/img/f1.png",
+        ),
+        trailing: MaterialButton(
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          color: appColor,
+          onPressed: () {
+            setState(() {
+              isFollowing = !isFollowing;
+            });
+          },
+          child: TextWidget(
+            title: isFollowing ? "Unfollow" : "Follow",
+            size: 12,
+            fontWeight: FontWeight.w700,
+            color: Colors.white,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+Widget _NearWidget(context,
+    {required String img,
+    required List<GetEventsModel> filteredListReviews,
+    required String title,
+    dynamic color}) {
+  return GestureDetector(
+    onTap: () {
+      PersistentNavBarNavigator.pushNewScreen(
+        context,
+        screen: EventDetailsScreen(
+          model: filteredListReviews[0],
+        ),
+        withNavBar: false,
+      );
+    },
+    child: Container(
+      margin: EdgeInsets.only(right: 10, bottom: 10),
+      width: width * 0.6,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Stack(
+            children: [
+              ClipRRect(
+                  borderRadius: BorderRadius.circular(10),
+                  child: Image.asset("assets/img/$img.png",
+                      height: height * 0.17,
+                      width: width * 0.6,
+                      fit: BoxFit.fill)),
+              Container(
+                padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                margin: EdgeInsets.only(top: 10, left: 10),
+                decoration: BoxDecoration(
+                    color: color, borderRadius: BorderRadius.circular(5)),
+                child: TextWidget(
+                  title: "$title",
+                  fontWeight: FontWeight.w700,
+                  size: 8,
+                  color: Colors.white,
+                ),
               ),
-            ),
-          ],
-        ),
-        SizedBox(
-          height: 10,
-        ),
-        TextWidget(
-          title: "Bring Me The Horizon Tour",
-          size: 16,
-          fontWeight: FontWeight.w700,
-        ),
-        SizedBox(
-          height: 10,
-        ),
-        Row(
-          children: [
-            Icon(
-              Icons.calendar_month_outlined,
-              size: 15,
-              color: greyColor,
-            ),
-            TextWidget(
-              title: "  Nov 27  .  07:00 PM",
-              size: 12,
-              fontWeight: FontWeight.w500,
-              color: greyColor,
-            ),
-            Spacer(),
-            TextWidget(
-              title: "\$39.00",
-              size: 12,
-              fontWeight: FontWeight.w500,
-              color: darkPurpleColor,
-            ),
-          ],
-        )
-      ],
+            ],
+          ),
+          SizedBox(
+            height: 10,
+          ),
+          TextWidget(
+            title: "Bring Me The Horizon Tour",
+            size: 16,
+            fontWeight: FontWeight.w700,
+          ),
+          SizedBox(
+            height: 10,
+          ),
+          Row(
+            children: [
+              Icon(
+                Icons.calendar_month_outlined,
+                size: 15,
+                color: greyColor,
+              ),
+              TextWidget(
+                title: "  Nov 27  .  07:00 PM",
+                size: 12,
+                fontWeight: FontWeight.w500,
+                color: greyColor,
+              ),
+              Spacer(),
+              TextWidget(
+                title: "\$39.00",
+                size: 12,
+                fontWeight: FontWeight.w500,
+                color: darkPurpleColor,
+              ),
+            ],
+          )
+        ],
+      ),
     ),
   );
 }

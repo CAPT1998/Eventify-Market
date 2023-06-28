@@ -27,9 +27,10 @@ class ProductCategoryResponseModel {
   }
 }
 
- class Data {
+class Data {
   int? id;
   String? name;
+  int? price;
   String? description;
   String? createdAt;
   String? updatedAt;
@@ -38,12 +39,12 @@ class ProductCategoryResponseModel {
 
   Data(
       {this.id,
-        this.name,
-        this.description,
-        this.createdAt,
-        this.updatedAt,
-        this.hasMedia,
-        this.media});
+      this.name,
+      this.description,
+      this.createdAt,
+      this.updatedAt,
+      this.hasMedia,
+      this.media});
 
   Data.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -98,22 +99,22 @@ class Media {
 
   Media(
       {this.id,
-        this.modelType,
-        this.modelId,
-        this.collectionName,
-        this.name,
-        this.fileName,
-        this.mimeType,
-        this.disk,
-        this.size,
-        this.customProperties,
-        this.orderColumn,
-        this.createdAt,
-        this.updatedAt,
-        this.url,
-        this.thumb,
-        this.icon,
-        this.formatedSize});
+      this.modelType,
+      this.modelId,
+      this.collectionName,
+      this.name,
+      this.fileName,
+      this.mimeType,
+      this.disk,
+      this.size,
+      this.customProperties,
+      this.orderColumn,
+      this.createdAt,
+      this.updatedAt,
+      this.url,
+      this.thumb,
+      this.icon,
+      this.formatedSize});
 
   Media.fromJson(Map<String, dynamic> json) {
     id = json['id'];

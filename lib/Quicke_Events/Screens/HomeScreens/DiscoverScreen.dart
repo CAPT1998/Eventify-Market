@@ -16,6 +16,7 @@ import 'package:quickie_event/Quicke_Events/Widgets/TextWidget.dart';
 
 import '../../Models/GetEventsModel.dart';
 import '../../Widgets/TextFormWidget.dart';
+import '../DetailOrganizer/DetaillOrganizerdetail.dart';
 
 class DiscoverScreen extends StatefulWidget {
   const DiscoverScreen({super.key});
@@ -33,15 +34,14 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    WidgetsBinding.instance
-        .addPostFrameCallback((_) =>     getRequests(context)
-    );
+    WidgetsBinding.instance.addPostFrameCallback((_) => getRequests(context));
   }
 
-getRequests(BuildContext context) async {
- await Provider.of<EventProvider>(context, listen: false).mGetEvents();
- await Provider.of<EventProvider>(context, listen: false).getEventOrganizers();
-}
+  getRequests(BuildContext context) async {
+    await Provider.of<EventProvider>(context, listen: false).mGetEvents();
+    await Provider.of<EventProvider>(context, listen: false)
+        .getEventOrganizers();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -63,12 +63,17 @@ getRequests(BuildContext context) async {
                           borderRadius: BorderRadius.circular(10),
                           color: lightGreyColor,
                         ),
-                        child: Row(
-                          children: [
-                            Icon(Icons.location_on_outlined),
-                            SizeWidget(width: 5),
-                            TextWidget(title: "New York City"),
-                          ],
+                        child: GestureDetector(
+                          onTap: () {
+                            SuccessFlushbar(context, "", "Current Location");
+                          },
+                          child: Row(
+                            children: [
+                              Icon(Icons.location_on_outlined),
+                              SizeWidget(width: 5),
+                              TextWidget(title: "New York City"),
+                            ],
+                          ),
                         ),
                       ),
                       Spacer(),
@@ -351,9 +356,23 @@ getRequests(BuildContext context) async {
                   SizedBox(
                     height: 20,
                   ),
-                  _moreEventsWidget(),
-                  _moreEventsWidget(),
-                  _moreEventsWidget(),
+                  SingleChildScrollView(
+                    scrollDirection: Axis.vertical,
+                    child: Row(
+                      children: [
+                        _moreNearWidget(
+                            img: "1",
+                            title: "Today",
+                            color: greenColor,
+                            filteredListReviews: _filteredListReviews,
+                            searchController: _searchController,
+                            value: value),
+                      ],
+                    ),
+                  ),
+                  //  _moreEventsWidget(),
+                  //  _moreEventsWidget(),
+                  //  _moreEventsWidget(),
                   SizedBox(
                     height: 20,
                   ),
@@ -397,46 +416,49 @@ getRequests(BuildContext context) async {
                       Positioned(
                         bottom: 0,
                         right: 0,
-                        child: Container(
-                          height: height * 0.1,
-                          width: width * 0.9,
-                          padding: EdgeInsets.all(20),
-                          decoration: BoxDecoration(
-                              color: Color(0XFFFFFFFF).withOpacity(0.3),
-                              borderRadius: BorderRadius.circular(10)),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              TextWidget(
-                                title: "Drink & Draw at The Living Gallery",
-                                fontWeight: FontWeight.w700,
-                                size: 14,
-                                color: Colors.white,
-                              ),
-                              Spacer(),
-                              Row(
-                                children: [
-                                  Icon(
-                                    Icons.calendar_month_outlined,
-                                    color: Colors.white,
-                                    size: 12,
-                                  ),
-                                  TextWidget(
-                                    title: "  Nov 27, 07:00 PM",
-                                    fontWeight: FontWeight.w500,
-                                    size: 12,
-                                    color: Colors.white,
-                                  ),
-                                  Spacer(),
-                                  TextWidget(
-                                    title: "\$39.00",
-                                    fontWeight: FontWeight.w500,
-                                    size: 12,
-                                    color: Colors.white,
-                                  ),
-                                ],
-                              )
-                            ],
+                        child: GestureDetector(
+                          onTap: () {},
+                          child: Container(
+                            height: height * 0.1,
+                            width: width * 0.9,
+                            padding: EdgeInsets.all(20),
+                            decoration: BoxDecoration(
+                                color: Color(0XFFFFFFFF).withOpacity(0.3),
+                                borderRadius: BorderRadius.circular(10)),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                TextWidget(
+                                  title: "Drink & Draw at The Living Gallery",
+                                  fontWeight: FontWeight.w700,
+                                  size: 14,
+                                  color: Colors.white,
+                                ),
+                                Spacer(),
+                                Row(
+                                  children: [
+                                    Icon(
+                                      Icons.calendar_month_outlined,
+                                      color: Colors.white,
+                                      size: 12,
+                                    ),
+                                    TextWidget(
+                                      title: "  Nov 27, 07:00 PM",
+                                      fontWeight: FontWeight.w500,
+                                      size: 12,
+                                      color: Colors.white,
+                                    ),
+                                    Spacer(),
+                                    TextWidget(
+                                      title: "\$39.00",
+                                      fontWeight: FontWeight.w500,
+                                      size: 12,
+                                      color: Colors.white,
+                                    ),
+                                  ],
+                                )
+                              ],
+                            ),
                           ),
                         ),
                       )
@@ -522,7 +544,7 @@ getRequests(BuildContext context) async {
                       ),
                       Spacer(),
                       InkWell(
-                        onTap: (){
+                        onTap: () {
                           Navigator.push(
                               context,
                               MaterialPageRoute(
@@ -540,19 +562,18 @@ getRequests(BuildContext context) async {
                   SizedBox(
                     height: 20,
                   ),
-
-                                  SizedBox(
-                                    height: 150,
-                                    child: ListView.builder(
-                                      shrinkWrap: true,
-                                      scrollDirection: Axis.horizontal,
-                                      itemCount: value.getEventOrganizer?.organizer?.length,
-                                      itemBuilder: (context, index) {
-                                        return OrganizerWidget(value.getEventOrganizer?.organizer?[index]);
-                                      },
-                                    ),
-                                  ),
-
+                  SizedBox(
+                    height: 150,
+                    child: ListView.builder(
+                      shrinkWrap: true,
+                      scrollDirection: Axis.horizontal,
+                      itemCount: value.getEventOrganizer?.organizer?.length,
+                      itemBuilder: (context, index) {
+                        return OrganizerWidget(context,
+                            value.getEventOrganizer?.organizer?[index]);
+                      },
+                    ),
+                  ),
                   SizedBox(
                     height: 50,
                   ),
@@ -566,33 +587,41 @@ getRequests(BuildContext context) async {
   }
 }
 
-Widget OrganizerWidget(String? organize) {
-  return Container(
-    padding: EdgeInsets.only(left: 20, right: 20, top: 30, bottom: 40),
-    margin: EdgeInsets.only(right: 20),
-    width: width * 0.35,
-    decoration: BoxDecoration(
-      border: Border.all(
-        color: greyColor.withOpacity(0.3),
-      ),
-      borderRadius: BorderRadius.circular(10),
-    ),
-    child: Column(
-
-      children: [
-        ClipRRect(
-            borderRadius: BorderRadius.circular(10),
-            child: Image.asset(
-              "assets/img/6.png",
-              height: 50,
-              width: 50,
-              fit: BoxFit.fill,
-            )),
-        SizedBox(
-          height: 10,
+Widget OrganizerWidget(context, String? organize) {
+  return GestureDetector(
+    onTap: () {
+      PersistentNavBarNavigator.pushNewScreen(
+        context,
+        screen: DetailOrganizerScreen(),
+        withNavBar: false,
+      );
+    },
+    child: Container(
+      padding: EdgeInsets.only(left: 20, right: 20, top: 30, bottom: 40),
+      margin: EdgeInsets.only(right: 20),
+      width: width * 0.35,
+      decoration: BoxDecoration(
+        border: Border.all(
+          color: greyColor.withOpacity(0.3),
         ),
-        TextWidget(title: organize.toString())
-      ],
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Column(
+        children: [
+          ClipRRect(
+              borderRadius: BorderRadius.circular(10),
+              child: Image.asset(
+                "assets/img/6.png",
+                height: 50,
+                width: 50,
+                fit: BoxFit.fill,
+              )),
+          SizedBox(
+            height: 10,
+          ),
+          TextWidget(title: organize.toString())
+        ],
+      ),
     ),
   );
 }
@@ -616,7 +645,7 @@ _NearWidget(
             : ListView.builder(
                 shrinkWrap: true,
                 scrollDirection: Axis.horizontal,
-                itemCount: filteredListReviews.length,
+                itemCount: 3,
                 itemBuilder: (context, index) {
                   return InkWell(
                     onTap: () {
@@ -696,7 +725,8 @@ _NearWidget(
                                 ),
                                 Spacer(),
                                 TextWidget(
-                                  title: "\$ ${filteredListReviews[index].price}",
+                                  title:
+                                      "\$ ${filteredListReviews[index].price}",
                                   size: 12,
                                   fontWeight: FontWeight.w500,
                                   color: darkPurpleColor,
@@ -705,6 +735,104 @@ _NearWidget(
                             )
                           ],
                         ),
+                      ),
+                    ),
+                  );
+                },
+              ),
+  );
+}
+
+_moreNearWidget(
+    {required String img,
+    required String title,
+    dynamic color,
+    required TextEditingController searchController,
+    required List<GetEventsModel> filteredListReviews,
+    required EventProvider value}) {
+  if (searchController.text.isEmpty) {
+    filteredListReviews = value.getEventsModel;
+  }
+  return SizedBox(
+    height: height * 0.15,
+    child: value.checkValueEvent == false
+        ? Image.asset("assets/img/loading.gif")
+        : filteredListReviews.length == 0
+            ? TextWidget(title: "No Event Available")
+            : ListView.builder(
+                shrinkWrap: true,
+                scrollDirection: Axis.horizontal,
+                itemCount: 1,
+                itemBuilder: (context, index) {
+                  return InkWell(
+                    onTap: () {
+                      PersistentNavBarNavigator.pushNewScreen(
+                        context,
+                        screen: EventDetailsScreen(
+                          model: filteredListReviews[index],
+                        ),
+                        withNavBar: false,
+                      );
+                    },
+                    child: Container(
+                      height: 90,
+                      width: width,
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(10),
+                            child: Image.asset(
+                              "assets/img/6.png",
+                              height: 80,
+                              width: 80,
+                              fit: BoxFit.fill,
+                            ),
+                          ),
+                          GestureDetector(
+                            onTap: () {},
+                            child: Container(
+                              padding:
+                                  EdgeInsets.only(left: 10, top: 5, bottom: 5),
+                              margin: EdgeInsets.only(bottom: 10),
+                              width: width * 0.65,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceEvenly,
+                                children: [
+                                  TextWidget(
+                                    title: "Gala Galactica: New Year's",
+                                    fontWeight: FontWeight.w600,
+                                    size: 16,
+                                  ),
+                                  Row(
+                                    children: [
+                                      Icon(
+                                        Icons.calendar_month_outlined,
+                                        size: 15,
+                                        color: greyColor,
+                                      ),
+                                      TextWidget(
+                                        title: "  Nov 27  .  07:00 PM",
+                                        size: 12,
+                                        fontWeight: FontWeight.w500,
+                                        color: greyColor,
+                                      ),
+                                      Spacer(),
+                                      TextWidget(
+                                        title: "\$39.00",
+                                        size: 12,
+                                        fontWeight: FontWeight.w500,
+                                        color: darkPurpleColor,
+                                      ),
+                                    ],
+                                  )
+                                ],
+                              ),
+                            ),
+                          )
+                        ],
                       ),
                     ),
                   );
@@ -753,42 +881,45 @@ Widget _moreEventsWidget() {
             fit: BoxFit.fill,
           ),
         ),
-        Container(
-          padding: EdgeInsets.only(left: 10, top: 5, bottom: 5),
-          margin: EdgeInsets.only(bottom: 10),
-          width: width * 0.65,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              TextWidget(
-                title: "Gala Galactica: New Year's",
-                fontWeight: FontWeight.w600,
-                size: 16,
-              ),
-              Row(
-                children: [
-                  Icon(
-                    Icons.calendar_month_outlined,
-                    size: 15,
-                    color: greyColor,
-                  ),
-                  TextWidget(
-                    title: "  Nov 27  .  07:00 PM",
-                    size: 12,
-                    fontWeight: FontWeight.w500,
-                    color: greyColor,
-                  ),
-                  Spacer(),
-                  TextWidget(
-                    title: "\$39.00",
-                    size: 12,
-                    fontWeight: FontWeight.w500,
-                    color: darkPurpleColor,
-                  ),
-                ],
-              )
-            ],
+        GestureDetector(
+          onTap: () {},
+          child: Container(
+            padding: EdgeInsets.only(left: 10, top: 5, bottom: 5),
+            margin: EdgeInsets.only(bottom: 10),
+            width: width * 0.65,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                TextWidget(
+                  title: "Gala Galactica: New Year's",
+                  fontWeight: FontWeight.w600,
+                  size: 16,
+                ),
+                Row(
+                  children: [
+                    Icon(
+                      Icons.calendar_month_outlined,
+                      size: 15,
+                      color: greyColor,
+                    ),
+                    TextWidget(
+                      title: "  Nov 27  .  07:00 PM",
+                      size: 12,
+                      fontWeight: FontWeight.w500,
+                      color: greyColor,
+                    ),
+                    Spacer(),
+                    TextWidget(
+                      title: "\$39.00",
+                      size: 12,
+                      fontWeight: FontWeight.w500,
+                      color: darkPurpleColor,
+                    ),
+                  ],
+                )
+              ],
+            ),
           ),
         )
       ],

@@ -33,7 +33,34 @@ class _NotificationScreenState extends State<NotificationScreen> {
           elevation: 0,
           actions: [
             IconButton(
-                onPressed: () {},
+                onPressed: () {
+                  showModalBottomSheet<void>(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return Container(
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: <Widget>[
+                              ListTile(
+                                leading: Icon(Icons.notifications),
+                                title: Text('Clear all'),
+                                onTap: () {
+                                  // Perform action for option 1
+                                  Navigator.pop(context);
+                                },
+                              ),
+                              ListTile(
+                                leading: Icon(Icons.cancel),
+                                title: Text('Cancel'),
+                                onTap: () {
+                                  Navigator.pop(context);
+                                },
+                              ),
+                            ],
+                          ),
+                        );
+                      });
+                },
                 icon: Icon(
                   Icons.settings,
                   color: greyColor,
