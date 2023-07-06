@@ -8,6 +8,7 @@ import 'package:quickie_event/SplashScreen/SplashScreen.dart';
 
 import 'ConstantProviders/cartitemsprovider.dart';
 import 'Quicke_Features/providers/HomeProviders.dart';
+import 'Quicke_Features/providers/Notificationprovider.dart';
 
 void main(List<String> args) async {
 
@@ -36,7 +37,9 @@ class MyApp extends StatelessWidget {
             create: (context) => HomeProvider()),
              ChangeNotifierProvider<CartProvider>(
             create: (context) => CartProvider()),
-      ],
+          ChangeNotifierProvider<NotificationProvider>(
+            create: (context) => NotificationProvider()),  
+      ],  
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         navigatorKey: navigatorKey,

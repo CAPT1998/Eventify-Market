@@ -1,12 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
+import 'package:provider/provider.dart';
 import 'package:quickie_event/Constant.dart';
 import 'package:quickie_event/Quicke_Events/Widgets/TextWidget.dart';
 import 'package:quickie_event/Quicke_Features/Screen_Features/SearchFeatures/SearchFeatureScreen.dart';
 import 'package:rounded_loading_button/rounded_loading_button.dart';
 
+import '../../Model/ProductScreenResponseModel.dart';
+import '../../providers/HomeProviders.dart';
+import '../Categories/ProductScreen.dart';
+
 class ExploreScreenFeatures extends StatefulWidget {
-  const ExploreScreenFeatures({super.key});
+  ExploreScreenFeatures({super.key});
 
   @override
   State<ExploreScreenFeatures> createState() => _ExploreScreenFeaturesState();
@@ -15,6 +20,8 @@ class ExploreScreenFeatures extends StatefulWidget {
 class _ExploreScreenFeaturesState extends State<ExploreScreenFeatures> {
   RoundedLoadingButtonController buttonController =
       RoundedLoadingButtonController();
+  List<Categories> _filteredListReviews = [];
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -38,22 +45,27 @@ class _ExploreScreenFeaturesState extends State<ExploreScreenFeatures> {
             SizedBox(
               height: 50,
             ),
-            RoundedLoadingButton(
-                borderRadius: 10,
-                controller: buttonController,
-                onPressed: () {
-                  PersistentNavBarNavigator.pushNewScreen(
-                    context,
-                    screen: SearchFeatureScreen(),
-                    withNavBar: false
-                  );
-                  buttonController.reset();
-                },
-                child: TextWidget(
-                  title: "Explore",
-                  size: 16,
-                  color: Colors.white,
-                ))
+            Consumer<HomeProvider>(builder: (context, person, child) {
+              _filteredListReviews = person.getProductScreenData != null
+                  ? person.getProductScreenData!.data!.categories!
+                  : [];
+
+              return RoundedLoadingButton(
+                  borderRadius: 10,
+                  controller: buttonController,
+                  onPressed: () {
+                    PersistentNavBarNavigator.pushNewScreen(context,
+                        screen: ProductScreen(
+                            _filteredListReviews[0].id.toString()),
+                        withNavBar: false);
+                    buttonController.reset();
+                  },
+                  child: TextWidget(
+                    title: "Explore",
+                    size: 16,
+                    color: Colors.white,
+                  ));
+            })
           ],
         ),
       ),

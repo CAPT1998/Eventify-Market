@@ -269,7 +269,7 @@ class EventProvider with ChangeNotifier {
   }) async {
     String checkMessageEventCreate = "";
     try {
-      List<Location> locations = await locationFromAddress("${eventLocation}");
+      List<dynamic> locations = await locationFromAddress("${eventLocation}");
       var headers = {
         'Authorization':
             "Bearer " + (Storage.getJWT().isEmpty ? "" : Storage.getJWT())

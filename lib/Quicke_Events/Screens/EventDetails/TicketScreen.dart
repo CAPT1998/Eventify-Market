@@ -26,7 +26,6 @@ class _TicketScreenState extends State<TicketScreen> {
         .length);
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Consumer<EventProvider>(
@@ -48,14 +47,7 @@ class _TicketScreenState extends State<TicketScreen> {
               )),
           centerTitle: true,
           elevation: 0,
-          actions: [
-            IconButton(
-                onPressed: () {},
-                icon: Icon(
-                  Icons.more_horiz_outlined,
-                  color: greyColor,
-                ))
-          ],
+          actions: [],
         ),
         body: Container(
           height: height,

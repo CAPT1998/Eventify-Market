@@ -4,6 +4,9 @@ import 'package:quickie_event/Quicke_Events/Screens/DetailOrganizer/DetaillOrgan
 import 'package:quickie_event/Quicke_Events/Screens/EventDetails/ContactInformationScreen.dart';
 import 'package:quickie_event/Quicke_Events/Widgets/TextWidget.dart';
 
+import '../../../Quicke_Features/Screen_Features/BottomNavigationFeatures/BottomNavigationFeatures.dart';
+import '../BottomNavigation/PersistanceNavigationBar.dart';
+
 class TicketOrderCompletedScreen extends StatefulWidget {
   const TicketOrderCompletedScreen({super.key});
 
@@ -90,11 +93,10 @@ class _TicketOrderCompletedScreenState
                 minWidth: width,
                 height: 50,
                 onPressed: () {
-                  Navigator.push(
+                  Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(
-                          builder: (context) =>
-                              DetailOrganizerScreen()));
+                          builder: (context) => BottomNavigationScreen()));
                 },
                 child: TextWidget(
                   title: "Discover More Event",

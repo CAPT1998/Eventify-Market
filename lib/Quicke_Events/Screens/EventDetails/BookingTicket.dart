@@ -20,7 +20,7 @@ class BookingTicket extends StatefulWidget {
 class _BookingTicketState extends State<BookingTicket> {
   RoundedLoadingButtonController buttonController =
       RoundedLoadingButtonController();
-  bool isTimerVisible=false;
+  bool isTimerVisible = false;
 
   @override
   Widget build(BuildContext context) {
@@ -44,14 +44,7 @@ class _BookingTicketState extends State<BookingTicket> {
               )),
           centerTitle: true,
           elevation: 0,
-          actions: [
-            IconButton(
-                onPressed: () {},
-                icon: Icon(
-                  Icons.more_horiz_outlined,
-                  color: greyColor,
-                ))
-          ],
+          actions: [],
         ),
         body: SingleChildScrollView(
           child: Padding(
@@ -175,8 +168,7 @@ class _BookingTicketState extends State<BookingTicket> {
                                           value.reservationModel!.seatId!
                                               .length) {
                                         setState(() {
-                                          isTimerVisible=true;
-
+                                          isTimerVisible = true;
                                         });
                                         value.mAddSeatList(
                                             id: value.getEventSeatsModel[index]
@@ -191,8 +183,7 @@ class _BookingTicketState extends State<BookingTicket> {
                                       }
                                     } else {
                                       setState(() {
-                                        isTimerVisible=false;
-
+                                        isTimerVisible = false;
                                       });
                                       value.mSubtractSeatList(
                                           id: value.getEventSeatsModel[index]
@@ -242,7 +233,7 @@ class _BookingTicketState extends State<BookingTicket> {
                                   child: TextWidget(
                                       title:
                                           "${value.getEventSeatsModel[index].seatingPlanDetails[index12].seatNo}",
-                                      color: Colors.white),
+                                      color: Colors.black),
                                 ),
                               );
                             },
@@ -259,22 +250,24 @@ class _BookingTicketState extends State<BookingTicket> {
                   height: 40,
                 ),
                 Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
                     Text(
-                      "  ●",
+                      "●",
                       style: TextStyle(color: Colors.grey, fontSize: 30),
                     ),
                     TextWidget(title: "  Reserved", size: 16),
                     Text(
-                      "    ●",
-                      style: TextStyle(color: Colors.grey[100], fontSize: 30),
+                      "  ●",
+                      style: TextStyle(color: Colors.grey[300], fontSize: 30),
                     ),
                     TextWidget(title: "  Available", size: 16),
                     Text(
-                      "    ●",
+                      "  ●",
                       style: TextStyle(color: appColor, fontSize: 30),
                     ),
-                    TextWidget(title: "  Booking", size: 16),
+                    TextWidget(title: "  Booked", size: 16),
+                    Spacer(),
                   ],
                 ),
                 SizedBox(
@@ -300,18 +293,19 @@ class _BookingTicketState extends State<BookingTicket> {
                   visible: isTimerVisible,
                   child: Center(
                     child: Container(
-                      decoration: BoxDecoration( borderRadius: BorderRadius.circular(10),
-                     color: appColor ),
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                          color: appColor),
                       margin: EdgeInsets.all(20),
                       child: SlideCountdown(
                         duration: const Duration(minutes: 20),
                         textStyle: TextStyle(color: Colors.white),
                         decoration: BoxDecoration(color: Colors.transparent),
                         countUp: false,
-                        onDone: (){
-                          if(isTimerVisible){
+                        onDone: () {
+                          if (isTimerVisible) {
                             setState(() {
-                              isTimerVisible=false;
+                              isTimerVisible = false;
                             });
                           }
                           print("doneee");
@@ -320,7 +314,6 @@ class _BookingTicketState extends State<BookingTicket> {
                     ),
                   ),
                 )
-
               ],
             ),
           ),
@@ -334,9 +327,7 @@ class _BookingTicketState extends State<BookingTicket> {
             borderRadius: 14,
             height: 50,
             onPressed: () async {
-
-
-        /*       await value.mAddReservation();
+              /*       await value.mAddReservation();
               if (value.reservationMessage == "success") {
                 buttonController.success();
                 SuccessFlushbar(context, "Reservation",
@@ -371,7 +362,6 @@ class _BookingTicketState extends State<BookingTicket> {
       ),
     );
   }
-
 }
 
 class TableWithSeats extends StatelessWidget {

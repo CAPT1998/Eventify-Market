@@ -12,7 +12,8 @@ import '../../providers/HomeProviders.dart';
 import '../barcodescannerFeatures/scanner.dart';
 
 class SearchFeatureScreen extends StatefulWidget {
-  const SearchFeatureScreen({super.key});
+   String productId;
+   SearchFeatureScreen(this.productId,{super.key});
 
   @override
   State<SearchFeatureScreen> createState() => _SearchFeatureScreenState();

@@ -1,8 +1,16 @@
+import 'dart:convert';
+import 'package:geocoding/geocoding.dart';
+import 'package:http/http.dart' as http;
+
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_place_picker_mb/google_maps_place_picker.dart';
 import 'dart:io' show Platform;
+import 'package:intl_phone_number_input/intl_phone_number_input.dart';
+
+import '../../providers/Notificationprovider.dart';
 
 class AddressBottomSheetWidget extends StatefulWidget {
   @override
@@ -40,7 +48,7 @@ class _AddressBottomSheetWidgetState extends State<AddressBottomSheetWidget> {
               Spacer(),
               IconButton(
                 onPressed: () {
-                  _clearAddresses();
+                  _clearAddresses2();
                   setState(() {
                     _selectedAddressIndex = -1;
                   });
@@ -77,6 +85,7 @@ class _AddressBottomSheetWidgetState extends State<AddressBottomSheetWidget> {
                             _selectedAddressIndex = value!;
                           });
                           _selectAddress(address);
+                          // Navigator.of(context).pop(address);
                         },
                       ),
                       title: Text(
@@ -92,6 +101,7 @@ class _AddressBottomSheetWidgetState extends State<AddressBottomSheetWidget> {
                           _selectedAddressIndex = index;
                         });
                         _selectAddress(address);
+                        Navigator.of(context).pop(address);
                       },
                     );
                   },
@@ -135,9 +145,21 @@ class _AddressBottomSheetWidgetState extends State<AddressBottomSheetWidget> {
     return -1; // Address not found
   }
 
-  void _clearAddresses() async {
+  void _clearAddresses2() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.remove('addresses');
+    List<String> addresses = await _getSavedAddresses();
+    final selectedAddress = prefs.getString('selectedAddress');
+
+    int index = await _getAddressIndex(selectedAddress!);
+    print("index is" + index.toString());
+
+    if (index >= 0 && index < addresses.length) {
+      addresses.removeAt(index);
+      await _saveAddresses(addresses);
+      setState(() {
+        _selectedAddressIndex = -1;
+      });
+    }
   }
 
   void _selectAddress(String selectedAddress) async {
@@ -172,29 +194,59 @@ class _AddressBottomSheetWidgetState extends State<AddressBottomSheetWidget> {
           usePinPointingSearch: true,
 
           onPlacePicked: (result) async {
-            print(result.formattedAddress);
-            if (result != null) {
-              final newAddress = result.formattedAddress;
-              if (newAddress != null) {
-                final additionalInfo = await Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) =>
-                        AddressInputScreen(selectedAddress: newAddress),
-                  ),
-                );
+            final coordinates = result.geometry!.location;
+            final latlng = "${coordinates.lat},${coordinates.lng}";
+            // Perform reverse geocoding using geocoding library
+            final List<Placemark> placemarks = await placemarkFromCoordinates(
+                coordinates.lat, coordinates.lng);
 
-                if (additionalInfo != null) {
-                  final updatedAddress = ' $additionalInfo';
+            if (placemarks != null && placemarks.isNotEmpty) {
+              final placemark = placemarks[0].name;
+              String address = '';
+              address = placemark!.trim().replaceAll(RegExp(',\$'), '');
 
-                  final addresses = await _getSavedAddresses();
-                  addresses.add(updatedAddress);
-                  await _saveAddresses(addresses);
-                  setState(() {});
+              print(address);
+
+              // print(result.formattedAddress);
+              if (result != null) {
+                final newAddress = address;
+                if (newAddress != null) {
+                  final additionalInfo = await Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) =>
+                          AddressInputScreen(selectedAddress: newAddress),
+                    ),
+                  );
+
+                  if (additionalInfo != null) {
+                    final updatedAddress = ' $additionalInfo';
+
+                    final addresses = await _getSavedAddresses();
+                    addresses.add(updatedAddress);
+                    await _saveAddresses(addresses);
+                    setState(() {});
+                    Navigator.of(context).pop(updatedAddress);
+                  }
+                  Provider.of<NotificationProvider>(context, listen: false)
+                      .addNotification(
+                    NotificationModel(
+                      image: Icons.location_city,
+                      title: "New Notification",
+                      subtitle: "New Address Added",
+                      trailing: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [
+                          Color(0XFFFF4D67),
+                          Color(0XFFFF8A9B),
+                        ],
+                      ),
+                    ),
+                  );
                 }
               }
             }
-            Navigator.of(context).pop();
           },
           initialPosition: LatLng(0.0, 0.0),
           useCurrentLocation: true,
@@ -225,6 +277,9 @@ class _AddressInputScreenState extends State<AddressInputScreen> {
   late TextEditingController _controller;
   late String updatedAddress;
   late String apartmentOrBuilding;
+  late String indications;
+  String phoneNumber = '';
+  PhoneNumber number = PhoneNumber(isoCode: 'US');
 
   @override
   void initState() {
@@ -232,6 +287,7 @@ class _AddressInputScreenState extends State<AddressInputScreen> {
     _controller = TextEditingController(text: widget.selectedAddress);
     updatedAddress = widget.selectedAddress;
     apartmentOrBuilding = '';
+    indications = "";
   }
 
   @override
@@ -242,7 +298,8 @@ class _AddressInputScreenState extends State<AddressInputScreen> {
 
   void _saveAddress() {
     final additionalInfo = _controller.text.trim();
-    updatedAddress = ' $additionalInfo $apartmentOrBuilding';
+    updatedAddress =
+        '$additionalInfo, $apartmentOrBuilding, $indications, $phoneNumber';
 
     // Perform your address saving logic here
 
@@ -253,47 +310,89 @@ class _AddressInputScreenState extends State<AddressInputScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Add Address Information'),
+        title: Text('completa los últimos datos'),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Text(
-              'Selected Address:',
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 18.0,
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Text(
+                'Dirección',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 18.0,
+                ),
               ),
-            ),
-            SizedBox(height: 8.0),
-            TextFormField(
-              controller: _controller,
-              onChanged: (value) {
-                setState(() {
-                  updatedAddress = value;
-                });
-              },
-              style: TextStyle(fontSize: 16.0),
-            ),
-            SizedBox(height: 16.0),
-            TextField(
-              onChanged: (value) {
-                setState(() {
-                  apartmentOrBuilding = value;
-                });
-              },
-              decoration: InputDecoration(
-                labelText: 'Apartment or Building',
+              SizedBox(height: 8.0),
+              TextFormField(
+                controller: _controller,
+                onChanged: (value) {
+                  setState(() {
+                    updatedAddress = value;
+                  });
+                },
+                style: TextStyle(fontSize: 16.0),
               ),
-            ),
-            SizedBox(height: 16.0),
-            ElevatedButton(
-              child: Text('Save Address'),
-              onPressed: _saveAddress,
-            ),
-          ],
+              SizedBox(height: 16.0),
+              TextField(
+                onChanged: (value) {
+                  setState(() {
+                    indications = value;
+                  });
+                },
+                decoration: InputDecoration(
+                  labelText: 'indicaciones para la entrega',
+                ),
+              ),
+              SizedBox(height: 16.0),
+              TextField(
+                onChanged: (value) {
+                  setState(() {
+                    apartmentOrBuilding = value;
+                  });
+                },
+                decoration: InputDecoration(
+                  labelText: 'Nro. de piso/Apartmenato/casa',
+                ),
+              ),
+              SizedBox(height: 16.0),
+              InternationalPhoneNumberInput(
+                onInputChanged: (PhoneNumber number) {
+                  print(number);
+                  setState(() {
+                    phoneNumber = number.phoneNumber!;
+                  });
+                },
+                selectorConfig: SelectorConfig(
+                  selectorType: PhoneInputSelectorType.DROPDOWN,
+                ),
+                ignoreBlank: true,
+                autoValidateMode: AutovalidateMode.disabled,
+                selectorTextStyle: TextStyle(color: Colors.black),
+                formatInput: false,
+                initialValue: number,
+                keyboardType: TextInputType.numberWithOptions(
+                    signed: true, decimal: true),
+                inputDecoration: InputDecoration(
+                  labelText: 'Teléfono',
+                ),
+                onSaved: (PhoneNumber? number) {
+                  // Save the phone number
+                  print(PhoneNumber);
+                  if (number != null) {
+                    phoneNumber = number.phoneNumber!;
+                  }
+                },
+              ),
+              SizedBox(height: 16.0),
+              ElevatedButton(
+                child: Text('Guardar Dirección'),
+                onPressed: _saveAddress,
+              ),
+            ],
+          ),
         ),
       ),
     );

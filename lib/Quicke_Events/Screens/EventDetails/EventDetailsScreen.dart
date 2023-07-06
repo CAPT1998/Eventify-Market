@@ -1,6 +1,7 @@
 import 'package:favorite_button/favorite_button.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:intl/intl.dart';
 import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
 import 'package:provider/provider.dart';
 import 'package:quickie_event/Constant.dart';
@@ -9,6 +10,10 @@ import 'package:quickie_event/Quicke_Events/Providers/EventsProvider.dart';
 import 'package:quickie_event/Quicke_Events/Screens/EventDetails/BookingTicket.dart';
 import 'package:quickie_event/Quicke_Events/Screens/EventDetails/TicketScreen.dart';
 import 'package:ticket_widget/ticket_widget.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:table_calendar/table_calendar.dart';
+import 'package:device_calendar/device_calendar.dart';
+import 'package:timezone/timezone.dart' as tz;
 
 import '../../Widgets/TextWidget.dart';
 
@@ -23,6 +28,9 @@ class EventDetailsScreen extends StatefulWidget {
 class _EventDetailsScreenState extends State<EventDetailsScreen> {
   GoogleMapController? _googleMapController;
   List<GetEventsModel> _filteredListReviews = [];
+  Map<DateTime, List<dynamic>> _events = {};
+  final DeviceCalendarPlugin _deviceCalendarPlugin = DeviceCalendarPlugin();
+  String remindertime = "";
 
   @override
   void initState() {
@@ -38,6 +46,7 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    print("date is" + widget.model.eventStartDate.toString());
     return SafeArea(
       child: Scaffold(
         body: SingleChildScrollView(
@@ -151,15 +160,97 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
                           color: greyColor.withOpacity(0.5),
                           fontWeight: FontWeight.w500,
                         ),
-                        trailing: Container(
-                          padding: EdgeInsets.all(10),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(10),
-                            color: lightGreyColor,
-                          ),
-                          child: Icon(
-                            Icons.calendar_month_outlined,
-                            color: appColor,
+                        trailing: GestureDetector(
+                          onTap: () async {
+                            await _deviceCalendarPlugin.requestPermissions();
+
+                            var calendarsResult =
+                                await _deviceCalendarPlugin.retrieveCalendars();
+                            print("here");
+                            if (calendarsResult.isSuccess &&
+                                calendarsResult.data?.isNotEmpty == true) {
+                              var defaultCalendar = calendarsResult.data![0];
+
+                              var eventDate = widget.model.eventStartDate;
+
+// Convert the event date to a TZDateTime object
+                              var timeZone = tz.getLocation(
+                                  'UTC'); // Replace 'your_timezone' with the desired timezone
+                              var eventDateTime =
+                                  tz.TZDateTime.from(eventDate, timeZone);
+                              var event = Event(defaultCalendar.id);
+                              event.title = "Quickee event Reminder";
+                              event.start = eventDateTime;
+                              event.end =
+                                  eventDateTime.add(Duration(minutes: 15));
+                              event.reminders = [
+                                Reminder(minutes: 30),
+                                Reminder(minutes: 60),
+                              ];
+
+                              // Create the recurrence rule for a daily event
+                              var recurrenceRule = RecurrenceRule(
+                                RecurrenceFrequency.Daily,
+                                interval: 1,
+                                endDate: eventDateTime,
+                              );
+                              event.recurrenceRule = recurrenceRule;
+
+                              // Add the reminder event to the calendar
+                              var addResult = await _deviceCalendarPlugin
+                                  .createOrUpdateEvent(event);
+
+                              if (addResult!.isSuccess &&
+                                  addResult.data != null) {
+                                // Reminder added successfully
+                                print("Auto reminder added to calendar");
+                                showModalBottomSheet(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return SizedBox(
+                                      height: 200,
+                                      child: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          const Text(
+                                            'Reminder added to calendar!',
+                                            style: TextStyle(fontSize: 20),
+                                          ),
+                                          SizedBox(height: 10),
+                                          Text(
+                                            'Date: ${eventDateTime.toLocal().toString().split(' ')[0]}',
+                                            style: TextStyle(fontSize: 16),
+                                          ),
+                                          Text(
+                                            'Time: ${eventDateTime.toLocal().toString().split(' ')[1].substring(0, 5)}',
+                                            style: TextStyle(fontSize: 16),
+                                          ),
+                                        ],
+                                      ),
+                                    );
+                                  },
+                                );
+                              } else {
+                                // Failed to add reminder
+                                print(
+                                    "Failed to add auto reminder to calendar");
+                              }
+                            } else {
+                              // No calendars found
+                              print("No calendars found");
+                            }
+                          },
+                          child: Container(
+                            padding: EdgeInsets.all(10),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(10),
+                              color: lightGreyColor,
+                            ),
+                            child: Icon(
+                              Icons.calendar_month_outlined,
+                              color: appColor,
+                            ),
                           ),
                         ),
                       ),
@@ -312,9 +403,9 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
                     SizedBox(
                       height: 10,
                     ),
-                    OrganizerWidget(),
-                    OrganizerWidget(),
-                    OrganizerWidget(),
+                    OrganizerWidget(widget.model.eventOrganizer),
+                    // OrganizerWidget(widget.model.eventOrganizer),
+                    // OrganizerWidget(widget.model.eventOrganizer),
                     SizedBox(height: 20),
                     Row(
                       children: [
@@ -406,6 +497,9 @@ Widget _TagWidget(String title) {
 }
 
 class OrganizerWidget extends StatefulWidget {
+  String? name;
+
+  OrganizerWidget(this.name, {super.key});
   @override
   _OrganizerWidgetState createState() => _OrganizerWidgetState();
 }
@@ -425,7 +519,7 @@ class _OrganizerWidgetState extends State<OrganizerWidget> {
       ),
       child: ListTile(
         title: TextWidget(
-          title: "Living Gallery",
+          title: widget.name!,
           size: 14,
           fontWeight: FontWeight.w500,
         ),

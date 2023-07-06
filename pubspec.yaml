@@ -78,6 +78,10 @@ dependencies:
   shared_preferences: ^2.1.2
   google_maps_place_picker_mb: ^3.0.2 
   mobile_scanner: ^3.3.0
+  country_state_city_picker: ^1.2.8
+  url_launcher: ^6.1.11
+  intl_phone_number_input: ^0.7.3+1
+  device_calendar: ^4.3.1
 dev_dependencies:
   flutter_test:
     sdk: flutter

@@ -44,8 +44,7 @@ class _CalenderTicketScreenState extends State<CalenderTicketScreen> {
                 focusedDay: _focusedDay,
                 calendarFormat: _calendarFormat,
                 rowHeight: 50,
-                calendarBuilders: CalendarBuilders(
-                ),
+                calendarBuilders: CalendarBuilders(),
                 calendarStyle: CalendarStyle(
                   selectedDecoration: BoxDecoration(
                     shape: BoxShape.rectangle,

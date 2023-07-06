@@ -13,7 +13,10 @@ import 'package:quickie_event/Quicke_Events/Screens/Notification/NotificationScr
 import 'package:quickie_event/Quicke_Events/Screens/VideoPlayer/VideoPlayerScreen.dart';
 import 'package:quickie_event/Quicke_Events/Widgets/SizedBoxWidget.dart';
 import 'package:quickie_event/Quicke_Events/Widgets/TextWidget.dart';
+import 'package:country_state_city_picker/country_state_city_picker.dart';
+import 'package:geocoding/geocoding.dart';
 
+import '../../../Quicke_Features/Screen_Features/BottomNavigationFeatures/BottomNavigationFeatures.dart';
 import '../../Models/GetEventsModel.dart';
 import '../../Widgets/TextFormWidget.dart';
 import '../DetailOrganizer/DetaillOrganizerdetail.dart';
@@ -29,6 +32,7 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
   GoogleMapController? _googleMapController;
   List<GetEventsModel> _filteredListReviews = [];
   final TextEditingController _searchController = TextEditingController();
+  String? addressValue;
 
   @override
   void initState() {
@@ -57,6 +61,23 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
                   SizeWidget(height: 30),
                   Row(
                     children: [
+                      IconButton(
+                        icon: Icon(Icons.arrow_back),
+                        onPressed: () {
+                          PersistentNavBarNavigator.pushDynamicScreen(
+                            context,
+                            screen: MaterialPageRoute(
+                                builder: (context) =>
+                                    BottomNavigationFeatures()),
+                            withNavBar: false,
+                          );
+                          Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                      BottomNavigationFeatures()));
+                        },
+                      ),
                       Container(
                         padding: EdgeInsets.all(10),
                         decoration: BoxDecoration(
@@ -64,14 +85,24 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
                           color: lightGreyColor,
                         ),
                         child: GestureDetector(
-                          onTap: () {
-                            SuccessFlushbar(context, "", "Current Location");
+                          onTap: () async {
+                            final selectedAddress = await Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => locationpicker()),
+                            );
+                            if (selectedAddress != null) {
+                              setState(() {
+                                addressValue = selectedAddress;
+                              });
+                            }
                           },
                           child: Row(
                             children: [
                               Icon(Icons.location_on_outlined),
                               SizeWidget(width: 5),
-                              TextWidget(title: "New York City"),
+                              TextWidget(
+                                  title: addressValue ?? "Select Address"),
                             ],
                           ),
                         ),
@@ -647,6 +678,14 @@ _NearWidget(
                 scrollDirection: Axis.horizontal,
                 itemCount: 3,
                 itemBuilder: (context, index) {
+                  print("location si " + filteredListReviews[index].location);
+                  final coordinates =
+                      filteredListReviews[index].location.split(',');
+                  final latitude = double.parse(coordinates[0]);
+                  final longitude = double.parse(coordinates[1]);
+                  final price = filteredListReviews[index].price;
+                  final originalPrice = double.parse(price);
+                  final reducedPrice = originalPrice - 15;
                   return InkWell(
                     onTap: () {
                       PersistentNavBarNavigator.pushNewScreen(
@@ -683,9 +722,10 @@ _NearWidget(
                                   ),
                                 ),
                                 Container(
-                                  padding: EdgeInsets.symmetric(
+                                  padding: const EdgeInsets.symmetric(
                                       horizontal: 10, vertical: 5),
-                                  margin: EdgeInsets.only(top: 10, left: 10),
+                                  margin:
+                                      const EdgeInsets.only(top: 10, left: 10),
                                   decoration: BoxDecoration(
                                       color: color,
                                       borderRadius: BorderRadius.circular(5)),
@@ -724,15 +764,68 @@ _NearWidget(
                                   color: greyColor,
                                 ),
                                 Spacer(),
-                                TextWidget(
-                                  title:
-                                      "\$ ${filteredListReviews[index].price}",
-                                  size: 12,
-                                  fontWeight: FontWeight.w500,
-                                  color: darkPurpleColor,
+                              ],
+                            ),
+                            SizedBox(
+                              height: 10,
+                            ),
+                            TextWidget(
+                              title:
+                                  "\$ ${reducedPrice.toStringAsFixed(2)} - \$ $originalPrice",
+                              size: 16,
+                              fontWeight: FontWeight.w500,
+                              color: darkPurpleColor,
+                            ),
+                            SizedBox(
+                              height: 10,
+                            ),
+                            Row(
+                              children: [
+                                Icon(
+                                  Icons.map,
+                                  size: 15,
+                                  color: greyColor,
+                                ),
+                                SizedBox(
+                                  width: 5,
+                                ),
+                                FutureBuilder<List<Placemark>>(
+                                  future: placemarkFromCoordinates(
+                                      latitude, longitude),
+                                  builder: (context, snapshot) {
+                                    if (snapshot.connectionState ==
+                                        ConnectionState.waiting) {
+                                      return Text(
+                                        'Loading...',
+                                        style: TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w400,
+                                        ),
+                                      );
+                                    } else if (snapshot.hasData &&
+                                        snapshot.data!.isNotEmpty) {
+                                      final placemark = snapshot.data!.first;
+                                      return Text(
+                                        placemark.name ??
+                                            'Address not available',
+                                        style: TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w400,
+                                        ),
+                                      );
+                                    } else {
+                                      return Text(
+                                        'Address not available',
+                                        style: TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w400,
+                                        ),
+                                      );
+                                    }
+                                  },
                                 ),
                               ],
-                            )
+                            ),
                           ],
                         ),
                       ),
@@ -925,4 +1018,81 @@ Widget _moreEventsWidget() {
       ],
     ),
   );
+}
+
+class locationpicker extends StatefulWidget {
+  @override
+  _locationpickerState createState() => _locationpickerState();
+}
+
+class _locationpickerState extends State<locationpicker> {
+  String countryValue = '';
+  String stateValue = '';
+  String cityValue = '';
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Select Events Location'),
+      ),
+      body: Container(
+          padding: EdgeInsets.symmetric(horizontal: 20),
+          height: 600,
+          child: Column(
+            children: [
+              SelectState(
+                // style: TextStyle(color: Colors.red),
+                onCountryChanged: (value) {
+                  setState(() {
+                    countryValue = value;
+                  });
+                },
+                onStateChanged: (value) {
+                  setState(() {
+                    stateValue = value;
+                  });
+                },
+                onCityChanged: (value) {
+                  setState(() {
+                    cityValue = value;
+                  });
+                },
+              ),
+              InkWell(
+                onTap: () {
+                  String address;
+
+                  if (cityValue.isNotEmpty) {
+                    address = cityValue;
+                  } else if (stateValue.isNotEmpty) {
+                    address = stateValue;
+                  } else {
+                    address = countryValue;
+                  }
+
+                  print('Selected address: $address');
+                  Navigator.of(context).pop(address);
+                },
+                child: SizedBox(
+                  width: 150,
+                  child: Container(
+                    padding: EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                      color: lightGreyColor,
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(Icons.location_on_outlined),
+                        SizeWidget(width: 3),
+                        TextWidget(title: "Confirm Selection"),
+                      ],
+                    ),
+                  ),
+                ), //Text('Confirm Selection')
+              )
+            ],
+          )),
+    );
+  }
 }

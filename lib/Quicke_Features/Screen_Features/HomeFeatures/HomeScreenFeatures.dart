@@ -16,6 +16,7 @@ import 'package:quickie_event/Quicke_Features/providers/HomeProviders.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../ConstantProviders/cartitemsprovider.dart';
+import '../../providers/Notificationprovider.dart';
 import '../CartFeatures/CartScreenFeatures.dart';
 import '../Notification/NotificationScreen.dart';
 import '../ProductDetail/ProductDetailScreen.dart';
@@ -34,107 +35,43 @@ class _HomeScreenFeaturesState extends State<HomeScreenFeatures> {
   List<Categories> _filteredListReviews = [];
   List<Product> _filteredListReviews2 = [];
   int _selectedAddressIndex = -1;
-
+  String? add;
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     // getCategories();
-    _loadAddress();
+    _loadSelectedAddress();
   }
 
   getCategories() async {
     await Provider.of<HomeProvider>(context).getProductScreenDate();
   }
 
-  Future<void> _loadAddress() async {
+  Future<void> _loadSelectedAddress() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    String? address = prefs.getString('address') ?? " ";
-    if (address != null) {
+    final selectedAddress = prefs.getString('selectedAddress');
+    if (selectedAddress != null) {
       setState(() {
-        _addressController!.text = address;
+        add = selectedAddress; // Await the result
       });
     }
-  }
 
-  Future<void> _saveAddress(String address) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setString('address', address);
+    print("address is " + selectedAddress!);
   }
 
   TextEditingController _addressController = TextEditingController();
 
-  void _showAddressBottomSheet(BuildContext context) {
-    showModalBottomSheet(
+  void _showAddressBottomSheet(BuildContext context) async {
+    final address = await showModalBottomSheet(
       context: context,
       builder: (BuildContext context) {
         return SingleChildScrollView(child: AddressBottomSheetWidget());
       },
     );
-  }
-
-  void _clearAddresses() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.remove('addresses');
-  }
-
-  void _selectAddress(String selectedAddress) async {
-    final addresses = await _getSavedAddresses();
-    final selectedIndex = addresses.indexOf(selectedAddress);
-    print('Selected Address: $selectedAddress');
-    setState(() {
-      _selectedAddressIndex = selectedIndex;
-    });
-    print('Selected Address: $selectedAddress');
-  }
-
-  Future<List<String>> _getSavedAddresses() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    final addressesJson = prefs.getStringList('addresses');
-    if (addressesJson != null) {
-      return addressesJson;
-    }
-    return [];
-  }
-
-  Future<void> _saveAddresses(List<String> addresses) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setStringList('addresses', addresses);
-  }
-
-  Future<void> _addNewAddress() async {
-    // Prompt user to enter a new address
-    final newAddress = await showDialog<String>(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('Enter New Address'),
-          content: TextField(
-            controller: _addressController,
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: Text('Cancel'),
-            ),
-            TextButton(
-              onPressed: () {
-                Navigator.pop(context, _addressController!.text);
-              },
-              child: Text('Save'),
-            ),
-          ],
-        );
-      },
-    );
-
-    if (newAddress != null) {
-      final addresses = await _getSavedAddresses();
-      addresses.add(newAddress);
-
-      await _saveAddresses(addresses);
+    if (address != null) {
       setState(() {
-        _selectedAddressIndex = addresses.length - 1;
+        add = address;
       });
     }
   }
@@ -155,7 +92,7 @@ class _HomeScreenFeaturesState extends State<HomeScreenFeatures> {
                 _showAddressBottomSheet(context);
               },
               child: Text(
-                " MI CASA",
+                add ?? "MI CASA",
                 style: TextStyle(
                   fontSize: 15,
                   color: Colors.white,
@@ -168,7 +105,7 @@ class _HomeScreenFeaturesState extends State<HomeScreenFeatures> {
                 _showAddressBottomSheet(context);
               },
               child: Text(
-                "Express Shopping",
+                "  Express Shopping",
                 style: TextStyle(
                   fontSize: 17,
                   fontWeight: FontWeight.w600,
@@ -1099,6 +1036,22 @@ class _QuantityState extends State<QuantityButtonsVerticalHome> {
               addToCart(widget.product, quantity!);
               SuccessFlushbar(context, "Success", "Item added to cart");
             });
+            Provider.of<NotificationProvider>(context, listen: false)
+                .addNotification(
+              NotificationModel(
+                image: Icons.shopping_basket,
+                title: "New Notification",
+                subtitle: "Item Added to Cart",
+                trailing: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    Color(0XFFFF4D67),
+                    Color(0XFFFF8A9B),
+                  ],
+                ),
+              ),
+            );
           },
         ),
         Spacer(),

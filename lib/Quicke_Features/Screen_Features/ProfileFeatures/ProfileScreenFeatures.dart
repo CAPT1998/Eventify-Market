@@ -24,7 +24,7 @@ class _ProfileScreenFeaturesState extends State<ProfileScreenFeatures> {
   @override
   Widget build(BuildContext context) {
     return Consumer<AuthProvider>(
-      builder: (context, value, child) =>  SafeArea(
+      builder: (context, value, child) => SafeArea(
         child: Scaffold(
           body: SingleChildScrollView(
             child: Padding(
@@ -37,10 +37,16 @@ class _ProfileScreenFeaturesState extends State<ProfileScreenFeatures> {
                   ListTile(
                     leading: CircleAvatar(
                       radius: 30,
-                      backgroundImage: NetworkImage(value.userData["picture"]??""),
+                      backgroundImage:
+                          NetworkImage(value.userData["picture"] ?? ""),
                     ),
-                    title: TextWidget(title: "${value.userData["username"]??value.loginModel?.data.name}", size: 16),
-                    subtitle: Text("${value.userData["email"]??value.loginModel?.data.email}",),
+                    title: TextWidget(
+                        title:
+                            "${value.userData["username"] ?? value.loginModel?.data.name}",
+                        size: 16),
+                    subtitle: Text(
+                      "${value.userData["email"] ?? value.loginModel?.data.email}",
+                    ),
                   ),
                   Divider(
                     color: greyColor,
@@ -66,11 +72,11 @@ class _ProfileScreenFeaturesState extends State<ProfileScreenFeatures> {
                   ),
                   ListTile(
                     onTap: () {
-                      PersistentNavBarNavigator.pushNewScreen(
-                        context,
-                        screen: SearchFeatureScreen(),
-                        withNavBar: false,
-                      );
+                      //  PersistentNavBarNavigator.pushNewScreen(
+                      //     context,
+                      //    screen: SearchFeatureScreen(),
+                      //    withNavBar: false,
+                      // );
                     },
                     leading: Icon(Icons.manage_search_sharp),
                     title: TextWidget(
@@ -133,7 +139,6 @@ class _ProfileScreenFeaturesState extends State<ProfileScreenFeatures> {
                     ),
                     trailing: Icon(Icons.arrow_forward_ios),
                   ),
-
                 ],
               ),
             ),

@@ -1,5 +1,6 @@
 import 'package:favorite_button/favorite_button.dart';
 import 'package:flutter/material.dart';
+import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
 import 'package:provider/provider.dart';
 import 'package:quickie_event/Constant.dart';
 import 'package:quickie_event/Quicke_Events/Widgets/TextFormWidget.dart';
@@ -8,6 +9,7 @@ import '../../Model/ProductDetailResponseModel.dart';
 import '../../providers/HomeProviders.dart';
 import '../HomeFeatures/HomeScreenFeatures.dart';
 import '../ProductDetail/ProductDetailScreen.dart';
+import '../barcodescannerFeatures/scanner.dart';
 
 class ProductScreen extends StatefulWidget {
   String productId;
@@ -77,7 +79,13 @@ class _ProductScreenState extends State<ProductScreen> {
                             color: Colors.white,
                             borderRadius: BorderRadius.circular(5)),
                         child: IconButton(
-                          onPressed: () {},
+                          onPressed: () {
+                            PersistentNavBarNavigator.pushNewScreen(
+                              context,
+                              screen: const QrScanner(),
+                              withNavBar: false,
+                            );
+                          },
                           icon: Icon(
                             Icons.document_scanner_outlined,
                             color: appColor,
