@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
@@ -8,6 +10,8 @@ import 'package:quickie_event/Constant.dart';
 import 'package:quickie_event/ConstantModels/LoginModel.dart';
 import 'package:quickie_event/Quicke_Features/Screen_Features/BottomNavigationFeatures/BottomNavigationFeatures.dart';
 import 'package:quickie_event/helper/storage_helper.dart';
+
+import '../ConstantModels/ProfileModel.dart';
 
 class AuthProvider with ChangeNotifier {
   String? registerMessage;
@@ -33,6 +37,58 @@ class AuthProvider with ChangeNotifier {
       print(response.reasonPhrase);
       registerMessage = "unsuccess";
       this.registerMessage = registerMessage;
+      notifyListeners();
+    }
+  }
+
+
+   updateprofile({
+    required String id,
+    required String name,
+    required String email,
+    required String password,
+  }) async {    LoginModel? loginModel;
+
+
+        String token = "PivvPlsQWxPl1bB5KrbKNBuraJit0PrUZekQUgtLyTRuyBq921atFtoR1HuA"; // Assuming the token is stored in `apiToken` property of `LoginModel`
+var requestBody = {};
+
+  if (name.isNotEmpty) {
+    requestBody["name"] = name;
+  }
+  if (email.isNotEmpty) {
+    requestBody["email"] = email;
+  }
+  if (password.isNotEmpty) {
+    requestBody["password"] = password;
+  }
+   var response = await http.post(
+      Uri.parse('http://quickeeapi.pakwexpo.com/api/users/$id'),
+      headers: {
+        'Authorization': 'Bearer $token',
+      },
+    body: requestBody,
+
+    );
+    print(response.body);
+
+      final jsonData = json.decode(response.body);
+            final Map<String, dynamic> data = json.decode(response.body);
+
+     if (response.statusCode == 200) {
+      
+loginModel = loginModelFromJson(json.encode(data));
+      this.loginModel = loginModel;
+      Storage.saveUser(loginModel);
+      Storage.saveJWT(loginModel.data.apiToken);
+      loginMessage = "success";
+      this.loginMessage = loginMessage;
+      print("updated");
+      notifyListeners();
+    } else {
+      print(response.reasonPhrase);
+      loginMessage = "unsuccess";
+      this.loginMessage = loginMessage;
       notifyListeners();
     }
   }
@@ -73,6 +129,34 @@ class AuthProvider with ChangeNotifier {
       notifyListeners();
     }
   }
+  /*      ProfileModel? profileModel;
+
+   Future<void> fetchProfile() async {
+        ProfileModel? profileModel;
+
+    try {
+          String id = loginModel!.data.id.toString();
+
+    final response = await http.get(Uri.parse('http://quickeeapi.pakwexpo.com/api/users/$id'));
+
+      if (response.statusCode == 200) {
+        final jsonData = json.decode(response.body);
+
+         profileModel = ProfileModel.fromJson(jsonData);
+
+this.profileModel = profileModel;        
+        Storage.saveUser(loginModel!);
+
+        notifyListeners();
+        print("profile data fetched");
+      } else {
+        throw Exception('Failed to fetch profile data');
+      }
+    } catch (error) {
+      throw Exception('An error occurred while fetching profile data: $error');
+    }
+  }
+  */
 
   bool isUserCreated = false;
   String userLoginMessage = "";

@@ -6,27 +6,32 @@ import 'package:quickie_event/Quicke_Events/Providers/CategoryProvider.dart';
 import 'package:quickie_event/Quicke_Events/Providers/EventsProvider.dart';
 import 'package:quickie_event/SplashScreen/SplashScreen.dart';
 
+import 'ConstantModels/pushnotifications.dart';
+import 'ConstantProviders/ChatProvider.dart';
 import 'ConstantProviders/cartitemsprovider.dart';
 import 'Quicke_Features/providers/HomeProviders.dart';
 import 'Quicke_Features/providers/Notificationprovider.dart';
 
 void main(List<String> args) async {
-
   WidgetsFlutterBinding.ensureInitialized();
   // Shared.pref = await SharedPreferences.getInstance();
   await Firebase.initializeApp();
+  await FCM().configureFCM();
+
   runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
   final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
-    MyApp({super.key});
+  MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
+        ChangeNotifierProvider<ChatProvider>(
+            create: (context) => ChatProvider()),
         ChangeNotifierProvider<AuthProvider>(
             create: (context) => AuthProvider()),
         ChangeNotifierProvider<EventProvider>(
@@ -35,15 +40,14 @@ class MyApp extends StatelessWidget {
             create: (context) => CategoryPRovider()),
         ChangeNotifierProvider<HomeProvider>(
             create: (context) => HomeProvider()),
-             ChangeNotifierProvider<CartProvider>(
+        ChangeNotifierProvider<CartProvider>(
             create: (context) => CartProvider()),
-          ChangeNotifierProvider<NotificationProvider>(
-            create: (context) => NotificationProvider()),  
-      ],  
+        ChangeNotifierProvider<NotificationProvider>(
+            create: (context) => NotificationProvider()),
+      ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         navigatorKey: navigatorKey,
-
         home: SplashScreen(),
       ),
     );

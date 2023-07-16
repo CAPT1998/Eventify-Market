@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
 import 'package:quickie_event/Constant.dart';
 import '../../Widgets/TextWidget.dart';
+import '../BottomNavigation/PersistanceNavigationBar.dart';
 
 class FavoriteEmptyScreen extends StatefulWidget {
   const FavoriteEmptyScreen({super.key});
@@ -34,7 +36,6 @@ class _FavoriteEmptyScreenState extends State<FavoriteEmptyScreen> {
             SizedBox(
               height: 50,
             ),
-            
             Image.asset(
               "assets/img/favourite.png",
               width: width * 0.7,
@@ -63,7 +64,12 @@ class _FavoriteEmptyScreenState extends State<FavoriteEmptyScreen> {
               minWidth: width,
               height: 60,
               onPressed: () {
-               },
+                PersistentNavBarNavigator.pushNewScreen(
+                  context,
+                  screen: BottomNavigationScreen(),
+                  withNavBar: false,
+                );
+              },
               child: TextWidget(
                 title: "Exeplore Event",
                 size: 16,

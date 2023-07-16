@@ -57,7 +57,6 @@ class _HomeScreenFeaturesState extends State<HomeScreenFeatures> {
       });
     }
 
-    print("address is " + selectedAddress!);
   }
 
   TextEditingController _addressController = TextEditingController();
@@ -105,7 +104,7 @@ class _HomeScreenFeaturesState extends State<HomeScreenFeatures> {
                 _showAddressBottomSheet(context);
               },
               child: Text(
-                "  Express Shopping",
+                " Express Shopping",
                 style: TextStyle(
                   fontSize: 17,
                   fontWeight: FontWeight.w600,
@@ -143,10 +142,6 @@ class _HomeScreenFeaturesState extends State<HomeScreenFeatures> {
                       context: context,
                       name: "Search",
                       onChanged: (value) {
-                        _filteredListReviews2 =
-                            Provider.of<HomeProvider>(context, listen: false)
-                                .getProductDetailScreenData!
-                                .product!;
                         _filteredListReviews =
                             Provider.of<HomeProvider>(context, listen: false)
                                 .getProductScreenData!
@@ -186,6 +181,7 @@ class _HomeScreenFeaturesState extends State<HomeScreenFeatures> {
                 ],
               ),
             ),
+            
             SizedBox(
                 height: height * 0.2, child: CourselSliderFeatures(context)),
             Stack(

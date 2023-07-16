@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:favorite_button/favorite_button.dart';
 import 'package:flutter/material.dart';
+import 'package:geocoding/geocoding.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
 import 'package:provider/provider.dart';
@@ -14,12 +15,12 @@ import 'package:quickie_event/Quicke_Events/Screens/VideoPlayer/VideoPlayerScree
 import 'package:quickie_event/Quicke_Events/Widgets/SizedBoxWidget.dart';
 import 'package:quickie_event/Quicke_Events/Widgets/TextWidget.dart';
 import 'package:country_state_city_picker/country_state_city_picker.dart';
-import 'package:geocoding/geocoding.dart';
 
 import '../../../Quicke_Features/Screen_Features/BottomNavigationFeatures/BottomNavigationFeatures.dart';
 import '../../Models/GetEventsModel.dart';
 import '../../Widgets/TextFormWidget.dart';
 import '../DetailOrganizer/DetaillOrganizerdetail.dart';
+import 'package:geolocator/geolocator.dart';
 
 class DiscoverScreen extends StatefulWidget {
   const DiscoverScreen({super.key});
@@ -33,11 +34,13 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
   List<GetEventsModel> _filteredListReviews = [];
   final TextEditingController _searchController = TextEditingController();
   String? addressValue;
+  String? currentCountry;
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    getcuurentlocation();
     WidgetsBinding.instance.addPostFrameCallback((_) => getRequests(context));
   }
 
@@ -45,6 +48,29 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
     await Provider.of<EventProvider>(context, listen: false).mGetEvents();
     await Provider.of<EventProvider>(context, listen: false)
         .getEventOrganizers();
+  }
+
+  void getcuurentlocation() async {
+    setState(() {
+      currentCountry = "Fetching location...";
+    });
+
+    try {
+      final position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high,
+      );
+      final List<Placemark> placemarks = await placemarkFromCoordinates(
+        position.latitude,
+        position.longitude,
+      );
+      setState(() {
+        currentCountry = placemarks.first.locality;
+      });
+    } catch (error) {
+      setState(() {
+        currentCountry = "Error fetching location";
+      });
+    }
   }
 
   @override
@@ -71,11 +97,6 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
                                     BottomNavigationFeatures()),
                             withNavBar: false,
                           );
-                          Navigator.pushReplacement(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) =>
-                                      BottomNavigationFeatures()));
                         },
                       ),
                       Container(
@@ -102,7 +123,7 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
                               Icon(Icons.location_on_outlined),
                               SizeWidget(width: 5),
                               TextWidget(
-                                  title: addressValue ?? "Select Address"),
+                                  title: addressValue ?? currentCountry!),
                             ],
                           ),
                         ),
@@ -668,7 +689,7 @@ _NearWidget(
     filteredListReviews = value.getEventsModel;
   }
   return SizedBox(
-    height: height * 0.25,
+    height: height * 0.35,
     child: value.checkValueEvent == false
         ? Image.asset("assets/img/loading.gif")
         : filteredListReviews.length == 0
@@ -789,7 +810,7 @@ _NearWidget(
                                 SizedBox(
                                   width: 5,
                                 ),
-                                FutureBuilder<List<Placemark>>(
+                                FutureBuilder<List<dynamic>>(
                                   future: placemarkFromCoordinates(
                                       latitude, longitude),
                                   builder: (context, snapshot) {

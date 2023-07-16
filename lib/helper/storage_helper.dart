@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:get_storage/get_storage.dart';
 
 import '../ConstantModels/LoginModel.dart';
+import '../ConstantModels/ProfileModel.dart';
 import 'logging_utils.dart';
 
 
@@ -50,7 +51,10 @@ class Storage {
     box.write(userKey, user);
   }
 
-
+static profileinfo(ProfileModel data){
+     String userdata = jsonEncode(data);
+    box.write(userKey, userdata);
+  }
   static isFirstRun(bool isFirstRun) {
     if (kDebugMode) {
       print("** SAVE ISFIRSTRUN");
@@ -62,6 +66,8 @@ class Storage {
     }
 
   }
+
+  
 
 
 

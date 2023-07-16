@@ -4,6 +4,9 @@ import 'package:quickie_event/Constant.dart';
 import 'package:quickie_event/Quicke_Events/Screens/HomeScreens/FavouriteEmptyScreen.dart';
 import 'package:quickie_event/Quicke_Events/Widgets/TextWidget.dart';
 
+import '../EventDetails/EventDetailsScreen.dart';
+import 'FavouriteEventDetailsScreen.dart';
+
 class FavouriteScreen extends StatefulWidget {
   const FavouriteScreen({super.key});
 
@@ -33,7 +36,10 @@ class _FavouriteScreenState extends State<FavouriteScreen> {
                   withNavBar: false,
                 );
               },
-              icon: Icon(Icons.favorite_border,color: Colors.black,),
+              icon: Icon(
+                Icons.favorite_border,
+                color: Colors.black,
+              ),
             ),
           ],
         ),
@@ -97,15 +103,15 @@ class _FavouriteScreenState extends State<FavouriteScreen> {
                             SingleChildScrollView(
                               child: Column(
                                 children: [
-                                  _NearWidget(
+                                  _NearWidget(context,
                                       img: "1",
                                       title: "Flash Deal",
                                       color: yellowColor),
-                                  _NearWidget(
+                                  _NearWidget(context,
                                       img: "2",
                                       title: "Flash Deal",
                                       color: yellowColor),
-                                  _NearWidget(
+                                  _NearWidget(context,
                                       img: "3",
                                       title: "Flash Deal",
                                       color: yellowColor),
@@ -115,15 +121,15 @@ class _FavouriteScreenState extends State<FavouriteScreen> {
                             SingleChildScrollView(
                               child: Column(
                                 children: [
-                                  _NearWidget(
+                                  _NearWidget(context,
                                       img: "4",
                                       title: "Flash Deal",
                                       color: yellowColor),
-                                  _NearWidget(
+                                  _NearWidget(context,
                                       img: "5",
                                       title: "Flash Deal",
                                       color: yellowColor),
-                                  _NearWidget(
+                                  _NearWidget(context,
                                       img: "1",
                                       title: "Flash Deal",
                                       color: yellowColor),
@@ -133,15 +139,15 @@ class _FavouriteScreenState extends State<FavouriteScreen> {
                             SingleChildScrollView(
                               child: Column(
                                 children: [
-                                  _NearWidget(
+                                  _NearWidget(context,
                                       img: "2",
                                       title: "Flash Deal",
                                       color: yellowColor),
-                                  _NearWidget(
+                                  _NearWidget(context,
                                       img: "11",
                                       title: "Flash Deal",
                                       color: yellowColor),
-                                  _NearWidget(
+                                  _NearWidget(context,
                                       img: "4",
                                       title: "Flash Deal",
                                       color: yellowColor),
@@ -163,7 +169,7 @@ class _FavouriteScreenState extends State<FavouriteScreen> {
   }
 }
 
-Widget _NearWidget(
+Widget _NearWidget(context,
     {required String img, required String title, dynamic color}) {
   return Container(
     margin: EdgeInsets.only(right: 30, bottom: 10, left: 30),
@@ -171,25 +177,37 @@ Widget _NearWidget(
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Stack(
-          children: [
-            ClipRRect(
-                borderRadius: BorderRadius.circular(20),
-                child: Image.asset("assets/img/$img.png",
-                    height: height * 0.2, width: width, fit: BoxFit.fill)),
-            Container(
-              padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-              margin: EdgeInsets.only(top: 10, left: 10),
-              decoration: BoxDecoration(
-                  color: color, borderRadius: BorderRadius.circular(5)),
-              child: TextWidget(
-                title: "$title",
-                fontWeight: FontWeight.w700,
-                size: 8,
-                color: Colors.white,
+        InkWell(
+          onTap: () {
+            //  PersistentNavBarNavigator.pushNewScreen(
+            //            context,
+            //           screen: FavouriteEventDetailsScreen(
+            //            id : '1', img: 1, name: title,
+            //          ),
+            //         withNavBar: false,
+            //      );
+            // Handle tap event
+          },
+          child: Stack(
+            children: [
+              ClipRRect(
+                  borderRadius: BorderRadius.circular(20),
+                  child: Image.asset("assets/img/$img.png",
+                      height: height * 0.2, width: width, fit: BoxFit.fill)),
+              Container(
+                padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                margin: EdgeInsets.only(top: 10, left: 10),
+                decoration: BoxDecoration(
+                    color: color, borderRadius: BorderRadius.circular(5)),
+                child: TextWidget(
+                  title: "$title",
+                  fontWeight: FontWeight.w700,
+                  size: 8,
+                  color: Colors.white,
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
         SizedBox(
           height: 10,

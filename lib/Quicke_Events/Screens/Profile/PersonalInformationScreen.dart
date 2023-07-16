@@ -1,6 +1,12 @@
-import 'package:flutter/material.dart';
-import 'package:quickie_event/Constant.dart';
+import 'dart:convert';
 
+import 'package:flutter/material.dart';
+import 'package:get_storage/get_storage.dart';
+import 'package:provider/provider.dart';
+import 'package:quickie_event/Constant.dart';
+import 'package:quickie_event/ConstantModels/LoginModel.dart';
+
+import '../../../ConstantProviders/AuthProviders.dart';
 import '../../Widgets/SizedBoxWidget.dart';
 import '../../Widgets/TextFormWidget.dart';
 import '../../Widgets/TextWidget.dart';
@@ -13,7 +19,35 @@ class PersonalInformationScreen extends StatefulWidget {
       _PersonalInformationScreenState();
 }
 
+
+
 class _PersonalInformationScreenState extends State<PersonalInformationScreen> {
+TextEditingController nameController = TextEditingController();
+TextEditingController emailController = TextEditingController();
+TextEditingController passwordController = TextEditingController();
+@override
+void initState() {
+    super.initState();
+    getProfileInfo();
+}
+   LoginModel? profile;
+
+   LoginModel? getProfileInfo() {
+    final box = GetStorage();
+    String? userData = box.read("userKey");
+
+    if (userData != null) {
+       Map<String, dynamic> jsonMap = jsonDecode(userData);
+setState(() {
+        profile = LoginModel.fromJson(jsonMap);
+        print("name is" + profile!.data.email);
+      });
+      return profile;
+    } else {
+      return null;
+    }
+  }
+  
   bool passwordVisible = true;
   @override
   Widget build(BuildContext context) {
@@ -32,7 +66,9 @@ class _PersonalInformationScreenState extends State<PersonalInformationScreen> {
         elevation: 0,
         centerTitle: true,
       ),
-      body: SingleChildScrollView(
+      body: Consumer<AuthProvider>(
+      builder: (context, value, child) => SafeArea(
+        child:SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20),
           child: Column(
@@ -53,21 +89,33 @@ class _PersonalInformationScreenState extends State<PersonalInformationScreen> {
               Row(
                 children: [
                   TextWidget(
-                    title: "Full Name",
+                    title: profile?.data.name ?? " ",
                     fontWeight: FontWeight.w600,
                   ),
                   Spacer(),
-                  TextWidget(
-                    title: "Change",
-                    fontWeight: FontWeight.w600,
-                    color: appColor,
+                  GestureDetector(
+                onTap: () async {
+  await value.updateprofile(
+    id: profile!.data.id.toString(),
+    name: nameController.text,
+    email: "",
+    password: "",
+  );
+  Navigator.pop(context, nameController.text); // Pass the updated name as a result
+},
+                    child: TextWidget(
+                      title: "Change",
+                      fontWeight: FontWeight.w600,
+                      color: appColor,
+                    ),
                   ),
                 ],
               ),
               SizedBox(
                 height: 10,
               ),
-              textfieldProduct(context: context, name: "Name"),
+              textfieldProduct(context: context, name: profile?.data.name?? "No name",  controller: nameController,
+),
               SizedBox(
                 height: 20,
               ),
@@ -78,17 +126,29 @@ class _PersonalInformationScreenState extends State<PersonalInformationScreen> {
                     fontWeight: FontWeight.w600,
                   ),
                   Spacer(),
-                  TextWidget(
-                    title: "Change",
-                    fontWeight: FontWeight.w600,
-                    color: appColor,
+                  GestureDetector(
+                    onTap: () async {
+                       await value.updateprofile(
+                                                id:  profile!.data.id.toString(),
+
+                        name: "",
+                            email: emailController.text,
+                            password: "",
+                          );
+                    },
+                    child: TextWidget(
+                      title: "Change",
+                      fontWeight: FontWeight.w600,
+                      color: appColor,
+                    ),
                   ),
                 ],
               ),
               SizedBox(
                 height: 10,
               ),
-              textfieldProduct(context: context, name: "Email"),
+              textfieldProduct(context: context, name: profile?.data.email?? " ",  controller: emailController,
+),
               SizedBox(
                 height: 20,
               ),
@@ -99,10 +159,21 @@ class _PersonalInformationScreenState extends State<PersonalInformationScreen> {
                     fontWeight: FontWeight.w600,
                   ),
                   Spacer(),
-                  TextWidget(
-                    title: "Update",
-                    fontWeight: FontWeight.w600,
-                    color: appColor,
+                  GestureDetector(
+                    onTap: ()async{
+ await value.updateprofile(
+                          id:  profile!.data.id.toString(),
+
+                        name: "",
+                            email: "",
+                            password: passwordController.text,
+                          );
+                    },
+                    child: TextWidget(
+                      title: "Update",
+                      fontWeight: FontWeight.w600,
+                      color: appColor,
+                    ),
                   ),
                 ],
               ),
@@ -111,7 +182,7 @@ class _PersonalInformationScreenState extends State<PersonalInformationScreen> {
               ),
               textfieldProduct(
                   context: context,
-                  name: "Password",
+                  name: " ",
                   obscureText: passwordVisible,
                   suffixIcon: IconButton(
                       onPressed: () {
@@ -121,11 +192,15 @@ class _PersonalInformationScreenState extends State<PersonalInformationScreen> {
                       },
                       icon: Icon(passwordVisible
                           ? Icons.visibility_off
-                          : Icons.visibility))),
+                          : Icons.visibility)),
+                            controller: passwordController,
+),
             ],
           ),
         ),
       ),
+      ),
+    ),
     );
   }
 }

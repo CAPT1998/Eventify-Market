@@ -1,4 +1,7 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
 import 'package:provider/provider.dart';
 import 'package:quickie_event/Constant.dart';
@@ -10,6 +13,7 @@ import 'package:quickie_event/Quicke_Events/Screens/Profile/PersonalInformationS
 import 'package:quickie_event/Quicke_Events/Screens/SearchingEvents/SearchCategoryScreen.dart';
 import 'package:quickie_event/Quicke_Events/Widgets/TextWidget.dart';
 
+import '../../../ConstantModels/LoginModel.dart';
 import '../../../helper/storage_helper.dart';
 import '../SearchFeatures/SearchFeatureScreen.dart';
 
@@ -21,6 +25,29 @@ class ProfileScreenFeatures extends StatefulWidget {
 }
 
 class _ProfileScreenFeaturesState extends State<ProfileScreenFeatures> {
+
+@override
+void initState() {
+    super.initState();
+    getProfileInfo();
+}
+   LoginModel? profile;
+
+     LoginModel? getProfileInfo() {
+    final box = GetStorage();
+    String? userData = box.read("userKey");
+
+    if (userData != null) {
+       Map<String, dynamic> jsonMap = jsonDecode(userData);
+setState(() {
+        profile = LoginModel.fromJson(jsonMap);
+        print("name is" + profile!.data.email);
+      });
+      return profile;
+    } else {
+      return null;
+    }
+  }
   @override
   Widget build(BuildContext context) {
     return Consumer<AuthProvider>(
@@ -29,7 +56,8 @@ class _ProfileScreenFeaturesState extends State<ProfileScreenFeatures> {
           body: SingleChildScrollView(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Column(
+              child: Consumer<AuthProvider>(
+      builder: (context, value, child) => Column(
                 children: [
                   SizedBox(
                     height: 50,
@@ -42,10 +70,10 @@ class _ProfileScreenFeaturesState extends State<ProfileScreenFeatures> {
                     ),
                     title: TextWidget(
                         title:
-                            "${value.userData["username"] ?? value.loginModel?.data.name}",
+                            "${value.loginModel?.data.name ?? value.userData["username"] }",
                         size: 16),
                     subtitle: Text(
-                      "${value.userData["email"] ?? value.loginModel?.data.email}",
+                      "${value.loginModel?.data.email ?? value.userData["email"] }",
                     ),
                   ),
                   Divider(
@@ -144,6 +172,7 @@ class _ProfileScreenFeaturesState extends State<ProfileScreenFeatures> {
             ),
           ),
         ),
+      ),
       ),
     );
   }

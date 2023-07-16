@@ -77,36 +77,54 @@ class _NotificationCenterScreenState extends State<NotificationCenterScreen> {
 }
 
 bool valueCheckBox = false;
-Widget _OrganizerWidget({dynamic icon, String? title}) {
-  return Container(
-    margin: EdgeInsets.only(bottom: 10),
-    width: width,
-    padding: EdgeInsets.all(5),
-    decoration: BoxDecoration(
-      border: Border.all(color: lightGreyColor),
-      borderRadius: BorderRadius.circular(10),
-    ),
-    child: ListTile(
-      title: TextWidget(
-        title: "$title",
-        size: 14,
-        fontWeight: FontWeight.w500,
+class _OrganizerWidget extends StatefulWidget {
+  final dynamic icon;
+  final String? title;
+
+  const _OrganizerWidget({Key? key, this.icon, this.title}) : super(key: key);
+
+  @override
+  _OrganizerWidgetState createState() => _OrganizerWidgetState();
+}
+
+class _OrganizerWidgetState extends State<_OrganizerWidget> {
+  bool valueCheckBox = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: EdgeInsets.only(bottom: 10),
+      width: width,
+      padding: EdgeInsets.all(5),
+      decoration: BoxDecoration(
+        border: Border.all(color: lightGreyColor),
+        borderRadius: BorderRadius.circular(10),
       ),
-      leading: Icon(icon),
-      trailing: SizedBox(
-        width: width * 0.15,
-        child: FlutterSwitch(
-          showOnOff: true,
-          activeTextColor: Colors.black,
-          activeColor: appColor,
-          toggleSize: 15,
-          height: 25,
-          width: 55,
-          // inactiveTextColor: Colors.blue[50],
-          value: valueCheckBox,
-          onToggle: (value) {},
+      child: ListTile(
+        title: TextWidget(
+          title: "${widget.title}",
+          size: 14,
+          fontWeight: FontWeight.w500,
+        ),
+        leading: Icon(widget.icon),
+        trailing: SizedBox(
+          width: width * 0.15,
+          child: FlutterSwitch(
+            showOnOff: true,
+            activeTextColor: Colors.black,
+            activeColor: appColor,
+            toggleSize: 15,
+            height: 25,
+            width: 55,
+            value: valueCheckBox,
+            onToggle: (value) {
+              setState(() {
+                valueCheckBox = value;
+              });
+            },
+          ),
         ),
       ),
-    ),
-  );
+    );
+  }
 }

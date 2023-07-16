@@ -52,7 +52,7 @@ class _AddressBottomSheetWidgetState extends State<AddressBottomSheetWidget> {
                   setState(() {
                     _selectedAddressIndex = -1;
                   });
-                  Navigator.pop(context);
+                  Navigator.of(context).pop("MI CASA");
                 },
                 icon: const Icon(Icons.delete),
               ),
@@ -192,6 +192,12 @@ class _AddressBottomSheetWidgetState extends State<AddressBottomSheetWidget> {
           zoomGesturesEnabled: true,
           zoomControlsEnabled: true,
           usePinPointingSearch: true,
+          enableMapTypeButton: true,
+          hintText: "Find a place ...",
+          searchingText: "Please wait ...",
+          selectText: "Select place",
+          selectInitialPosition: true,
+          usePlaceDetailSearch: true,
 
           onPlacePicked: (result) async {
             final coordinates = result.geometry!.location;
@@ -209,7 +215,7 @@ class _AddressBottomSheetWidgetState extends State<AddressBottomSheetWidget> {
 
               // print(result.formattedAddress);
               if (result != null) {
-                final newAddress = address;
+                final newAddress = result.name;
                 if (newAddress != null) {
                   final additionalInfo = await Navigator.push(
                     context,
@@ -250,7 +256,6 @@ class _AddressBottomSheetWidgetState extends State<AddressBottomSheetWidget> {
           },
           initialPosition: LatLng(0.0, 0.0),
           useCurrentLocation: true,
-          usePlaceDetailSearch: true,
           resizeToAvoidBottomInset:
               false, // only works in page mode, less flickery, remove if wrong offsets
         ),
@@ -298,9 +303,14 @@ class _AddressInputScreenState extends State<AddressInputScreen> {
 
   void _saveAddress() {
     final additionalInfo = _controller.text.trim();
-    updatedAddress =
-        '$additionalInfo, $apartmentOrBuilding, $indications, $phoneNumber';
 
+    if (indications.isNotEmpty) {
+       updatedAddress =
+        ' $indications ';
+    } else {
+    updatedAddress =
+        '$additionalInfo, $apartmentOrBuilding, ';
+    }
     // Perform your address saving logic here
 
     Navigator.of(context).pop(updatedAddress);

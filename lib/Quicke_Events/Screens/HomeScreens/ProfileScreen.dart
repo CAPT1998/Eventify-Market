@@ -1,4 +1,7 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
 import 'package:provider/provider.dart';
 import 'package:quickie_event/Constant.dart';
@@ -13,6 +16,7 @@ import 'package:quickie_event/Quicke_Events/Screens/Profile/SelectCategoryForPri
 import 'package:quickie_event/Quicke_Events/Screens/SearchingEvents/SearchCategoryScreen.dart';
 import 'package:quickie_event/Quicke_Events/Widgets/TextWidget.dart';
 
+import '../../../ConstantModels/LoginModel.dart';
 import '../../../ConstantProviders/AuthProviders.dart';
 import '../../../ConstantScreens/AuthScreens/WelcomeScreen.dart';
 import '../../../helper/storage_helper.dart';
@@ -25,6 +29,29 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
+
+  @override
+void initState() {
+    super.initState();
+    getProfileInfo();
+}
+   LoginModel? profile;
+
+   LoginModel? getProfileInfo() {
+    final box = GetStorage();
+    String? userData = box.read("userKey");
+
+    if (userData != null) {
+       Map<String, dynamic> jsonMap = jsonDecode(userData);
+setState(() {
+        profile = LoginModel.fromJson(jsonMap);
+        print("name is" + profile!.data.email);
+      });
+      return profile;
+    } else {
+      return null;
+    }
+  }
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -32,7 +59,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
         body: SingleChildScrollView(
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: Column(
+            child: Consumer<AuthProvider>(
+      builder: (context, value, child) =>Column(
               children: [
                 SizedBox(
                   height: 50,
@@ -42,20 +70,24 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     radius: 30,
                     backgroundImage: AssetImage("assets/img/f4.png"),
                   ),
-                  title: TextWidget(title: "UserName", size: 16),
-                  subtitle: Text("abc@gmail.com"),
+                  title: TextWidget(title: value.loginModel?.data.name?? "Username", size: 16),
+                  subtitle: Text(value.loginModel?.data.name?? "email"),
                 ),
                 Divider(
                   color: greyColor,
                 ),
                 ListTile(
-                  onTap: () {
-                    PersistentNavBarNavigator.pushNewScreen(
-                      context,
-                      screen: PersonalInformationScreen(),
-                      withNavBar: false,
-                    );
-                  },
+ onTap: () async {
+ await Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (context) => PersonalInformationScreen(),
+    ),
+  );
+  
+},
+
+
                   leading: Icon(Icons.person),
                   title: TextWidget(
                     title: "Personal data",
@@ -239,6 +271,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
         ),
       ),
+      )
     );
   }
 }

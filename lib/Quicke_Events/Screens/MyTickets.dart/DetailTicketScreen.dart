@@ -1,16 +1,42 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:quickie_event/Constant.dart';
 import '../../Models/GetEventSeatHistoryModel.dart';
 import '../../Widgets/TextWidget.dart';
+import 'package:screenshot/screenshot.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:gallery_saver/gallery_saver.dart';
 
 class DetailTicketScreen extends StatefulWidget {
-  DetailTicketScreen({super.key,required this.model});
+  DetailTicketScreen({super.key, required this.model});
   GetEventSeatHistoryModel model;
   @override
   State<DetailTicketScreen> createState() => _DetailTicketScreenState();
 }
 
 class _DetailTicketScreenState extends State<DetailTicketScreen> {
+  ScreenshotController screenshotController = ScreenshotController();
+  late String imagePath;
+  Future<void> captureAndSaveScreenshot() async {
+    final imageFile = await screenshotController.capture();
+
+    final appDir = await getTemporaryDirectory();
+    final fileName = 'ticket_${DateTime.now().millisecondsSinceEpoch}.png';
+    final savedImagePath = '${appDir.path}/$fileName';
+
+    final savedFile = File(savedImagePath);
+    await savedFile.writeAsBytes(imageFile!);
+
+// Save the image file to the gallery
+    await GallerySaver.saveImage(savedImagePath);
+
+    setState(() {
+      imagePath = savedImagePath;
+    });
+    SuccessFlushbar(context, "Success", "Ticket saved to Gallery");
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -30,7 +56,7 @@ class _DetailTicketScreenState extends State<DetailTicketScreen> {
         centerTitle: true,
         actions: [
           IconButton(
-              onPressed: () {},
+              onPressed: captureAndSaveScreenshot,
               icon: Icon(
                 Icons.file_download_outlined,
                 color: Colors.black,
@@ -40,160 +66,164 @@ class _DetailTicketScreenState extends State<DetailTicketScreen> {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            Container(
-              padding: EdgeInsets.all(10),
-              margin: EdgeInsets.all(30),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Stack(
-                    children: [
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(20),
-                        child: Image.asset(
-                          "assets/img/11.png",
-                          width: width,
-                          height: height * 0.2,
-                          fit: BoxFit.fill,
-                        ),
-                      ),
-                      Positioned(
-                        bottom: 0,
-                        right: 0,
-                        child: Container(
-                          height: height * 0.07,
-                          width: width * 0.8,
-                          padding: EdgeInsets.all(20),
-                          decoration: BoxDecoration(
-                            color: Color(0XFFFFFFFF).withOpacity(0.3),
-                          ),
-                          child: TextWidget(
-                            title: "${widget.model.eventTitle}",
-                            fontWeight: FontWeight.w700,
-                            size: 14,
-                            color: Colors.white,
+            Screenshot(
+              controller: screenshotController,
+              child: Container(
+                padding: EdgeInsets.all(10),
+                margin: EdgeInsets.all(30),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Stack(
+                      children: [
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(20),
+                          child: Image.asset(
+                            "assets/img/11.png",
+                            width: width,
+                            height: height * 0.2,
+                            fit: BoxFit.fill,
                           ),
                         ),
-                      )
-                    ],
-                  ),
-                  SizedBox(
-                    height: 20,
-                  ),
-                  TextWidget(
-                      title: "Name",
-                      size: 12,
-                      fontWeight: FontWeight.w500,
-                      color: greyColor.withOpacity(0.3)),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  TextWidget(
-                    title: "Emaa Alexander",
-                    size: 20,
-                  ),
-                  SizedBox(
-                    height: 50,
-                    child: Divider(
-                      color: greyColor,
+                        Positioned(
+                          bottom: 0,
+                          right: 0,
+                          child: Container(
+                            height: height * 0.07,
+                            width: width * 0.8,
+                            padding: EdgeInsets.all(20),
+                            decoration: BoxDecoration(
+                              color: Color(0XFFFFFFFF).withOpacity(0.3),
+                            ),
+                            child: TextWidget(
+                              title: "${widget.model.eventTitle}",
+                              fontWeight: FontWeight.w700,
+                              size: 14,
+                              color: Colors.white,
+                            ),
+                          ),
+                        )
+                      ],
                     ),
-                  ),
-                  Row(
-                    children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          TextWidget(
-                              title: "Event date",
-                              size: 12,
-                              fontWeight: FontWeight.w500,
-                              color: greyColor.withOpacity(0.3)),
-                          SizedBox(
-                            height: 10,
-                          ),
-                          TextWidget(
-                            title: "${widget.model.eventStartDate.toString().split(" ")[0]}",
-                            size: 16,
-                          ),
-                        ],
-                      ),
-                      Spacer(),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          TextWidget(
-                              title: "Time",
-                              size: 12,
-                              fontWeight: FontWeight.w500,
-                              color: greyColor.withOpacity(0.3)),
-                          SizedBox(
-                            height: 10,
-                          ),
-                          TextWidget(
-                            title: "${widget.model.eventStartTime}",
-                            size: 16,
-                          ),
-                        ],
-                      )
-                    ],
-                  ),
-                  SizedBox(
-                    height: 20,
-                  ),
-                  Row(
-                    children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          TextWidget(
-                              title: "Event",
-                              size: 12,
-                              fontWeight: FontWeight.w500,
-                              color: greyColor.withOpacity(0.3)),
-                          SizedBox(
-                            height: 10,
-                          ),
-                          TextWidget(
-                            title: "${widget.model.seats[0].ticketId}",
-                            size: 16,
-                          ),
-                        ],
-                      ),
-                      Spacer(),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          TextWidget(
-                              title: "Venue",
-                              size: 12,
-                              fontWeight: FontWeight.w500,
-                              color: greyColor.withOpacity(0.3)),
-                          SizedBox(
-                            height: 10,
-                          ),
-                          TextWidget(
-                            title: "The Living",
-                            size: 16,
-                          ),
-                        ],
-                      )
-                    ],
-                  ),
-                  SizedBox(
-                    height: 50,
-                    child: Divider(
-                      color: greyColor,
+                    SizedBox(
+                      height: 20,
                     ),
-                  ),
-                  Image.asset("assets/img/var.png"),
-                  SizedBox(
-                    height: 20,
-                  ),
-                ],
+                    TextWidget(
+                        title: "Name",
+                        size: 12,
+                        fontWeight: FontWeight.w500,
+                        color: greyColor.withOpacity(0.3)),
+                    SizedBox(
+                      height: 10,
+                    ),
+                    TextWidget(
+                      title: "Emaa Alexander",
+                      size: 20,
+                    ),
+                    SizedBox(
+                      height: 50,
+                      child: Divider(
+                        color: greyColor,
+                      ),
+                    ),
+                    Row(
+                      children: [
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            TextWidget(
+                                title: "Event date",
+                                size: 12,
+                                fontWeight: FontWeight.w500,
+                                color: greyColor.withOpacity(0.3)),
+                            SizedBox(
+                              height: 10,
+                            ),
+                            TextWidget(
+                              title:
+                                  "${widget.model.eventStartDate.toString().split(" ")[0]}",
+                              size: 16,
+                            ),
+                          ],
+                        ),
+                        Spacer(),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            TextWidget(
+                                title: "Time",
+                                size: 12,
+                                fontWeight: FontWeight.w500,
+                                color: greyColor.withOpacity(0.3)),
+                            SizedBox(
+                              height: 10,
+                            ),
+                            TextWidget(
+                              title: "${widget.model.eventStartTime}",
+                              size: 16,
+                            ),
+                          ],
+                        )
+                      ],
+                    ),
+                    SizedBox(
+                      height: 20,
+                    ),
+                    Row(
+                      children: [
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            TextWidget(
+                                title: "Event",
+                                size: 12,
+                                fontWeight: FontWeight.w500,
+                                color: greyColor.withOpacity(0.3)),
+                            SizedBox(
+                              height: 10,
+                            ),
+                            TextWidget(
+                              title: "${widget.model.seats[0].ticketId}",
+                              size: 16,
+                            ),
+                          ],
+                        ),
+                        Spacer(),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            TextWidget(
+                                title: "Venue",
+                                size: 12,
+                                fontWeight: FontWeight.w500,
+                                color: greyColor.withOpacity(0.3)),
+                            SizedBox(
+                              height: 10,
+                            ),
+                            TextWidget(
+                              title: "The Living",
+                              size: 16,
+                            ),
+                          ],
+                        )
+                      ],
+                    ),
+                    SizedBox(
+                      height: 50,
+                      child: Divider(
+                        color: greyColor,
+                      ),
+                    ),
+                    Image.asset("assets/img/var.png"),
+                    SizedBox(
+                      height: 20,
+                    ),
+                  ],
+                ),
               ),
             ),
             Padding(

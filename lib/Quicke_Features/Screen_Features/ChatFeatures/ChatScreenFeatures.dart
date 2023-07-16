@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:provider/provider.dart';
 import 'package:quickie_event/Constant.dart';
 
+import '../../../ConstantProviders/AuthProviders.dart';
+import '../../../ConstantProviders/ChatProvider.dart';
 import 'Widgets/ChatInputField.dart';
 
 class ChatScreenFeatures extends StatefulWidget {
@@ -12,6 +16,8 @@ class ChatScreenFeatures extends StatefulWidget {
 
 class _ChatScreenFeaturesState extends State<ChatScreenFeatures> {
   TextEditingController message = TextEditingController();
+  final ScrollController _scrollController = ScrollController();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -23,7 +29,7 @@ class _ChatScreenFeaturesState extends State<ChatScreenFeatures> {
             backgroundImage: AssetImage("assets/img/slider1.jpg"),
           ),
           title: Text(
-            "Rafa Fashion",
+            "Support Chat",
             style: TextStyle(
               fontSize: 17,
               fontWeight: FontWeight.w600,
@@ -36,44 +42,58 @@ class _ChatScreenFeaturesState extends State<ChatScreenFeatures> {
         ),
       ),
       body: SingleChildScrollView(
-        child: Column(
-          children: [
-            SizedBox(
-              height: 10,
-            ),
-            Container(
-              margin: EdgeInsets.symmetric(horizontal: 50, vertical: 10),
-              padding: EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: Color(0XFF2473F2).withOpacity(0.2),
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: Text(
-                "Message to this chat and calls are now secured & Encripted",
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w400,
-                    color: Color(0XFF828588)),
-              ),
-            ),
-            SizedBox(
-              height: 20,
-            ),
-            _RightWidget(title: "Is it available now?"),
-            SizedBox(
-              height: 20,
-            ),
-            _LeftWidget(title: "Yeah. It is available. You\ncan buy it now."),
-            SizedBox(
-              height: 20,
-            ),
-            _RightWidget(title: "Wheen will I get if I make a order.\nWill I get within the cristmas?"),
-            SizedBox(
-              height: 20,
-            ),
-            _LeftWidget(title: "Off course. You will get the\nproduct within 2 days.\nThank you! 😍❤️")
-          ],
+        child: Consumer2<AuthProvider, ChatProvider>(
+          builder: (context, value, value2, child) {
+            value2.getChatData(value.loginModel!.data.id.toString(), "2");
+            return StreamBuilder<List<dynamic>>(
+              stream: value2.chatMessagesStream,
+              builder: (context, snapshot) {
+                if (snapshot.hasError) {
+                  return Text("${snapshot.error}");
+                }
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(
+                    child: SpinKitPumpingHeart(
+                      color: Color(0XFF24ABE3),
+                      size: 70.0,
+                    ),
+                  );
+                }
+                if (!snapshot.hasData ||
+                    snapshot.data == null ||
+                    snapshot.data!.isEmpty) {
+                  return const Padding(
+                    padding: EdgeInsets.only(top: 48.0),
+                    child: Center(child: Text("No chat")),
+                  );
+                }
+
+                return SingleChildScrollView(
+                  child: Padding(
+                    padding: const EdgeInsets.only(bottom: 50.0),
+                    child: ListView.builder(
+                      shrinkWrap: true,
+                      controller: _scrollController,
+                      itemCount: snapshot.data!.length,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemBuilder: (BuildContext ctx, index) {
+                        var item = snapshot.data![index];
+
+                        return value.loginModel!.data.id.toString() ==
+                                item["id"].toString()
+                            ? _LeftWidget(
+                                title: item["message"],
+                              )
+                            : _RightWidget(
+                                title: item["message"],
+                              );
+                      },
+                    ),
+                  ),
+                );
+              },
+            );
+          },
         ),
       ),
       bottomSheet: ChatInputField(message: message, press: () {}),

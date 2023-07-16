@@ -64,7 +64,6 @@ dependencies:
   cached_network_image: ^3.2.3
   file_picker: ^5.2.10
   intl: ^0.18.1
-  geocoding: ^2.1.0
   flutter_google_places_sdk: ^0.3.2+9
   flutter_typeahead: ^4.3.1
   slide_countdown: ^0.5.0
@@ -82,7 +81,11 @@ dependencies:
   url_launcher: ^6.1.11
   intl_phone_number_input: ^0.7.3+1
   device_calendar: ^4.3.1
-dev_dependencies:
+  gallery_saver: ^2.3.2
+  firebase_messaging: ^14.6.4
+  flutter_local_notifications: ^15.0.1
+  geolocator: ^9.0.2
+  geocoding: 2.1.0 
   flutter_test:
     sdk: flutter
 
@@ -92,6 +95,7 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^2.0.0
+  flutter_map: ^4.0.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

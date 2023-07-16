@@ -72,7 +72,7 @@ class Data {
     factory Data.fromJson(Map<String, dynamic> json) => Data(
         id: json["id"],
         name: json["name"],
-        email: json["email"],
+        email: json["email"]?? " empty",
         apiToken: json["api_token"],
         cardBrand: json["card_brand"],
         cardLastFour: json["card_last_four"],
