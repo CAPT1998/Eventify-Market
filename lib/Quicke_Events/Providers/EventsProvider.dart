@@ -26,7 +26,7 @@ class EventProvider with ChangeNotifier {
   List<GetEventsModel> getEventsModel = [];
   List<OrganizerEvent> organizerEventDetails2 = [];
   List<Getfavoriteevents> favoriteevents = [];
-
+  String? followersText;
   //List<GetOrganizersEventsModel> OrganizerEventDetails = [];
 
   bool checkValueEvent = false;
@@ -116,6 +116,8 @@ class EventProvider with ChangeNotifier {
 
       var jsonData = json.decode(responseData);
       String message = jsonData["message"];
+      notifyListeners();
+
       SuccessFlushbar(
         context,
         "Success",
@@ -124,8 +126,7 @@ class EventProvider with ChangeNotifier {
     }
   }
 
-
-    followorganizer(context, dynamic userid, dynamic organizerid) async {
+  followorganizer(context, dynamic userid, dynamic organizerid) async {
     print(organizerid);
     print("organizer follow");
     print(userid);
@@ -136,29 +137,32 @@ class EventProvider with ChangeNotifier {
     var request = http.Request(
         'POST',
         Uri.parse(
-            'http://quickeeapi.pakwexpo.com/api/organizers/{$organizerid}/follow/{$userid}'));
+            'http://quickeeapi.pakwexpo.com/api/organizers/$organizerid/follow/$userid'));
 
     request.headers.addAll(headers);
     http.StreamedResponse response = await request.send();
-    if (response.statusCode == 200) {
-      print("donde");
-      print(response.stream);
+    print(response.statusCode);
 
-      var responseData = await response.stream.bytesToString();
+    print("donde");
+    print(response.stream);
 
-      var jsonData = json.decode(responseData);
-      String message = jsonData["message"];
-      SuccessFlushbar(
-        context,
-        "Success",
-        message,
-      );
-    }
+    var responseData = await response.stream.bytesToString();
+
+    var jsonData = json.decode(responseData);
+    String message = jsonData["message"];
+    var followercount = jsonData["followers_count"];
+    int followerCountValue = followercount ?? 0;
+    followersText = "$followerCountValue Followers";
+    notifyListeners();
+
+    SuccessFlushbar(
+      context,
+      "Success",
+      message,
+    );
   }
 
-
-  
-    unfolloworganizer(context, dynamic userid, dynamic organizerid) async {
+  unfolloworganizer(context, dynamic userid, dynamic organizerid) async {
     print(organizerid);
     print("organizer follow");
     print(userid);
@@ -181,6 +185,11 @@ class EventProvider with ChangeNotifier {
 
       var jsonData = json.decode(responseData);
       String message = jsonData["message"];
+      var followercount = jsonData["followers_count"];
+      int followerCountValue = followercount ?? 0;
+      followersText = "$followerCountValue Followers";
+      notifyListeners();
+
       SuccessFlushbar(
         context,
         "Success",

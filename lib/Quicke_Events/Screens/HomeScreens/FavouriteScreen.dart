@@ -125,6 +125,16 @@ class _FavouriteScreenState extends State<FavouriteScreen> {
                                               model: eventvalue
                                                   .favoriteevents[index]);
                                         }),
+                                    if (eventvalue.favoriteevents == null ||
+                                        eventvalue.favoriteevents.isEmpty)
+                                      Center(
+                                        child: Text(
+                                          "No favorite events available.",
+                                          style: TextStyle(
+                                              fontSize: 18,
+                                              fontWeight: FontWeight.bold),
+                                        ),
+                                      )
                                   ],
                                 ),
                               ),

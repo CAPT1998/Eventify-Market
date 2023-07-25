@@ -96,9 +96,9 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
                                     context,
                                     authvalue.loginModel[0].data?.id,
                                     widget.model.id);
-                                 await eventvalue.getFavoriteEvents(authvalue
-                                     .loginModel[0].data!.id
-                                     .toString());
+                                await eventvalue.getFavoriteEvents(authvalue
+                                    .loginModel[0].data!.id
+                                    .toString());
                               },
                             ),
                           ),
@@ -420,8 +420,8 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
                     SizedBox(
                       height: 10,
                     ),
-                    OrganizerWidget(
-                        widget.model.eventOrganizer!.organizerName!,  widget.model.eventOrganizer!.id),
+                    OrganizerWidget(widget.model.eventOrganizer!.organizerName!,
+                        widget.model.eventOrganizer!.id),
                     // OrganizerWidget(widget.model.eventOrganizer),
                     // OrganizerWidget(widget.model.eventOrganizer),
                     SizedBox(height: 20),
@@ -516,7 +516,7 @@ Widget _TagWidget(String title) {
 
 class OrganizerWidget extends StatefulWidget {
   String? name;
-int? id;
+  int? id;
   OrganizerWidget(this.name, this.id, {super.key});
   @override
   _OrganizerWidgetState createState() => _OrganizerWidgetState();
@@ -524,56 +524,63 @@ int? id;
 
 class _OrganizerWidgetState extends State<OrganizerWidget> {
   bool isFollowing = false;
-
+  String? fcount;
   @override
   Widget build(BuildContext context) {
-    return   Consumer2<EventProvider, AuthProvider>(
-                          builder: (context, eventvalue, authvalue, child) =>Container(
-      margin: EdgeInsets.only(bottom: 10),
-      width: width,
-      padding: EdgeInsets.all(5),
-      decoration: BoxDecoration(
-        border: Border.all(color: lightGreyColor),
-        borderRadius: BorderRadius.circular(10),
-      ),
-      child: ListTile(
-        title: TextWidget(
-          title: widget.name!,
-          size: 14,
-          fontWeight: FontWeight.w500,
+    return Consumer2<EventProvider, AuthProvider>(
+      builder: (context, eventvalue, authvalue, child) => Container(
+        margin: EdgeInsets.only(bottom: 10),
+        width: width,
+        padding: EdgeInsets.all(5),
+        decoration: BoxDecoration(
+          border: Border.all(color: lightGreyColor),
+          borderRadius: BorderRadius.circular(10),
         ),
-        subtitle: TextWidget(
-          title: "10.5K Followers",
-          size: 12,
-          color: greyColor.withOpacity(0.5),
-          fontWeight: FontWeight.w500,
-        ),
-        leading: Image.asset(
-          "assets/img/f1.png",
-        ),
-        trailing: MaterialButton(
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-          color: appColor,
-          onPressed: () {
-            setState(() {
-              isFollowing = !isFollowing;
-            });
-             if (isFollowing) {
-             eventvalue.followorganizer(context, authvalue.loginModel[0].data!.id.toString(), widget.id.toString());
-            } else {
-              eventvalue.unfolloworganizer(context, authvalue.loginModel[0].data!.id.toString(), widget.id.toString());
-            }
-          },
-          child: TextWidget(
-            title: isFollowing ? "Unfollow" : "Follow",
+        child: ListTile(
+          title: TextWidget(
+            title: widget.name!,
+            size: 14,
+            fontWeight: FontWeight.w500,
+          ),
+          subtitle: TextWidget(
+            title: eventvalue.followersText ?? "0 Followers",
             size: 12,
-            fontWeight: FontWeight.w700,
-            color: Colors.white,
+            color: greyColor.withOpacity(0.5),
+            fontWeight: FontWeight.w500,
+          ),
+          leading: Image.asset(
+            "assets/img/f1.png",
+          ),
+          trailing: MaterialButton(
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            color: appColor,
+            onPressed: () {
+              setState(() {
+                isFollowing = !isFollowing;
+              });
+              if (isFollowing) {
+                eventvalue.followorganizer(
+                    context,
+                    authvalue.loginModel[0].data!.id.toString(),
+                    widget.id.toString());
+              } else {
+                eventvalue.unfolloworganizer(
+                    context,
+                    authvalue.loginModel[0].data!.id.toString(),
+                    widget.id.toString());
+              }
+              print("follower count is" + eventvalue.followersText!);
+            },
+            child: TextWidget(
+              title: isFollowing ? "Unfollow" : "Follow",
+              size: 12,
+              fontWeight: FontWeight.w700,
+              color: Colors.white,
+            ),
           ),
         ),
       ),
-                          ),
     );
   }
 }

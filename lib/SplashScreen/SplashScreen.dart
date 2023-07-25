@@ -12,8 +12,7 @@ import 'package:quickie_event/helper/logging_utils.dart';
 import 'package:quickie_event/helper/storage_helper.dart';
 
 class SplashScreen extends StatefulWidget {
-
-   SplashScreen({super.key});
+  SplashScreen({super.key});
 
   @override
   State<SplashScreen> createState() => _SplashScreenState();
@@ -28,11 +27,10 @@ class _SplashScreenState extends State<SplashScreen> {
       Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-              builder: (context) =>
-                  !Storage.getIsMentorTutorialComplete()
-              ?IntrductionScreen1():
-                  Storage.getJWT() != null && Storage.getJWT().isNotEmpty
-                      ? BottomNavigationFeatures()
+              builder: (context) => !Storage.getIsMentorTutorialComplete()
+                  ? IntrductionScreen1()
+                  : Storage.getJWT() != null && Storage.getJWT().isNotEmpty
+                      ? LoginScreen()
                       : LoginScreen()));
     });
   }
