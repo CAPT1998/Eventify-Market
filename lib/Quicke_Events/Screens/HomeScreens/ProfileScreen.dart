@@ -29,38 +29,45 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-
   @override
-void initState() {
+  void initState() {
     super.initState();
     getProfileInfo();
-}
-   LoginModel? profile;
+  }
 
-   LoginModel? getProfileInfo() {
+  LoginModel? profile;
+
+  LoginModel? getProfileInfo() {
     final box = GetStorage();
     String? userData = box.read("userKey");
 
+    print("userData: $userData"); // Print the userData to check its structure
+
     if (userData != null) {
-       Map<String, dynamic> jsonMap = jsonDecode(userData);
-setState(() {
-        profile = LoginModel.fromJson(jsonMap);
-        print("name is" + profile!.data.email);
-      });
-      return profile;
+      List<dynamic> jsonList = jsonDecode(userData);
+      if (jsonList.isNotEmpty) {
+        Map<String, dynamic> jsonMap = jsonList.first;
+        LoginModel profile = LoginModel.fromJson(jsonMap);
+        print("name is" + profile.data!.email!);
+        return profile;
+      } else {
+        print("Empty JSON array");
+        return null;
+      }
     } else {
       return null;
     }
   }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-      child: Scaffold(
-        body: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: Consumer<AuthProvider>(
-      builder: (context, value, child) =>Column(
+        child: Scaffold(
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          child: Consumer<AuthProvider>(
+            builder: (context, value, child) => Column(
               children: [
                 SizedBox(
                   height: 50,
@@ -68,26 +75,64 @@ setState(() {
                 ListTile(
                   leading: CircleAvatar(
                     radius: 30,
-                    backgroundImage: AssetImage("assets/img/f4.png"),
+                    child: ClipOval(
+                      child: Image.network(
+                        profile?.data?.media?.isNotEmpty == true
+                            ? profile!.data!.media![0].url!
+                            : "http://quickeeapi.pakwexpo.com/images/logo_default.png",
+                        width: 100,
+                        height: 100,
+                        fit: BoxFit.cover,
+                        loadingBuilder: (BuildContext context, Widget child,
+                            ImageChunkEvent? loadingProgress) {
+                          if (loadingProgress == null) {
+                            // Image finished loading
+                            return child;
+                          } else if (loadingProgress.cumulativeBytesLoaded ==
+                              0) {
+                            // Image failed to load, show fallback or error image from asset
+                            return Image.asset('assets/img/2.png',
+                                width: 100, height: 100);
+                          } else {
+                            // Image is still loading
+                            return Center(
+                              child: CircularProgressIndicator(
+                                value: loadingProgress.expectedTotalBytes !=
+                                        null
+                                    ? loadingProgress.cumulativeBytesLoaded /
+                                        (loadingProgress.expectedTotalBytes ??
+                                            1)
+                                    : null,
+                              ),
+                            );
+                          }
+                        },
+                        errorBuilder: (BuildContext context, Object error,
+                            StackTrace? stackTrace) {
+                          // Error occurred while loading the image, show fallback or error image from asset
+                          return Image.asset('assets/img/2.png',
+                              width: 100, height: 100);
+                        },
+                      ),
+                    ),
                   ),
-                  title: TextWidget(title: value.loginModel?.data.name?? "Username", size: 16),
-                  subtitle: Text(value.loginModel?.data.name?? "email"),
+                  title: TextWidget(
+                      title: value.loginModel[0].data?.name ?? "Username",
+                      size: 16),
+                  subtitle: Text(value.loginModel[0].data?.email ?? "email"),
                 ),
                 Divider(
                   color: greyColor,
                 ),
                 ListTile(
- onTap: () async {
- await Navigator.push(
-    context,
-    MaterialPageRoute(
-      builder: (context) => PersonalInformationScreen(),
-    ),
-  );
-  
-},
-
-
+                  onTap: () async {
+                    await Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => PersonalInformationScreen(),
+                      ),
+                    );
+                  },
                   leading: Icon(Icons.person),
                   title: TextWidget(
                     title: "Personal data",
@@ -183,7 +228,6 @@ setState(() {
                       withNavBar: false,
                     );
                   },
-                  
                   leading: Icon(Icons.event_note_outlined),
                   title: TextWidget(
                     title: "My Private Event",
@@ -252,11 +296,19 @@ setState(() {
                   onTap: () {
                     Storage.saveJWT("");
 
-                    Provider.of<AuthProvider>(context, listen: false).setIsFirstRun(false);
-
-                    Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) =>
-                        WelcomeScreen()), (Route<dynamic> route) => false);
-
+                    Provider.of<AuthProvider>(context, listen: false)
+                        .setIsFirstRun(false);
+                    Navigator.of(context).pushAndRemoveUntil(
+                      MaterialPageRoute(
+                        builder: (context) => WelcomeScreen(),
+                      ),
+                      (Route<dynamic> route) => false,
+                    );
+                    PersistentNavBarNavigator.pushNewScreen(
+                      context,
+                      screen: WelcomeScreen(),
+                      withNavBar: false,
+                    );
                   },
                   leading: Icon(Icons.logout),
                   title: TextWidget(
@@ -271,8 +323,7 @@ setState(() {
           ),
         ),
       ),
-      )
-    );
+    ));
   }
 }
 

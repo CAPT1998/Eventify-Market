@@ -1,4 +1,6 @@
 import 'dart:convert';
+import 'package:flutter/services.dart';
+import 'package:image_picker/image_picker.dart';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -10,10 +12,15 @@ import 'package:quickie_event/Constant.dart';
 import 'package:quickie_event/ConstantModels/LoginModel.dart';
 import 'package:quickie_event/Quicke_Features/Screen_Features/BottomNavigationFeatures/BottomNavigationFeatures.dart';
 import 'package:quickie_event/helper/storage_helper.dart';
+import 'package:flutter/foundation.dart';
 
 import '../ConstantModels/ProfileModel.dart';
+import '../Quicke_Events/Widgets/api_url.dart';
 
 class AuthProvider with ChangeNotifier {
+  String? profile;
+  List<LoginModel> loginModel = [];
+
   String? registerMessage;
   Map userData = {};
   mSignUpAuth({
@@ -41,46 +48,113 @@ class AuthProvider with ChangeNotifier {
     }
   }
 
+  Future<void> profileUpdate(context, userId, token) async {
+    final picker = ImagePicker();
+    final pickedImage = await picker.pickImage(source: ImageSource.gallery);
+    print(userId);
+    try {
+      if (pickedImage != null) {
+        final request = http.MultipartRequest(
+            'POST', Uri.parse('${AppUrl.baseUrl}/users/$userId/update-avatar'));
+        request.headers.addAll({'Authorization': "Bearer $token"});
 
-   updateprofile({
+        request.files
+            .add(await http.MultipartFile.fromPath('avatar', pickedImage.path));
+
+        var response = await request.send();
+        var responseBody = await response.stream.bytesToString();
+        final Map<String, dynamic> data = json.decode(responseBody);
+        print("Data $data");
+        print("Profile : ${responseBody}");
+        if (response.statusCode == 200) {
+          // loginModel = loginModelFromJson(responseBody);
+          registerMessage = "success";
+          this.registerMessage = registerMessage;
+          //  this.loginModel = loginModel;
+          print("Profile $profile");
+          SuccessFlushbar(context, "Profile Update", data["message"]);
+          notifyListeners();
+        } else {
+          // ErrorFlushbar(context, "Profile Update", data["message"]);
+          notifyListeners();
+        }
+      } else {
+        // Send an image from the asset folder instead
+        final request = http.MultipartRequest(
+            'POST', Uri.parse('${AppUrl.baseUrl}/users/$userId/update-avatar'));
+        request.headers.addAll({'Authorization': "Bearer $token"});
+
+        // Assuming you have an image named 'default_profile_pic.png' in the assets folder
+        ByteData imageData = await rootBundle.load('assets/img/2.png');
+        List<int> bytes = imageData.buffer.asUint8List();
+        var multipartFile = http.MultipartFile.fromBytes('profile_pic', bytes,
+            filename: '2.png');
+
+        request.files.add(multipartFile);
+
+        var response = await request.send();
+        var responseBody = await response.stream.bytesToString();
+        final Map<String, dynamic> data = json.decode(responseBody);
+        print("Data $data");
+        print("Profile : ${response.statusCode}");
+        if (response.statusCode == 200) {
+          loginModel = loginModelFromJson(responseBody);
+          registerMessage = "success";
+          this.registerMessage = registerMessage;
+          this.loginModel = loginModel;
+          print("Profile $profile");
+          SuccessFlushbar(context, "Profile Update", data["message"]);
+
+          notifyListeners();
+        }
+      }
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  updateprofile({
     required String id,
     required String name,
     required String email,
+    required String phone,
     required String password,
-  }) async {    LoginModel? loginModel;
+  }) async {
+    List<LoginModel> loginModel = [];
 
+    String token =
+        "PivvPlsQWxPl1bB5KrbKNBuraJit0PrUZekQUgtLyTRuyBq921atFtoR1HuA"; // Assuming the token is stored in `apiToken` property of `LoginModel`
+    var requestBody = {};
 
-        String token = "PivvPlsQWxPl1bB5KrbKNBuraJit0PrUZekQUgtLyTRuyBq921atFtoR1HuA"; // Assuming the token is stored in `apiToken` property of `LoginModel`
-var requestBody = {};
-
-  if (name.isNotEmpty) {
-    requestBody["name"] = name;
-  }
-  if (email.isNotEmpty) {
-    requestBody["email"] = email;
-  }
-  if (password.isNotEmpty) {
-    requestBody["password"] = password;
-  }
-   var response = await http.post(
+    if (name.isNotEmpty) {
+      requestBody["name"] = name;
+    }
+    if (email.isNotEmpty) {
+      requestBody["email"] = email;
+    }
+    if (password.isNotEmpty) {
+      requestBody["password"] = password;
+    }
+    if (phone.isNotEmpty) {
+      requestBody["phone"] = phone;
+    }
+    var response = await http.post(
       Uri.parse('http://quickeeapi.pakwexpo.com/api/users/$id'),
       headers: {
         'Authorization': 'Bearer $token',
       },
-    body: requestBody,
-
+      body: requestBody,
     );
     print(response.body);
 
-      final jsonData = json.decode(response.body);
-            final Map<String, dynamic> data = json.decode(response.body);
+    final jsonData = json.decode(response.body);
+    final Map<String, dynamic> data = json.decode(response.body);
 
-     if (response.statusCode == 200) {
-      
-loginModel = loginModelFromJson(json.encode(data));
+    if (response.statusCode == 200) {
+      loginModel = loginModelFromJson(json.encode(data));
       this.loginModel = loginModel;
-      Storage.saveUser(loginModel);
-      Storage.saveJWT(loginModel.data.apiToken);
+      Storage.saveUser2(loginModel);
+      Storage.saveJWT(loginModel[0].data!.apiToken!);
       loginMessage = "success";
       this.loginMessage = loginMessage;
       print("updated");
@@ -93,10 +167,9 @@ loginModel = loginModelFromJson(json.encode(data));
     }
   }
 
-  LoginModel? loginModel;
-  bool? isLoggedIn=false;
-  setIsFirstRun(bool value){
-    isLoggedIn=value;
+  bool? isLoggedIn = false;
+  setIsFirstRun(bool value) {
+    isLoggedIn = value;
     notifyListeners();
   }
 
@@ -106,7 +179,45 @@ loginModel = loginModelFromJson(json.encode(data));
     required String password,
   }) async {
     String? loginMessage;
-    LoginModel? loginModel;
+    List<LoginModel> loginModel = [];
+    var request = http.MultipartRequest(
+        'POST', Uri.parse('https://quickeeapi.pakwexpo.com/api/login'));
+    request.fields.addAll({'email': '$email', 'password': '$password'});
+    http.StreamedResponse response = await request.send();
+
+    if (response.statusCode == 200) {
+      String value = await response.stream.bytesToString();
+      print(value);
+      Map<String, dynamic> jsonMap = json.decode(value);
+
+      // Use the LoginModel.fromJson constructor directly
+      LoginModel model = LoginModel.fromJson(jsonMap);
+
+      // Add the single model to the loginModel list
+      loginModel.add(model);
+
+      this.loginModel = loginModel;
+      Storage.saveUser2(loginModel);
+      Storage.saveJWT(loginModel[0].data!.apiToken!);
+      loginMessage = "success";
+      this.loginMessage = loginMessage;
+      //             profile = loginModel.data!.media![0].url;
+
+      notifyListeners();
+    } else {
+      print(response.reasonPhrase);
+      loginMessage = "unsuccess";
+      this.loginMessage = loginMessage;
+      notifyListeners();
+    }
+  }
+
+  profilepictureupdate({
+    required String email,
+    required String password,
+  }) async {
+    String? loginMessage;
+    List<LoginModel> loginModel = [];
     var request = http.MultipartRequest(
         'POST', Uri.parse('https://quickeeapi.pakwexpo.com/api/login'));
     request.fields.addAll({'email': '$email', 'password': '$password'});
@@ -117,10 +228,12 @@ loginModel = loginModelFromJson(json.encode(data));
       print(value);
       loginModel = loginModelFromJson(value);
       this.loginModel = loginModel;
-      Storage.saveUser(loginModel);
-      Storage.saveJWT(loginModel.data.apiToken);
+      Storage.saveUser2(loginModel);
+      Storage.saveJWT(loginModel[0].data!.apiToken!);
       loginMessage = "success";
       this.loginMessage = loginMessage;
+      profile = loginModel[0].data!.media![0].url;
+
       notifyListeners();
     } else {
       print(response.reasonPhrase);

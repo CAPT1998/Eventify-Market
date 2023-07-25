@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:provider/provider.dart';
@@ -17,7 +19,8 @@ class ChatScreenFeatures extends StatefulWidget {
 class _ChatScreenFeaturesState extends State<ChatScreenFeatures> {
   TextEditingController message = TextEditingController();
   final ScrollController _scrollController = ScrollController();
-
+  late GlobalKey<RefreshIndicatorState> _refreshKey =
+      GlobalKey<RefreshIndicatorState>();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -28,7 +31,7 @@ class _ChatScreenFeaturesState extends State<ChatScreenFeatures> {
           leading: CircleAvatar(
             backgroundImage: AssetImage("assets/img/slider1.jpg"),
           ),
-          title: Text(
+          title: const Text(
             "Support Chat",
             style: TextStyle(
               fontSize: 17,
@@ -43,64 +46,98 @@ class _ChatScreenFeaturesState extends State<ChatScreenFeatures> {
       ),
       body: SingleChildScrollView(
         child: Consumer2<AuthProvider, ChatProvider>(
-          builder: (context, value, value2, child) {
-            value2.getChatData(value.loginModel!.data.id.toString(), "2");
-            return StreamBuilder<List<dynamic>>(
-              stream: value2.chatMessagesStream,
-              builder: (context, snapshot) {
-                if (snapshot.hasError) {
-                  return Text("${snapshot.error}");
-                }
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(
-                    child: SpinKitPumpingHeart(
+          builder: (context, value, chatProvider, child) {
+            return FutureBuilder<List<dynamic>>(
+                future:
+                    chatProvider.getChatData(value.loginModel[0].data!.id, "2"),
+                builder: (context, snapshot) {
+                  if (snapshot.hasError) {
+                    return Text("${snapshot.error}");
+                  }
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(
+                        child: SpinKitCircle(
                       color: Color(0XFF24ABE3),
                       size: 70.0,
-                    ),
-                  );
-                }
-                if (!snapshot.hasData ||
-                    snapshot.data == null ||
-                    snapshot.data!.isEmpty) {
-                  return const Padding(
-                    padding: EdgeInsets.only(top: 48.0),
-                    child: Center(child: Text("No chat")),
-                  );
-                }
+                    ));
+                  }
+                  if (snapshot.data == null) {
+                    return const Padding(
+                      padding: EdgeInsets.only(top: 48.0),
+                      child: Center(child: Text("No chat")),
+                    );
+                  }
 
-                return SingleChildScrollView(
-                  child: Padding(
-                    padding: const EdgeInsets.only(bottom: 50.0),
-                    child: ListView.builder(
-                      shrinkWrap: true,
-                      controller: _scrollController,
-                      itemCount: snapshot.data!.length,
-                      physics: const NeverScrollableScrollPhysics(),
-                      itemBuilder: (BuildContext ctx, index) {
-                        var item = snapshot.data![index];
+                  if (snapshot.data != null) {
+                    return SingleChildScrollView(
+                      child: Padding(
+                        padding: const EdgeInsets.only(bottom: 50.0),
+                        child: ListView.builder(
+                          shrinkWrap: true,
+                          //reverse: true, // Scroll to the bottom
+                          controller: _scrollController, // Add controller
+                          itemCount: snapshot.data!.length,
+                          physics: const NeverScrollableScrollPhysics(),
+                          itemBuilder: (BuildContext ctx, index) {
+                            var item = snapshot.data![index];
+                            // var item2 = snapshot.data![0];
+                            List<int> encodedBytes =
+                                base64Url.decode(item['message']);
+                            String encodedText = utf8.decode(encodedBytes);
+                            String decodedText =
+                                encodedText.replaceAll('@@@', '');
 
-                        return value.loginModel!.data.id.toString() ==
-                                item["id"].toString()
-                            ? _LeftWidget(
-                                title: item["message"],
-                              )
-                            : _RightWidget(
-                                title: item["message"],
-                              );
-                      },
-                    ),
-                  ),
-                );
-              },
-            );
+                            var adminid = item['receiver_id'];
+                            print(snapshot.data.toString());
+
+                            return adminid == "2"
+                                ? _LeftWidget(
+                                    title: decodedText,
+                                  )
+                                : _RightWidget(
+                                    title: decodedText,
+                                  );
+                          },
+                        ),
+                      ),
+                    );
+                  }
+                  return const Center(
+                      child: SpinKitCircle(
+                    color: Color(0XFF24ABE3),
+                    size: 70.0,
+                  ));
+                });
           },
         ),
       ),
-      bottomSheet: ChatInputField(message: message, press: () {}),
+      bottomSheet: Consumer2<AuthProvider, ChatProvider>(
+          builder: (context, value, chatProvider, child) {
+        return ChatInputField(
+            message: message,
+            press: () async {
+              String encodedText = message.text.replaceAllMapped(
+                RegExp(
+                  r'([\u{1F910}-\u{1F918}\u{1F980}-\u{1F984}\u{1F9C0}])',
+                  unicode: true,
+                ),
+                (Match match) => '@@@${match.group(0)}',
+              );
+              List<int> encodedBytes = utf8.encode(encodedText);
+              String encodedMessage = base64UrlEncode(encodedBytes);
+              await chatProvider.sentSMS(
+                  context, value.loginModel[0].data!.id, "2", encodedMessage);
+              setState(() {
+                _refreshKey = GlobalKey<RefreshIndicatorState>();
+              });
+              message.clear();
+            });
+      }),
     );
   }
 }
 
+// ignore: non_constant_identifier_names
 Widget _RightWidget({required String title}) {
   return Row(
     mainAxisAlignment: MainAxisAlignment.end,
@@ -140,17 +177,20 @@ Widget _LeftWidget({required String title}) {
   return Row(
     mainAxisAlignment: MainAxisAlignment.start,
     children: [
-      SizedBox(
+      const SizedBox(
+        height: 50,
+      ),
+      const SizedBox(
         width: 10,
       ),
-      CircleAvatar(
+      const CircleAvatar(
         backgroundImage: AssetImage("assets/img/slider1.jpg"),
       ),
-      SizedBox(
+      const SizedBox(
         width: 10,
       ),
       Container(
-        padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
         // width: width * 0.6,
         decoration: BoxDecoration(
           color: Color(0XFFB8BCBF),

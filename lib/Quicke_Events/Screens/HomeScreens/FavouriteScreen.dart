@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
+import 'package:provider/provider.dart';
 import 'package:quickie_event/Constant.dart';
+import 'package:quickie_event/ConstantProviders/AuthProviders.dart';
 import 'package:quickie_event/Quicke_Events/Screens/HomeScreens/FavouriteEmptyScreen.dart';
 import 'package:quickie_event/Quicke_Events/Widgets/TextWidget.dart';
 
+import '../../Models/GetFavoriteEvents.dart';
+import '../../Providers/EventsProvider.dart';
 import '../EventDetails/EventDetailsScreen.dart';
 import 'FavouriteEventDetailsScreen.dart';
 
@@ -20,149 +24,140 @@ class _FavouriteScreenState extends State<FavouriteScreen> {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-      child: Scaffold(
-        appBar: AppBar(
-          leading: null,
-          title: TextWidget(title: "Favorites", size: 16),
-          backgroundColor: Colors.grey[50],
-          elevation: 0,
-          centerTitle: true,
-          actions: [
-            IconButton(
-              onPressed: () {
-                PersistentNavBarNavigator.pushNewScreen(
-                  context,
-                  screen: FavoriteEmptyScreen(),
-                  withNavBar: false,
-                );
-              },
-              icon: Icon(
-                Icons.favorite_border,
-                color: Colors.black,
-              ),
-            ),
-          ],
-        ),
-        body: Column(
-          children: [
-            Expanded(
-              child: DefaultTabController(
-                length: 3,
-                child: Column(
-                  children: [
-                    Card(
-                      margin: EdgeInsets.zero,
-                      elevation: 10,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Container(
-                        width: width * 0.9,
-                        height: 50,
-                        decoration: BoxDecoration(
-                          color: lightGreyColor,
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: TabBar(
-                          controller: _tabController,
-                          padding: const EdgeInsets.all(3),
-                          labelColor: greyColor,
-                          unselectedLabelColor: Color(0XFFA0A3AD),
-                          labelStyle: const TextStyle(
-                            fontWeight: FontWeight.w700,
-                            fontSize: 12,
-                          ),
-                          automaticIndicatorColorAdjustment: true,
-                          // overlayColor:,
-                          indicator: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          tabs: [
-                            const Tab(
-                              text: "Events",
-                            ),
-                            const Tab(
-                              text: "Organizers",
-                            ),
-                            const Tab(
-                              text: "Collections",
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    const SizedBox(
-                      height: 60,
-                    ),
-                    Flexible(
-                      child: SizedBox(
-                        child: TabBarView(
-                          // physics: NeverScrollableScrollPhysics(),
-                          children: [
-                            SingleChildScrollView(
-                              child: Column(
-                                children: [
-                                  _NearWidget(context,
-                                      img: "1",
-                                      title: "Flash Deal",
-                                      color: yellowColor),
-                                  _NearWidget(context,
-                                      img: "2",
-                                      title: "Flash Deal",
-                                      color: yellowColor),
-                                  _NearWidget(context,
-                                      img: "3",
-                                      title: "Flash Deal",
-                                      color: yellowColor),
-                                ],
-                              ),
-                            ),
-                            SingleChildScrollView(
-                              child: Column(
-                                children: [
-                                  _NearWidget(context,
-                                      img: "4",
-                                      title: "Flash Deal",
-                                      color: yellowColor),
-                                  _NearWidget(context,
-                                      img: "5",
-                                      title: "Flash Deal",
-                                      color: yellowColor),
-                                  _NearWidget(context,
-                                      img: "1",
-                                      title: "Flash Deal",
-                                      color: yellowColor),
-                                ],
-                              ),
-                            ),
-                            SingleChildScrollView(
-                              child: Column(
-                                children: [
-                                  _NearWidget(context,
-                                      img: "2",
-                                      title: "Flash Deal",
-                                      color: yellowColor),
-                                  _NearWidget(context,
-                                      img: "11",
-                                      title: "Flash Deal",
-                                      color: yellowColor),
-                                  _NearWidget(context,
-                                      img: "4",
-                                      title: "Flash Deal",
-                                      color: yellowColor),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
+      child: Consumer2<EventProvider, AuthProvider>(
+        builder: (context, eventvalue, authvalue, child) => Scaffold(
+          appBar: AppBar(
+            leading: null,
+            title: TextWidget(title: "Favorites", size: 16),
+            backgroundColor: Colors.grey[50],
+            elevation: 0,
+            centerTitle: true,
+            actions: [
+              IconButton(
+                onPressed: () {
+                  PersistentNavBarNavigator.pushNewScreen(
+                    context,
+                    screen: FavoriteEmptyScreen(),
+                    withNavBar: false,
+                  );
+                },
+                icon: Icon(
+                  Icons.favorite_border,
+                  color: Colors.black,
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
+          body: Column(
+            children: [
+              Expanded(
+                child: DefaultTabController(
+                  length: 3,
+                  child: Column(
+                    children: [
+                      Card(
+                        margin: EdgeInsets.zero,
+                        elevation: 10,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Container(
+                          width: width * 0.9,
+                          height: 50,
+                          decoration: BoxDecoration(
+                            color: lightGreyColor,
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: TabBar(
+                            controller: _tabController,
+                            padding: const EdgeInsets.all(3),
+                            labelColor: greyColor,
+                            unselectedLabelColor: Color(0XFFA0A3AD),
+                            labelStyle: const TextStyle(
+                              fontWeight: FontWeight.w700,
+                              fontSize: 12,
+                            ),
+                            automaticIndicatorColorAdjustment: true,
+                            // overlayColor:,
+                            indicator: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            tabs: [
+                              const Tab(
+                                text: "Events",
+                              ),
+                              const Tab(
+                                text: "Organizers",
+                              ),
+                              const Tab(
+                                text: "Collections",
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      const SizedBox(
+                        height: 60,
+                      ),
+                      Flexible(
+                        child: SizedBox(
+                          child: TabBarView(
+                            // physics: NeverScrollableScrollPhysics(),
+                            children: [
+                              SingleChildScrollView(
+                                child: Column(
+                                  children: [
+                                    ListView.builder(
+                                        shrinkWrap: true,
+                                        scrollDirection: Axis.vertical,
+                                        physics:
+                                            NeverScrollableScrollPhysics(), // Disable scrolling of the inner ListView
+                                        itemCount:
+                                            eventvalue.favoriteevents.length,
+                                        itemBuilder: (context, index) {
+                                          return _NearWidget(context,
+                                              img: "1",
+                                              title: eventvalue
+                                                  .favoriteevents[index]
+                                                  .eventTitle!,
+                                              color: yellowColor,
+                                              model: eventvalue
+                                                  .favoriteevents[index]);
+                                        }),
+                                  ],
+                                ),
+                              ),
+                              SingleChildScrollView(
+                                child: Column(
+                                  children: [
+                                    //    _NearWidget(context,
+                                    //        img: "4",
+                                    //        title: "Flash Deal",
+                                    //       color: yellowColor),
+                                  ],
+                                ),
+                              ),
+                              SingleChildScrollView(
+                                child: Column(
+                                  children: [
+                                    //  _NearWidget(context,
+                                    //       img: "2",
+                                    //       title: "Flash Deal",
+                                    //        color: yellowColor),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -170,7 +165,10 @@ class _FavouriteScreenState extends State<FavouriteScreen> {
 }
 
 Widget _NearWidget(context,
-    {required String img, required String title, dynamic color}) {
+    {required String img,
+    required String title,
+    dynamic color,
+    required Getfavoriteevents model}) {
   return Container(
     margin: EdgeInsets.only(right: 30, bottom: 10, left: 30),
     width: width,
@@ -179,14 +177,13 @@ Widget _NearWidget(context,
       children: [
         InkWell(
           onTap: () {
-            //  PersistentNavBarNavigator.pushNewScreen(
-            //            context,
-            //           screen: FavouriteEventDetailsScreen(
-            //            id : '1', img: 1, name: title,
-            //          ),
-            //         withNavBar: false,
-            //      );
-            // Handle tap event
+            PersistentNavBarNavigator.pushNewScreen(
+              context,
+              screen: FavouriteEventDetailsScreen(
+                model: model,
+              ),
+              withNavBar: false,
+            );
           },
           child: Stack(
             children: [
@@ -213,7 +210,7 @@ Widget _NearWidget(context,
           height: 10,
         ),
         TextWidget(
-          title: "Bring Me The Horizon Tour",
+          title: model.eventTitle!,
           size: 16,
           fontWeight: FontWeight.w700,
         ),
@@ -228,14 +225,14 @@ Widget _NearWidget(context,
               color: greyColor,
             ),
             TextWidget(
-              title: "  Nov 27  .  07:00 PM",
+              title: model.eventStartDate!,
               size: 12,
               fontWeight: FontWeight.w500,
               color: greyColor,
             ),
             Spacer(),
             TextWidget(
-              title: "\$39.00",
+              title: "\$ ${model.price}",
               size: 12,
               fontWeight: FontWeight.w500,
               color: darkPurpleColor,

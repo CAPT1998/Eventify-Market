@@ -1,5 +1,8 @@
+import 'dart:convert';
+
 import 'package:favorite_button/favorite_button.dart';
 import 'package:flutter/material.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
@@ -15,6 +18,8 @@ import 'package:table_calendar/table_calendar.dart';
 import 'package:device_calendar/device_calendar.dart';
 import 'package:timezone/timezone.dart' as tz;
 
+import '../../../ConstantModels/LoginModel.dart';
+import '../../../ConstantProviders/AuthProviders.dart';
 import '../../Widgets/TextWidget.dart';
 
 class EventDetailsScreen extends StatefulWidget {
@@ -80,11 +85,23 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
                           ),
                         ),
                         Spacer(),
-                        FavoriteButton(
-                          iconSize: 40,
-                          valueChanged: (_isFavorite) {
-                            print('Is Favorite $_isFavorite)');
-                          },
+                        Consumer2<EventProvider, AuthProvider>(
+                          builder: (context, eventvalue, authvalue, child) =>
+                              GestureDetector(
+                            onTap: () {},
+                            child: FavoriteButton(
+                              iconSize: 40,
+                              valueChanged: (_isFavorite) async {
+                                await eventvalue.addFavoriteEvents(
+                                    context,
+                                    authvalue.loginModel[0].data?.id,
+                                    widget.model.id);
+                                 await eventvalue.getFavoriteEvents(authvalue
+                                     .loginModel[0].data!.id
+                                     .toString());
+                              },
+                            ),
+                          ),
                         ),
                         IconButton(
                           onPressed: () {},
@@ -172,12 +189,14 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
                               var defaultCalendar = calendarsResult.data![0];
 
                               var eventDate = widget.model.eventStartDate;
+                              DateTime parsedDateTime =
+                                  DateTime.parse(eventDate!);
 
 // Convert the event date to a TZDateTime object
                               var timeZone = tz.getLocation(
                                   'UTC'); // Replace 'your_timezone' with the desired timezone
                               var eventDateTime =
-                                  tz.TZDateTime.from(eventDate, timeZone);
+                                  tz.TZDateTime.from(parsedDateTime, timeZone);
                               var event = Event(defaultCalendar.id);
                               event.title = "Quickee event Reminder";
                               event.start = eventDateTime;
@@ -287,7 +306,7 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
                     SizedBox(
                       height: 200,
                       width: width,
-                      child: widget.model.lattitude == null ||
+                      child: widget.model.latitude == null ||
                               widget.model.longitude == null
                           ? Center(child: Text("No Location Available"))
                           : ClipRRect(
@@ -303,7 +322,7 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
                                   Marker(
                                     markerId: MarkerId("1"),
                                     position: LatLng(
-                                        double.parse(widget.model.lattitude),
+                                        double.parse(widget.model.latitude),
                                         double.parse(widget.model.longitude)),
                                     // infoWindow:
                                     //     InfoWindow(title: markerIdVal, snippet: '*'),
@@ -312,10 +331,8 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
                                 ]),
                                 initialCameraPosition: CameraPosition(
                                   target: LatLng(
-                                      double.parse(
-                                          widget.model.location.split(",")[0]),
-                                      double.parse(
-                                          widget.model.location.split(",")[0])),
+                                      double.parse(widget.model.latitude),
+                                      double.parse(widget.model.longitude)),
                                   zoom: 16.0,
                                 ),
                               ),
@@ -377,13 +394,13 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
                     SizedBox(
                       height: 50,
                       child: ListView.builder(
-                        itemCount: widget.model.tags.length,
+                        itemCount: widget.model.tags?.length ?? 0,
                         shrinkWrap: true,
                         scrollDirection: Axis.horizontal,
                         itemBuilder: (context, index) {
                           return Row(
                             children: [
-                              _TagWidget("${widget.model.tags[index]}"),
+                              _TagWidget("${widget.model.tags![index]}"),
                               SizedBox(
                                 width: 10,
                               ),
@@ -403,7 +420,8 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
                     SizedBox(
                       height: 10,
                     ),
-                    OrganizerWidget(widget.model.eventOrganizer),
+                    OrganizerWidget(
+                        widget.model.eventOrganizer!.organizerName!,  widget.model.eventOrganizer!.id),
                     // OrganizerWidget(widget.model.eventOrganizer),
                     // OrganizerWidget(widget.model.eventOrganizer),
                     SizedBox(height: 20),
@@ -498,8 +516,8 @@ Widget _TagWidget(String title) {
 
 class OrganizerWidget extends StatefulWidget {
   String? name;
-
-  OrganizerWidget(this.name, {super.key});
+int? id;
+  OrganizerWidget(this.name, this.id, {super.key});
   @override
   _OrganizerWidgetState createState() => _OrganizerWidgetState();
 }
@@ -509,7 +527,8 @@ class _OrganizerWidgetState extends State<OrganizerWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return   Consumer2<EventProvider, AuthProvider>(
+                          builder: (context, eventvalue, authvalue, child) =>Container(
       margin: EdgeInsets.only(bottom: 10),
       width: width,
       padding: EdgeInsets.all(5),
@@ -540,6 +559,11 @@ class _OrganizerWidgetState extends State<OrganizerWidget> {
             setState(() {
               isFollowing = !isFollowing;
             });
+             if (isFollowing) {
+             eventvalue.followorganizer(context, authvalue.loginModel[0].data!.id.toString(), widget.id.toString());
+            } else {
+              eventvalue.unfolloworganizer(context, authvalue.loginModel[0].data!.id.toString(), widget.id.toString());
+            }
           },
           child: TextWidget(
             title: isFollowing ? "Unfollow" : "Follow",
@@ -549,6 +573,7 @@ class _OrganizerWidgetState extends State<OrganizerWidget> {
           ),
         ),
       ),
+                          ),
     );
   }
 }

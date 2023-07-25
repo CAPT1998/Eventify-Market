@@ -10,6 +10,7 @@ import 'package:flutter/material.dart';
 
 import '../../../helper/firebase_deeplinking.dart';
 import '../ExploreFeatures/ExploreScreenFeatures.dart';
+import '../ProfileFeatures/profileinfoproduct.dart';
 
 class BottomNavigationFeatures extends StatefulWidget {
   const BottomNavigationFeatures({key}) : super(key: key);
@@ -32,9 +33,9 @@ class _BottomNavigationFeaturesState extends State<BottomNavigationFeatures> {
       FirebaseDeepLink().handleIncomingLinks(context);
     });
   }
+
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       body: Stack(
         children: [

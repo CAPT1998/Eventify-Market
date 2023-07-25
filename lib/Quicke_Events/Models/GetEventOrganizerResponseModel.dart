@@ -6,7 +6,7 @@ class GetEventOrganizerResponseModel {
 
   GetEventOrganizerResponseModel.fromJson(Map<String, dynamic> json) {
     message = json['message'];
-    organizer = json['Organizer'].cast<String>();
+    organizer = json['Organizer_event_details'].cast<String>();
   }
 
   Map<String, dynamic> toJson() {

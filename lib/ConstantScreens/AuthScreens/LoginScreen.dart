@@ -10,6 +10,7 @@ import 'package:quickie_event/Quicke_Events/Widgets/TextWidget.dart';
 import 'package:quickie_event/Quicke_Features/Screen_Features/BottomNavigationFeatures/BottomNavigationFeatures.dart';
 import 'package:quickie_event/Quicke_Features/Widget_Features/TextFieldFeature.dart';
 import 'package:rounded_loading_button/rounded_loading_button.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../Constant.dart';
 import 'RegistrationScreen.dart';
@@ -120,6 +121,9 @@ class _LoginScreenState extends State<LoginScreen> {
                       borderRadius: 10,
                       controller: buttonController,
                       onPressed: () async {
+                        final prefs = await SharedPreferences.getInstance();
+                        await prefs.setString('email', email.text);
+                        await prefs.setString('password', password.text);
                         if (_formKey.currentState!.validate()) {
                           await value.mLoginAuth(
                             email: email.text,

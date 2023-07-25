@@ -12,15 +12,23 @@ import 'package:quickie_event/Quicke_Events/Models/GetEventsModel.dart';
 import 'package:quickie_event/Quicke_Events/Models/GetMyPersonalEventsModel.dart';
 import 'package:quickie_event/Quicke_Events/Models/ReservationModel.dart';
 
+import '../../Constant.dart';
 import '../../helper/storage_helper.dart';
 import '../Models/GetEventOrganizerResponseModel.dart';
+import '../Models/GetFavoriteEvents.dart';
 import '../Models/GetMyEventsReponseModel.dart';
 import '../Models/GetSingleEventReponseModel.dart';
 import '../Models/GetUsersListModel.dart';
+import '../Models/OrganizersEvent.dart';
 import '../Models/RequestInvitationActionReponseModel.dart';
 
 class EventProvider with ChangeNotifier {
   List<GetEventsModel> getEventsModel = [];
+  List<OrganizerEvent> organizerEventDetails2 = [];
+  List<Getfavoriteevents> favoriteevents = [];
+
+  //List<GetOrganizersEventsModel> OrganizerEventDetails = [];
+
   bool checkValueEvent = false;
 
   mGetEvents() async {
@@ -30,13 +38,18 @@ class EventProvider with ChangeNotifier {
           "Bearer " + (Storage.getJWT().isEmpty ? "" : Storage.getJWT())
     };
     var request = http.Request(
-        'GET', Uri.parse('http://quickeeapi.pakwexpo.com/api/events/public'));
+        'GET', Uri.parse('http://quickeeapi.pakwexpo.com/api/events'));
     request.headers.addAll(headers);
     http.StreamedResponse response = await request.send();
 
     if (response.statusCode == 200) {
       String value = await response.stream.bytesToString();
-      getEventsModel = getEventsModelFromJson(value);
+      print(value);
+      Map<String, dynamic> jsonResponse = json.decode(value);
+      List<dynamic> eventDataList = jsonResponse['data'];
+      getEventsModel = eventDataList
+          .map((eventData) => GetEventsModel.fromJson(eventData))
+          .toList();
       this.getEventsModel = getEventsModel;
       checkValueEvent = true;
       notifyListeners();
@@ -45,6 +58,161 @@ class EventProvider with ChangeNotifier {
       notifyListeners();
       print(response.reasonPhrase);
     }
+  }
+
+  getFavoriteEvents(String userid) async {
+    List<Getfavoriteevents> favoriteevents = [];
+    var headers = {
+      'Authorization':
+          "Bearer " + (Storage.getJWT().isEmpty ? "" : Storage.getJWT())
+    };
+    var request = http.Request(
+        'GET',
+        Uri.parse(
+            'http://quickeeapi.pakwexpo.com/api/users/$userid/favorite-events'));
+
+    request.headers.addAll(headers);
+    http.StreamedResponse response = await request.send();
+
+    if (response.statusCode == 200) {
+      String value = await response.stream.bytesToString();
+
+      Map<String, dynamic> jsonResponse = json.decode(value);
+      List<dynamic> eventDataList = jsonResponse['data'];
+      favoriteevents = eventDataList
+          .map((eventData) => Getfavoriteevents.fromJson(eventData))
+          .toList();
+      this.favoriteevents = favoriteevents;
+      // checkValueEvent = true;
+      print(eventDataList.toString());
+
+      notifyListeners();
+    } else {
+      notifyListeners();
+      print(response.reasonPhrase);
+    }
+  }
+
+  addFavoriteEvents(context, dynamic userid, dynamic eventid) async {
+    print(eventid);
+    print("mark fav event");
+    print(userid);
+    var headers = {
+      'Authorization':
+          "Bearer " + (Storage.getJWT().isEmpty ? "" : Storage.getJWT())
+    };
+    var request = http.Request(
+        'POST',
+        Uri.parse(
+            'http://quickeeapi.pakwexpo.com/api/events/$eventid/favorite/$userid'));
+
+    request.headers.addAll(headers);
+    http.StreamedResponse response = await request.send();
+    if (response.statusCode == 200) {
+      print("donde");
+      print(response.stream);
+
+      var responseData = await response.stream.bytesToString();
+
+      var jsonData = json.decode(responseData);
+      String message = jsonData["message"];
+      SuccessFlushbar(
+        context,
+        "Success",
+        "Event Added to favorites",
+      );
+    }
+  }
+
+
+    followorganizer(context, dynamic userid, dynamic organizerid) async {
+    print(organizerid);
+    print("organizer follow");
+    print(userid);
+    var headers = {
+      'Authorization':
+          "Bearer " + (Storage.getJWT().isEmpty ? "" : Storage.getJWT())
+    };
+    var request = http.Request(
+        'POST',
+        Uri.parse(
+            'http://quickeeapi.pakwexpo.com/api/organizers/{$organizerid}/follow/{$userid}'));
+
+    request.headers.addAll(headers);
+    http.StreamedResponse response = await request.send();
+    if (response.statusCode == 200) {
+      print("donde");
+      print(response.stream);
+
+      var responseData = await response.stream.bytesToString();
+
+      var jsonData = json.decode(responseData);
+      String message = jsonData["message"];
+      SuccessFlushbar(
+        context,
+        "Success",
+        message,
+      );
+    }
+  }
+
+
+  
+    unfolloworganizer(context, dynamic userid, dynamic organizerid) async {
+    print(organizerid);
+    print("organizer follow");
+    print(userid);
+    var headers = {
+      'Authorization':
+          "Bearer " + (Storage.getJWT().isEmpty ? "" : Storage.getJWT())
+    };
+    var request = http.Request(
+        'DELETE',
+        Uri.parse(
+            'http://quickeeapi.pakwexpo.com/api/organizers/$organizerid/unfollow/$userid'));
+
+    request.headers.addAll(headers);
+    http.StreamedResponse response = await request.send();
+    if (response.statusCode == 200) {
+      print("donde");
+      print(response.stream);
+
+      var responseData = await response.stream.bytesToString();
+
+      var jsonData = json.decode(responseData);
+      String message = jsonData["message"];
+      SuccessFlushbar(
+        context,
+        "Success",
+        message,
+      );
+    }
+  }
+
+  fetchOrganizerEvents() async {
+    List<OrganizerEvent> organizerEventDetails2 = [];
+
+    final url = 'http://quickeeapi.pakwexpo.com/api/organizer';
+    var headers = {
+      'Authorization':
+          "Bearer " + (Storage.getJWT().isEmpty ? "" : Storage.getJWT())
+    };
+
+    try {
+      final response = await http.get(Uri.parse(url), headers: headers);
+      if (response.statusCode == 200) {
+        final jsonBody = json.decode(response.body);
+        List<dynamic> eventDetailsJson = jsonBody['Organizer_event_details'];
+
+        organizerEventDetails2 = eventDetailsJson
+            .map((json) => OrganizerEvent.fromJson(json))
+            .toList();
+
+        this.organizerEventDetails2 = organizerEventDetails2;
+        print(organizerEventDetails2);
+        notifyListeners();
+      } else {}
+    } catch (e) {}
   }
 
   List<GetEventTicketsModel> getEventTicketsModel = [];

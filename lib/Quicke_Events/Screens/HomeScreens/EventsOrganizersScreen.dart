@@ -7,8 +7,8 @@ import 'package:screenshot/screenshot.dart';
 
 import '../../../Constant.dart';
 import '../../Widgets/TextWidget.dart';
+import '../DetailOrganizer/DetaillOrganizerdetail.dart';
 import '../EventDetails/EventDetailsScreen.dart';
-
 
 class EventsOrganizersScreen extends StatefulWidget {
   const EventsOrganizersScreen({super.key});
@@ -50,20 +50,23 @@ class _EventsOrganizersScreenState extends State<EventsOrganizersScreen> {
                 crossAxisSpacing: 10.0,
                 mainAxisSpacing: 10.0,
               ),
-              itemCount: person.getEventOrganizer!.organizer!.length,
+              itemCount: person.getEventsModel.length,
               itemBuilder: (context, index) {
                 return InkWell(
                   onTap: () {
-                /*    PersistentNavBarNavigator.pushNewScreen(
+                    PersistentNavBarNavigator.pushNewScreen(
                       context,
-                      screen: EventDetailsScreen(
-                        model: person.getEventOrganizer!.organizer![index],
+                      screen: DetailOrganizerScreen(
+                        eventname: person.getEventsModel[index].eventOrganizer
+                            ?.organizerName!,
+                        model: person.getEventsModel,
                       ),
                       withNavBar: false,
-                    );*/
+                    );
                   },
                   child: Container(
-                    padding: EdgeInsets.only(left: 20, right: 20, top: 30, bottom: 40),
+                    padding: EdgeInsets.only(
+                        left: 20, right: 20, top: 30, bottom: 40),
                     margin: EdgeInsets.only(right: 20),
                     width: width * 0.35,
                     decoration: BoxDecoration(
@@ -73,7 +76,6 @@ class _EventsOrganizersScreenState extends State<EventsOrganizersScreen> {
                       borderRadius: BorderRadius.circular(10),
                     ),
                     child: Column(
-
                       children: [
                         ClipRRect(
                             borderRadius: BorderRadius.circular(10),
@@ -86,7 +88,10 @@ class _EventsOrganizersScreenState extends State<EventsOrganizersScreen> {
                         SizedBox(
                           height: 10,
                         ),
-                        TextWidget(title: person.getEventOrganizer!.organizer![index].toString())
+                        TextWidget(
+                            title: person.getEventsModel[index].eventOrganizer
+                                    ?.organizerName ??
+                                "Example Event")
                       ],
                     ),
                   ),

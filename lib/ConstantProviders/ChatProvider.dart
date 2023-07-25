@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
@@ -9,31 +8,15 @@ import '../Constant.dart';
 class ChatProvider with ChangeNotifier {
   String? returnMessage;
   var chatdata = [];
-  StreamController<List<dynamic>> _chatMessagesController = StreamController<List<dynamic>>();
-  Stream<List<dynamic>> get chatMessagesStream => _chatMessagesController.stream;
-void updateChatMessages(List<dynamic> messages) {
-    _chatMessagesController.add(messages);
-  }
+  
 
-   Future<void> getChat(dynamic token, dynamic senderId, dynamic adminId) async {
-    // Fetch the chat data using your existing logic
-    List<dynamic> chatData = await getChatData( senderId, adminId);
 
-    // Update the chat messages stream with the fetched data
-    updateChatMessages(chatData);
-  }
 
-  // Helper method to fetch chat data
- 
-
-  // Update the chatMessagesStream with the new messages
-
-  sentSMS(context,  userId, reciverId, text) async {
+  sentSMS(context, userId, reciverId, text) async {
     print('====>$userId====>$reciverId====>$text');
-                String token = "PivvPlsQWxPl1bB5KrbKNBuraJit0PrUZekQUgtLyTRuyBq921atFtoR1HuA"; // Assuming the token is stored in `apiToken` property of `LoginModel`
-
+    String token =
+        "PivvPlsQWxPl1bB5KrbKNBuraJit0PrUZekQUgtLyTRuyBq921atFtoR1HuA";
     try {
-      
       var url = Uri.parse('http://quickeeapi.pakwexpo.com/api/chats');
       var response = await http.post(url, headers: {
         'Authorization': 'Bearer $token',
@@ -51,7 +34,7 @@ void updateChatMessages(List<dynamic> messages) {
   }
 
   var userData = {};
- 
+
 /*
   sendVoiceMessage(context, token, userId, reciverId, path) async {
     print('====>$userId====>$reciverId====>$path====>$token');
@@ -84,26 +67,27 @@ void updateChatMessages(List<dynamic> messages) {
     }
   }
 */
-  Future getChatData(
-        senderId,
-
+  Future<List<dynamic>> getChatData(
+    senderId,
     adminId,
   ) async {
-            String token = "PivvPlsQWxPl1bB5KrbKNBuraJit0PrUZekQUgtLyTRuyBq921atFtoR1HuA"; // Assuming the token is stored in `apiToken` property of `LoginModel`
+    String token =
+        "PivvPlsQWxPl1bB5KrbKNBuraJit0PrUZekQUgtLyTRuyBq921atFtoR1HuA"; // Assuming the token is stored in `apiToken` property of `LoginModel`
 
-    var url = Uri.parse('http://quickeeapi.pakwexpo.com/api/chats/$senderId/$adminId');
-    var response = await http.post(url, headers: {
-      'Authorization': 'Bearer $token',
-    }, );
+    var url = Uri.parse(
+        'http://quickeeapi.pakwexpo.com/api/chats/$senderId/$adminId');
+    var response = await http.get(
+      url,
+      headers: {
+        'Authorization': 'Bearer $token',
+      },
+    );
 
     if (response.statusCode == 200) {
       final parsed = jsonDecode(response.body);
-      print("=====>$parsed");
-      return parsed['data'];
+      return parsed;
     } else {
       throw Exception('Something went wrong!');
     }
   }
-
-
 }

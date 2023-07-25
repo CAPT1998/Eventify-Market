@@ -51,6 +51,14 @@ class Storage {
     box.write(userKey, user);
   }
 
+  static saveUser2( List<LoginModel> data) {
+    if (kDebugMode) {
+      print("** SAVE USER DATA");
+    }
+    String user = jsonEncode(data);
+    box.write(userKey, user);
+  }
+
 static profileinfo(ProfileModel data){
      String userdata = jsonEncode(data);
     box.write(userKey, userdata);

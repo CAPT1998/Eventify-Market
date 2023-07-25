@@ -16,8 +16,10 @@ import 'package:quickie_event/Quicke_Events/Widgets/SizedBoxWidget.dart';
 import 'package:quickie_event/Quicke_Events/Widgets/TextWidget.dart';
 import 'package:country_state_city_picker/country_state_city_picker.dart';
 
+import '../../../ConstantProviders/AuthProviders.dart';
 import '../../../Quicke_Features/Screen_Features/BottomNavigationFeatures/BottomNavigationFeatures.dart';
 import '../../Models/GetEventsModel.dart';
+import '../../Models/OrganizersEvent.dart';
 import '../../Widgets/TextFormWidget.dart';
 import '../DetailOrganizer/DetaillOrganizerdetail.dart';
 import 'package:geolocator/geolocator.dart';
@@ -46,6 +48,12 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
 
   getRequests(BuildContext context) async {
     await Provider.of<EventProvider>(context, listen: false).mGetEvents();
+       String id =   Provider.of<AuthProvider>(context, listen: false).loginModel[0].data!.id.toString();
+
+    await Provider.of<EventProvider>(context, listen: false)
+        .fetchOrganizerEvents();
+    await Provider.of<EventProvider>(context, listen: false)
+        .getFavoriteEvents(id);
     await Provider.of<EventProvider>(context, listen: false)
         .getEventOrganizers();
   }
@@ -617,14 +625,20 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
                   SizedBox(
                     height: 150,
                     child: ListView.builder(
-                      shrinkWrap: true,
-                      scrollDirection: Axis.horizontal,
-                      itemCount: value.getEventOrganizer?.organizer?.length,
-                      itemBuilder: (context, index) {
-                        return OrganizerWidget(context,
-                            value.getEventOrganizer?.organizer?[index]);
-                      },
-                    ),
+                        shrinkWrap: true,
+                        scrollDirection: Axis.horizontal,
+                        itemCount: value.getEventsModel.length,
+                        itemBuilder: (context, index) {
+                          final eventOrganizerName = value.getEventsModel[index]
+                              .eventOrganizer?.organizerName;
+                          if (eventOrganizerName != null) {
+                            return OrganizerWidget(
+                              context,
+                              eventOrganizerName,
+                              value.getEventsModel,
+                            );
+                          }
+                        }),
                   ),
                   SizedBox(
                     height: 50,
@@ -639,17 +653,22 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
   }
 }
 
-Widget OrganizerWidget(context, String? organize) {
+// ignore: non_constant_identifier_names
+Widget OrganizerWidget(
+    context, String? organize, List<GetEventsModel> eventmodel) {
   return GestureDetector(
     onTap: () {
       PersistentNavBarNavigator.pushNewScreen(
         context,
-        screen: DetailOrganizerScreen(),
+        screen: DetailOrganizerScreen(
+          eventname: organize,
+          model: eventmodel,
+        ),
         withNavBar: false,
       );
     },
     child: Container(
-      padding: EdgeInsets.only(left: 20, right: 20, top: 30, bottom: 40),
+      padding: const EdgeInsets.only(left: 20, right: 20, top: 30, bottom: 40),
       margin: EdgeInsets.only(right: 20),
       width: width * 0.35,
       decoration: BoxDecoration(
@@ -699,13 +718,12 @@ _NearWidget(
                 scrollDirection: Axis.horizontal,
                 itemCount: 3,
                 itemBuilder: (context, index) {
-                  print("location si " + filteredListReviews[index].location);
-                  final coordinates =
-                      filteredListReviews[index].location.split(',');
-                  final latitude = double.parse(coordinates[0]);
-                  final longitude = double.parse(coordinates[1]);
+                  final latitude =
+                      double.parse(filteredListReviews[index].latitude);
+                  final longitude =
+                      double.parse(filteredListReviews[index].longitude);
                   final price = filteredListReviews[index].price;
-                  final originalPrice = double.parse(price);
+                  final originalPrice = double.parse(price!);
                   final reducedPrice = originalPrice - 15;
                   return InkWell(
                     onTap: () {

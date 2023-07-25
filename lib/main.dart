@@ -1,3 +1,5 @@
+import 'package:easy_localization/easy_localization.dart';
+import 'package:easy_localization_loader/easy_localization_loader.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -15,10 +17,17 @@ import 'Quicke_Features/providers/Notificationprovider.dart';
 void main(List<String> args) async {
   WidgetsFlutterBinding.ensureInitialized();
   // Shared.pref = await SharedPreferences.getInstance();
+  await EasyLocalization.ensureInitialized();
+
   await Firebase.initializeApp();
   await FCM().configureFCM();
 
-  runApp(MyApp());
+  runApp(EasyLocalization(
+      child: MyApp(),
+      supportedLocales: [Locale('en', 'US'), Locale('es', 'ES')],
+      path: 'assets/resources/langs/langs.csv',
+      fallbackLocale: Locale('en', 'US'),
+      assetLoader: CsvAssetLoader()));
 }
 
 class MyApp extends StatelessWidget {
@@ -47,6 +56,9 @@ class MyApp extends StatelessWidget {
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
+        localizationsDelegates: context.localizationDelegates,
+        supportedLocales: context.supportedLocales,
+        locale: context.locale,
         navigatorKey: navigatorKey,
         home: SplashScreen(),
       ),

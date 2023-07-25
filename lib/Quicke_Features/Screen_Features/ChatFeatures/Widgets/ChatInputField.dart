@@ -78,14 +78,7 @@ class ChatInputField extends StatelessWidget {
 
                       //   },
                       //   child:
-                      Icon(
-                        CupertinoIcons.mic,
-                        color: Theme.of(context)
-                            .textTheme
-                            .bodyText1!
-                            .color!
-                            .withOpacity(0.64),
-                      ),
+
                       // ),
                       SizedBox(width: 10),
                       // IconButton(

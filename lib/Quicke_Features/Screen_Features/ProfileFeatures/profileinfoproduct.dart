@@ -9,21 +9,22 @@ import 'package:quickie_event/ConstantModels/LoginModel.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../ConstantProviders/AuthProviders.dart';
-import '../../../Quicke_Features/Screen_Features/ProfileFeatures/ProfileScreenFeatures.dart';
-import '../../Widgets/SizedBoxWidget.dart';
-import '../../Widgets/TextFormWidget.dart';
-import '../../Widgets/TextWidget.dart';
-import '../HomeScreens/ProfileScreen.dart';
+import '../../../Quicke_Events/Screens/HomeScreens/ProfileScreen.dart';
+import '../../../Quicke_Events/Widgets/SizedBoxWidget.dart';
+import '../../../Quicke_Events/Widgets/TextFormWidget.dart';
+import '../../../Quicke_Events/Widgets/TextWidget.dart';
+import 'ProfileScreenFeatures.dart';
 
-class PersonalInformationScreen extends StatefulWidget {
-  const PersonalInformationScreen({super.key});
+class PersonalInformationScreenProducts extends StatefulWidget {
+  const PersonalInformationScreenProducts({super.key});
 
   @override
-  State<PersonalInformationScreen> createState() =>
+  State<PersonalInformationScreenProducts> createState() =>
       _PersonalInformationScreenState();
 }
 
-class _PersonalInformationScreenState extends State<PersonalInformationScreen> {
+class _PersonalInformationScreenState
+    extends State<PersonalInformationScreenProducts> {
   TextEditingController nameController = TextEditingController();
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
@@ -34,9 +35,8 @@ class _PersonalInformationScreenState extends State<PersonalInformationScreen> {
     super.initState();
   }
 
-  LoginModel? profile;
 
-
+ 
 
   bool passwordVisible = true;
   @override
@@ -68,9 +68,9 @@ class _PersonalInformationScreenState extends State<PersonalInformationScreen> {
                     radius: 50,
                     child: ClipOval(
                       child: Image.network(
-                         profile?.data?.media?.isNotEmpty == true
-                            ? profile!.data!.media![0].url!
-                            : "http://quickeeapi.pakwexpo.com/images/logo_default.png",
+                         value.loginModel[0].data?.media?.isNotEmpty == true
+      ? value.loginModel[0].data!.media![0].url!
+      : "http://quickeeapi.pakwexpo.com/images/logo_default.png",
                         width: 100,
                         height: 100,
                         fit: BoxFit.cover,
@@ -114,8 +114,8 @@ class _PersonalInformationScreenState extends State<PersonalInformationScreen> {
                     onTap: () async {
                       await value.profileUpdate(
                           context,
-                        value.loginModel[0].data?.id.toString(),
-                         value.loginModel[0].data?.apiToken);
+                        value.loginModel[0].data!.id.toString(),
+                        value.loginModel[0].data!.apiToken);
                       final prefs = await SharedPreferences.getInstance();
                       String email = prefs.getString('email') ?? '';
                       String password = prefs.getString('password') ?? '';
@@ -124,10 +124,10 @@ class _PersonalInformationScreenState extends State<PersonalInformationScreen> {
                         email: email,
                         password: password,
                       );
-                      value.loginModel[0].data?.media![0].url = value.profile;
+                     value.loginModel[0].data!.media![0].url = value.profile;
                       Navigator.of(context).pushAndRemoveUntil(
                         MaterialPageRoute(
-                          builder: (context) => const ProfileScreen(),
+                          builder: (context) => ProfileScreenFeatures(),
                         ),
                         (route) => false,
                       );
@@ -172,7 +172,7 @@ class _PersonalInformationScreenState extends State<PersonalInformationScreen> {
                   ),
                   textfieldProduct(
                     context: context,
-                    name: value.loginModel[0].data?.name ?? "No name",
+                    name: value.loginModel[0].data!.name ?? "No name",
                     controller: nameController,
                   ),
                   SizedBox(
@@ -194,7 +194,7 @@ class _PersonalInformationScreenState extends State<PersonalInformationScreen> {
                     inputtype: TextInputType.none,
                     isread: true,
                     context: context,
-                    name: value.loginModel[0].data?.email ?? " ",
+                    name:value.loginModel[0].data!.email ?? " ",
                     controller: emailController,
                   ),
                   SizedBox(
@@ -210,7 +210,7 @@ class _PersonalInformationScreenState extends State<PersonalInformationScreen> {
                       GestureDetector(
                         onTap: () async {
                           await value.updateprofile(
-                            id: value.loginModel[0].data!.id.toString(),
+                            id:value.loginModel[0].data!.id.toString(),
                             name: "",
                             email: "",
                             password: passwordController.text,
@@ -277,7 +277,7 @@ class _PersonalInformationScreenState extends State<PersonalInformationScreen> {
                   textfieldProduct(
                     isread: true,
                     context: context,
-                    name:value.loginModel[0].data?.phone ?? "123456789 ",
+                    name: value.loginModel[0].data!.phone ?? "123456789 ",
                     controller: emailController,
                   ),
                 ],
