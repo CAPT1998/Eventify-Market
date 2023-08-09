@@ -43,11 +43,11 @@ class _DetailTicketScreenState extends State<DetailTicketScreen> {
     if (await canLaunch(thirdPartyAppUri)) {
       await launch(thirdPartyAppUri);
     } else {
-      showDownloadDialog(context);
+      showDownloadDialog2(context);
     }
   }
 
-  void showDownloadDialog(BuildContext context) {
+  void showDownloadDialog2(BuildContext context) {
     showDialog(
       context: context,
       builder: (BuildContext context) {

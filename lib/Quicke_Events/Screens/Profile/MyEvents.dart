@@ -36,10 +36,7 @@ class _MyEventsState extends State<MyEvents> {
     // getApiCalls();
   }
 
-  getApiCalls() {
-    // getPrivateEvents();
-    // getUsersEvents();
-  }
+  
 
   Future<void> getPrivateEvents() async {
     await Provider.of<EventProvider>(context, listen: false).mEvents();
