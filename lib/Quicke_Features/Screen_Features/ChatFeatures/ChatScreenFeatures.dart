@@ -21,6 +21,34 @@ class _ChatScreenFeaturesState extends State<ChatScreenFeatures> {
   final ScrollController _scrollController = ScrollController();
   late GlobalKey<RefreshIndicatorState> _refreshKey =
       GlobalKey<RefreshIndicatorState>();
+
+  void _showSupportChatInfo(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("Support Chat Info"),
+          content: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text("Timing: Monday to Friday, 9 AM to 5 PM"),
+              Text("Availability: Online"),
+            ],
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: Text('Close'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -38,12 +66,18 @@ class _ChatScreenFeaturesState extends State<ChatScreenFeatures> {
               fontWeight: FontWeight.w600,
             ),
           ),
-          trailing: Icon(
-            Icons.info,
-            color: appColor,
+          trailing: IconButton(
+            icon: Icon(
+              Icons.info,
+              color: appColor,
+            ),
+            onPressed: () {
+              _showSupportChatInfo(context);
+            },
           ),
         ),
       ),
+
       body: SingleChildScrollView(
         child: Consumer2<AuthProvider, ChatProvider>(
           builder: (context, value, chatProvider, child) {

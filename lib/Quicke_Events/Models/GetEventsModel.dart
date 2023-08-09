@@ -20,8 +20,9 @@ class GetEventsModel {
   String latitude;
   String longitude;
   String? eventRelevantVideo;
-  String? tags;
+  final List<String>? tags;
   String followers;
+  String categoryname;
   String eventType;
   String userId;
   int totalSeats;
@@ -47,6 +48,7 @@ class GetEventsModel {
     required this.eventTitle,
     required this.price,
     required this.about,
+    required this.categoryname,
     required this.latitude,
     required this.longitude,
     this.eventRelevantVideo,
@@ -79,13 +81,14 @@ class GetEventsModel {
       eventTitle: json['event_title'],
       price: json['price'] ?? "50",
       about: json['about'],
-      latitude: json['lattitude'],
-      longitude: json['longitude'],
+      categoryname: json['category_name'],
+      latitude: json['lattitude'] != null ? json['lattitude'] : '23.90',
+      longitude: json['longitude'] != null ? json['longitude'] : '23.90',
       eventRelevantVideo: json['event_relevant_video'],
-      tags: json['tags'],
-      followers: json['followers'],
-      eventType: json['event_type'],
-      userId: json['user_id'],
+      tags: (json['tags'] as List?)?.map((dynamic e) => e as String).toList(),
+      followers: json['followers'] != null ? json['followers'] : '0',
+      eventType: json['event_type'] != null ? json['event_type'] : '0',
+      userId: json['user_id'] != null ? json['user_id'] : '0',
       totalSeats: int.parse(json['total_seats'] ?? "100"),
       availableSeats: int.parse(json['available_seats'] ?? "50"),
       reserveSeats: json['reserve_seats'] ?? "50",
@@ -97,9 +100,14 @@ class GetEventsModel {
       eventStartDate: json['event_start_date'],
       eventEndDate: json['event_end_date'],
       eventCatId: json['event_cat_id'] ?? "",
-      createdAt: DateTime.parse(json['created_at']),
-      updatedAt: DateTime.parse(json['updated_at']),
-      organizerId: int.parse(json['organizer_id']),
+      createdAt: json['created_at'] != null
+          ? DateTime.parse(json['created_at'])
+          : DateTime.now(),
+      updatedAt: json['updated_at'] != null
+          ? DateTime.parse(json['updated_at'])
+          : DateTime.now(),
+      organizerId:
+          json['organizer_id'] != null ? int.parse(json['organizer_id']) : 0,
       customFields: json['custom_fields'] ?? [],
       eventOrganizer: json['event_organizer'] != null
           ? EventOrganizer.fromJson(json['event_organizer'])
@@ -114,6 +122,7 @@ class GetEventsModel {
       'price': price,
       'about': about,
       'lattitude': latitude,
+      "category_name": categoryname,
       'longitude': longitude,
       'event_relevant_video': eventRelevantVideo,
       'tags': tags,
@@ -163,11 +172,11 @@ class EventOrganizer {
     return EventOrganizer(
       id: json['id'],
       organizerName: json['organizer_name'],
-      organizerImage: json['organizer_image'],
+      organizerImage: json['organizer_image'] ?? "",
       createdAt: DateTime.parse(json['created_at']),
       updatedAt: DateTime.parse(json['updated_at']),
-      bio: json['bio'],
-      location: json['location'],
+      bio: json['bio'] ?? "",
+      location: json['location'] ?? "",
     );
   }
   Map<String, dynamic> toJson() {

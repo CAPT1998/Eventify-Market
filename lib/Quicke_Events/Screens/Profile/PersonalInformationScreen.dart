@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
 import 'package:provider/provider.dart';
@@ -36,8 +37,6 @@ class _PersonalInformationScreenState extends State<PersonalInformationScreen> {
 
   LoginModel? profile;
 
-
-
   bool passwordVisible = true;
   @override
   Widget build(BuildContext context) {
@@ -68,7 +67,7 @@ class _PersonalInformationScreenState extends State<PersonalInformationScreen> {
                     radius: 50,
                     child: ClipOval(
                       child: Image.network(
-                         profile?.data?.media?.isNotEmpty == true
+                        profile?.data?.media?.isNotEmpty == true
                             ? profile!.data!.media![0].url!
                             : "http://quickeeapi.pakwexpo.com/images/logo_default.png",
                         width: 100,
@@ -114,8 +113,8 @@ class _PersonalInformationScreenState extends State<PersonalInformationScreen> {
                     onTap: () async {
                       await value.profileUpdate(
                           context,
-                        value.loginModel[0].data?.id.toString(),
-                         value.loginModel[0].data?.apiToken);
+                          value.loginModel[0].data?.id.toString(),
+                          value.loginModel[0].data?.apiToken);
                       final prefs = await SharedPreferences.getInstance();
                       String email = prefs.getString('email') ?? '';
                       String password = prefs.getString('password') ?? '';
@@ -124,12 +123,11 @@ class _PersonalInformationScreenState extends State<PersonalInformationScreen> {
                         email: email,
                         password: password,
                       );
-                      value.loginModel[0].data?.media![0].url = value.profile;
-                      Navigator.of(context).pushAndRemoveUntil(
+                      value.loginModel[0].data!.media![0].url = value.profile;
+                      Navigator.of(context).push(
                         MaterialPageRoute(
-                          builder: (context) => const ProfileScreen(),
+                          builder: (context) => ProfileScreenFeatures(),
                         ),
-                        (route) => false,
                       );
                     },
                     child: TextWidget(
@@ -216,6 +214,7 @@ class _PersonalInformationScreenState extends State<PersonalInformationScreen> {
                             password: passwordController.text,
                             phone: "",
                           );
+                          Navigator.pop(context);
                         },
                         child: TextWidget(
                           title: "Update",
@@ -256,12 +255,13 @@ class _PersonalInformationScreenState extends State<PersonalInformationScreen> {
                       GestureDetector(
                         onTap: () async {
                           await value.updateprofile(
-                            id:value.loginModel[0].data!.id.toString(),
+                            id: value.loginModel[0].data!.id.toString(),
                             name: "",
                             email: "",
                             password: "",
                             phone: phoneController.text,
                           );
+                          Navigator.pop(context);
                         },
                         child: TextWidget(
                           title: "Update",
@@ -275,10 +275,14 @@ class _PersonalInformationScreenState extends State<PersonalInformationScreen> {
                     height: 10,
                   ),
                   textfieldProduct(
-                    isread: true,
+                    inputtype: TextInputType.number,
+                    inputFormatters: <TextInputFormatter>[
+                      FilteringTextInputFormatter.digitsOnly
+                    ],
+                    // isread: true,
                     context: context,
-                    name:value.loginModel[0].data?.phone ?? "123456789 ",
-                    controller: emailController,
+                    name: value.loginModel[0].data?.phone ?? "123456789 ",
+                    controller: phoneController,
                   ),
                 ],
               ),

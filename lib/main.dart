@@ -16,13 +16,16 @@ import 'Quicke_Features/providers/Notificationprovider.dart';
 
 void main(List<String> args) async {
   WidgetsFlutterBinding.ensureInitialized();
+
   // Shared.pref = await SharedPreferences.getInstance();
+  
   await EasyLocalization.ensureInitialized();
 
   await Firebase.initializeApp();
   await FCM().configureFCM();
 
-  runApp(EasyLocalization(
+  runApp(
+    EasyLocalization(
       child: MyApp(),
       supportedLocales: [Locale('en', 'US'), Locale('es', 'ES')],
       path: 'assets/resources/langs/langs.csv',

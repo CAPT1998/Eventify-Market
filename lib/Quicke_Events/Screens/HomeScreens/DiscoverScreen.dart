@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:favorite_button/favorite_button.dart';
 import 'package:flutter/material.dart';
@@ -24,6 +26,9 @@ import '../../Widgets/TextFormWidget.dart';
 import '../DetailOrganizer/DetaillOrganizerdetail.dart';
 import 'package:geolocator/geolocator.dart';
 
+import '../DetailOrganizer/DetailsAllOganizerscreen.dart';
+import 'CategoryEvents/Categoryevent.dart';
+
 class DiscoverScreen extends StatefulWidget {
   const DiscoverScreen({super.key});
 
@@ -34,6 +39,10 @@ class DiscoverScreen extends StatefulWidget {
 class _DiscoverScreenState extends State<DiscoverScreen> {
   GoogleMapController? _googleMapController;
   List<GetEventsModel> _filteredListReviews = [];
+  List<GetEventsModel> getEventsModel = [];
+  bool _isfavorite = false;
+  bool _isfavoritecollection = false;
+
   final TextEditingController _searchController = TextEditingController();
   String? addressValue;
   String? currentCountry;
@@ -48,14 +57,26 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
 
   getRequests(BuildContext context) async {
     await Provider.of<EventProvider>(context, listen: false).mGetEvents();
-       String id =   Provider.of<AuthProvider>(context, listen: false).loginModel[0].data!.id.toString();
+    String id = Provider.of<AuthProvider>(context, listen: false)
+        .loginModel[0]
+        .data!
+        .id
+        .toString();
 
     await Provider.of<EventProvider>(context, listen: false)
         .fetchOrganizerEvents();
     await Provider.of<EventProvider>(context, listen: false)
         .getFavoriteEvents(id);
     await Provider.of<EventProvider>(context, listen: false)
+        .getFavoriteOrganzers(id);
+    await Provider.of<EventProvider>(context, listen: false)
         .getEventOrganizers();
+    await Provider.of<EventProvider>(context, listen: false)
+        .getFavoritecollection(id);
+    await Provider.of<EventProvider>(context, listen: false)
+        .getcollectionevets();
+    await Provider.of<EventProvider>(context, listen: false)
+        .mGetEventSeatHistory();
   }
 
   void getcuurentlocation() async {
@@ -84,8 +105,8 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-      child: Consumer<EventProvider>(
-        builder: (context, value, child) => Scaffold(
+      child: Consumer2<EventProvider, AuthProvider>(
+        builder: (context, value, authvalue, child) => Scaffold(
           body: SingleChildScrollView(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -248,43 +269,42 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
-                        _CategoryWidget(icon: Icons.music_note, title: "Music"),
+                        _CategoryWidget(context,
+                            icon: Icons.music_note, title: "Music"),
                         SizedBox(
                           width: 20,
                         ),
-                        _CategoryWidget(
+                        _CategoryWidget(context,
                             icon: Icons.attractions_sharp, title: "Visual Art"),
                         SizedBox(
                           width: 20,
                         ),
-                        _CategoryWidget(
+                        _CategoryWidget(context,
                             icon: Icons.business_center_outlined,
                             title: "Business"),
                         SizedBox(
                           width: 20,
                         ),
-                        _CategoryWidget(
+                        _CategoryWidget(context,
                             icon: Icons.favorite_outline, title: "Heart"),
                         SizedBox(
                           width: 20,
                         ),
-                        _CategoryWidget(icon: Icons.music_note, title: "Music"),
+                        _CategoryWidget(context,
+                            icon: Icons.sports, title: "Sports"),
                         SizedBox(
                           width: 20,
                         ),
-                        _CategoryWidget(
-                            icon: Icons.attractions_sharp, title: "Visual Art"),
+                        _CategoryWidget(context,
+                            icon: Icons.travel_explore, title: "Travel"),
                         SizedBox(
                           width: 20,
                         ),
-                        _CategoryWidget(
-                            icon: Icons.business_center_outlined,
-                            title: "Business"),
+                        _CategoryWidget(context,
+                            icon: Icons.holiday_village, title: "Holidays"),
                         SizedBox(
                           width: 20,
                         ),
-                        _CategoryWidget(
-                            icon: Icons.favorite_outline, title: "Heart"),
                       ],
                     ),
                   ),
@@ -341,70 +361,186 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
                   SizedBox(
                     height: 20,
                   ),
-                  Stack(
-                    children: [
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(10),
-                        child: Image.asset(
-                          "assets/img/5.png",
-                          width: width,
-                          height: height * 0.25,
-                          fit: BoxFit.fill,
-                        ),
-                      ),
-                      Positioned(
-                        bottom: 0,
-                        right: 0,
-                        child: Container(
-                          height: height * 0.1,
-                          width: width * 0.8,
-                          margin: EdgeInsets.all(20),
-                          padding: EdgeInsets.all(20),
-                          decoration: BoxDecoration(
-                              color: Color(0XFFFFFFFF).withOpacity(0.3),
-                              borderRadius: BorderRadius.circular(10)),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              TextWidget(
-                                title: "The Best Art Events in New York",
-                                fontWeight: FontWeight.w700,
-                                size: 14,
-                                color: Colors.white,
+                  Consumer<EventProvider>(
+                    builder: (context, eventvalue, child) => GestureDetector(
+                      onTap: () {
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              title: Text('Upcoming Events'),
+                              content: Container(
+                                width: double.maxFinite,
+                                child: ListView.builder(
+                                  shrinkWrap: true,
+                                  itemCount: eventvalue.collectionsmodel[0]
+                                      .upcomingEvents!.length!,
+                                  itemBuilder:
+                                      (BuildContext context, int index) {
+                                    final event = eventvalue.collectionsmodel[0]
+                                        .upcomingEvents![index];
+                                    return Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          vertical: 6.0),
+                                      child: GestureDetector(
+                                          onTap: () {
+                                            PersistentNavBarNavigator
+                                                .pushNewScreen(
+                                              context,
+                                              screen: EventDetailsScreen(
+                                                  model: eventvalue
+                                                      .collectionsmodel[0]
+                                                      .upcomingEvents![index]),
+                                              withNavBar: false,
+                                            );
+                                          },
+                                          child: Column(
+                                            children: [
+                                              Text(
+                                                event.eventTitle!,
+                                                style: TextStyle(
+                                                  color: Colors.black,
+                                                  fontSize: 20,
+                                                  fontStyle: FontStyle.normal,
+                                                  decorationColor: Colors.black,
+                                                  decorationThickness: 2.0,
+                                                  shadows: [
+                                                    Shadow(
+                                                      color: Colors.black,
+                                                      offset: Offset(1.0, 1.0),
+                                                      blurRadius: 3.0,
+                                                    ),
+                                                  ],
+                                                  letterSpacing: 0.5,
+                                                ),
+                                              ),
+                                              Divider(
+                                                color: Colors.black,
+                                                thickness: 1.0,
+                                              ),
+                                            ],
+                                          )),
+                                    );
+                                  },
+                                ),
                               ),
-                              Spacer(),
-                              Row(
+                              actions: [
+                                TextButton(
+                                  onPressed: () {
+                                    Navigator.of(context)
+                                        .pop(); // Close the dialog
+                                  },
+                                  child: Text('Close'),
+                                ),
+                              ],
+                            );
+                          },
+                        );
+                      },
+                      child: Stack(
+                        children: [
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(10),
+                            child: Image.asset(
+                              "assets/img/5.png",
+                              width: width,
+                              height: height * 0.25,
+                              fit: BoxFit.fill,
+                            ),
+                          ),
+                          Positioned(
+                            top: 5,
+                            right: 10,
+                            child: FavoriteButton(
+                              iconSize: 50,
+                              valueChanged: (_) async {
+                                if (!_isfavoritecollection) {
+                                  await value.addFavoritecollection(
+                                      context,
+                                      authvalue.loginModel[0].data?.id,
+                                      eventvalue.collectionsmodel[0].id
+                                          .toString());
+                                  await value.getFavoritecollection(authvalue
+                                      .loginModel[0].data!.id
+                                      .toString());
+                                } else {
+                                  await value.removeFavoritecollection(
+                                      context,
+                                      authvalue.loginModel[0].data?.id,
+                                      eventvalue.collectionsmodel[0].id
+                                          .toString());
+                                  await value.getFavoritecollection(authvalue
+                                      .loginModel[0].data!.id
+                                      .toString());
+                                }
+                                setState(() {
+                                  _isfavoritecollection =
+                                      !_isfavoritecollection;
+                                });
+                              },
+                            ),
+                          ),
+                          Positioned(
+                            bottom: 0,
+                            right: 0,
+                            child: Container(
+                              height: height * 0.2,
+                              width: width * 0.8,
+                              margin: EdgeInsets.all(20),
+                              padding: EdgeInsets.all(20),
+                              decoration: BoxDecoration(
+                                  color: Color(0XFFFFFFFF).withOpacity(0.3),
+                                  borderRadius: BorderRadius.circular(10)),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  CircleAvatar(
-                                    radius: 10,
-                                    backgroundColor: appColor,
-                                    child: Icon(
-                                      Icons.crisis_alert_rounded,
-                                      color: Colors.white,
-                                      size: 12,
-                                    ),
-                                  ),
                                   TextWidget(
-                                    title: "  by Eventer",
-                                    fontWeight: FontWeight.w500,
-                                    size: 12,
+                                    title:
+                                        eventvalue.collectionsmodel[0].name ??
+                                            "Example Collection",
+                                    fontWeight: FontWeight.w700,
+                                    size: 14,
                                     color: Colors.white,
                                   ),
                                   Spacer(),
-                                  TextWidget(
-                                    title: "8 Upcoming events",
-                                    fontWeight: FontWeight.w500,
-                                    size: 12,
-                                    color: Colors.white,
-                                  ),
+                                  Row(
+                                    children: [
+                                      CircleAvatar(
+                                        radius: 10,
+                                        backgroundColor: appColor,
+                                        child: Icon(
+                                          Icons.crisis_alert_rounded,
+                                          color: Colors.white,
+                                          size: 12,
+                                        ),
+                                      ),
+                                      TextWidget(
+                                        title: "  by Eventer",
+                                        fontWeight: FontWeight.w500,
+                                        size: 12,
+                                        color: Colors.white,
+                                      ),
+                                      Spacer(),
+                                      TextWidget(
+                                        title: eventvalue.collectionsmodel[0]
+                                                .upcomingEventsCount
+                                                .toString() +
+                                            " Upcoming Events ",
+                                        fontWeight: FontWeight.w500,
+                                        size: 12,
+                                        color: Colors.white,
+                                      ),
+                                    ],
+                                  )
                                 ],
-                              )
-                            ],
-                          ),
-                        ),
-                      )
-                    ],
+                              ),
+                            ),
+                          )
+                        ],
+                      ),
+                    ),
                   ),
+
                   SizedBox(
                     height: 20,
                   ),
@@ -418,7 +554,7 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
                   ),
                   SingleChildScrollView(
                     scrollDirection: Axis.vertical,
-                    child: Row(
+                    child: Column(
                       children: [
                         _moreNearWidget(
                             img: "1",
@@ -455,8 +591,25 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
                         right: 10,
                         child: FavoriteButton(
                           iconSize: 40,
-                          valueChanged: (_isFavorite) {
-                            print('Is Favorite $_isFavorite)');
+                          valueChanged: (_isFavorite) async {
+                            if (!_isfavorite) {
+                              await value.addFavoriteEvents(
+                                  context,
+                                  authvalue.loginModel[0].data?.id,
+                                  value.getEventsModel[0].id);
+                              await value.getFavoriteEvents(
+                                  authvalue.loginModel[0].data!.id.toString());
+                            } else {
+                              await value.deleteFavoriteEvents(
+                                  context,
+                                  authvalue.loginModel[0].data?.id,
+                                  value.getEventsModel[0].id);
+                              await value.getFavoriteEvents(
+                                  authvalue.loginModel[0].data!.id.toString());
+                            }
+                            setState(() {
+                              _isfavorite = !_isfavorite;
+                            });
                           },
                         ),
                       ),
@@ -477,7 +630,15 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
                         bottom: 0,
                         right: 0,
                         child: GestureDetector(
-                          onTap: () {},
+                          onTap: () {
+                            PersistentNavBarNavigator.pushNewScreen(
+                              context,
+                              screen: EventDetailsScreen(
+                                model: value.getEventsModel[0],
+                              ),
+                              withNavBar: false,
+                            );
+                          },
                           child: Container(
                             height: height * 0.1,
                             width: width * 0.9,
@@ -489,7 +650,7 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 TextWidget(
-                                  title: "Drink & Draw at The Living Gallery",
+                                  title: value.getEventsModel[0].eventTitle,
                                   fontWeight: FontWeight.w700,
                                   size: 14,
                                   color: Colors.white,
@@ -503,14 +664,16 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
                                       size: 12,
                                     ),
                                     TextWidget(
-                                      title: "  Nov 27, 07:00 PM",
+                                      title: value
+                                          .getEventsModel[0].eventStartDate,
                                       fontWeight: FontWeight.w500,
                                       size: 12,
                                       color: Colors.white,
                                     ),
                                     Spacer(),
                                     TextWidget(
-                                      title: "\$39.00",
+                                      title:
+                                          "\$ ${value.getEventsModel[0].price} ",
                                       fontWeight: FontWeight.w500,
                                       size: 12,
                                       color: Colors.white,
@@ -631,10 +794,13 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
                         itemBuilder: (context, index) {
                           final eventOrganizerName = value.getEventsModel[index]
                               .eventOrganizer?.organizerName;
+                          final eventOrganizerid =
+                              value.getEventsModel[index].eventOrganizer?.id;
                           if (eventOrganizerName != null) {
                             return OrganizerWidget(
                               context,
                               eventOrganizerName,
+                              eventOrganizerid.toString(),
                               value.getEventsModel,
                             );
                           }
@@ -655,14 +821,15 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
 
 // ignore: non_constant_identifier_names
 Widget OrganizerWidget(
-    context, String? organize, List<GetEventsModel> eventmodel) {
+    context, String? organize, String id, List<GetEventsModel> eventmodel) {
   return GestureDetector(
     onTap: () {
       PersistentNavBarNavigator.pushNewScreen(
         context,
-        screen: DetailOrganizerScreen(
-          eventname: organize,
+        screen: DetailAllOrganizerScreen(
+          organizername: organize,
           model: eventmodel,
+          organizerid: id,
         ),
         withNavBar: false,
       );
@@ -886,7 +1053,7 @@ _moreNearWidget(
     filteredListReviews = value.getEventsModel;
   }
   return SizedBox(
-    height: height * 0.15,
+    height: height * 0.12,
     child: value.checkValueEvent == false
         ? Image.asset("assets/img/loading.gif")
         : filteredListReviews.length == 0
@@ -896,6 +1063,7 @@ _moreNearWidget(
                 scrollDirection: Axis.horizontal,
                 itemCount: 1,
                 itemBuilder: (context, index) {
+                  String price = filteredListReviews[0].price;
                   return InkWell(
                     onTap: () {
                       PersistentNavBarNavigator.pushNewScreen(
@@ -916,8 +1084,8 @@ _moreNearWidget(
                             borderRadius: BorderRadius.circular(10),
                             child: Image.asset(
                               "assets/img/6.png",
-                              height: 80,
-                              width: 80,
+                              height: 70,
+                              width: 70,
                               fit: BoxFit.fill,
                             ),
                           ),
@@ -934,7 +1102,7 @@ _moreNearWidget(
                                     MainAxisAlignment.spaceEvenly,
                                 children: [
                                   TextWidget(
-                                    title: "Gala Galactica: New Year's",
+                                    title: filteredListReviews[0].eventTitle,
                                     fontWeight: FontWeight.w600,
                                     size: 16,
                                   ),
@@ -946,14 +1114,15 @@ _moreNearWidget(
                                         color: greyColor,
                                       ),
                                       TextWidget(
-                                        title: "  Nov 27  .  07:00 PM",
+                                        title: filteredListReviews[0]
+                                            .eventStartDate,
                                         size: 12,
                                         fontWeight: FontWeight.w500,
                                         color: greyColor,
                                       ),
                                       Spacer(),
                                       TextWidget(
-                                        title: "\$39.00",
+                                        title: "\$ $price",
                                         size: 12,
                                         fontWeight: FontWeight.w500,
                                         color: darkPurpleColor,
@@ -973,27 +1142,39 @@ _moreNearWidget(
   );
 }
 
-Widget _CategoryWidget({required dynamic icon, required String title}) {
-  return Column(
-    children: [
-      Container(
-        padding: EdgeInsets.symmetric(horizontal: 15, vertical: 15),
-        decoration: BoxDecoration(
-            color: appColor, borderRadius: BorderRadius.circular(10)),
-        child: Icon(
-          icon,
-          color: Colors.white,
+Widget _CategoryWidget(context,
+    {required dynamic icon, required String title}) {
+  return GestureDetector(
+    onTap: () {
+      PersistentNavBarNavigator.pushNewScreen(
+        context,
+        screen: CategoryEvent(
+          title: title,
         ),
-      ),
-      SizedBox(
-        height: 10,
-      ),
-      TextWidget(
-        title: "$title",
-        size: 14,
-        fontWeight: FontWeight.w500,
-      )
-    ],
+        withNavBar: false,
+      );
+    },
+    child: Column(
+      children: [
+        Container(
+          padding: EdgeInsets.symmetric(horizontal: 15, vertical: 15),
+          decoration: BoxDecoration(
+              color: appColor, borderRadius: BorderRadius.circular(10)),
+          child: Icon(
+            icon,
+            color: Colors.white,
+          ),
+        ),
+        SizedBox(
+          height: 10,
+        ),
+        TextWidget(
+          title: "$title",
+          size: 14,
+          fontWeight: FontWeight.w500,
+        )
+      ],
+    ),
   );
 }
 

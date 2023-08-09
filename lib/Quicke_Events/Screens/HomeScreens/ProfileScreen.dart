@@ -15,6 +15,7 @@ import 'package:quickie_event/Quicke_Events/Screens/Profile/PersonalInformationS
 import 'package:quickie_event/Quicke_Events/Screens/Profile/SelectCategoryForPrivateEvent.dart';
 import 'package:quickie_event/Quicke_Events/Screens/SearchingEvents/SearchCategoryScreen.dart';
 import 'package:quickie_event/Quicke_Events/Widgets/TextWidget.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../ConstantModels/LoginModel.dart';
 import '../../../ConstantProviders/AuthProviders.dart';
@@ -293,9 +294,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   color: greyColor,
                 ),
                 ListTile(
-                  onTap: () {
+                  onTap: () async {
                     Storage.saveJWT("");
-
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+                    await prefs.clear();
                     Provider.of<AuthProvider>(context, listen: false)
                         .setIsFirstRun(false);
                     Navigator.of(context).pushAndRemoveUntil(

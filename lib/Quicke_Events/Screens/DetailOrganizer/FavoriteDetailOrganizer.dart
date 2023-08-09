@@ -8,27 +8,28 @@ import 'package:quickie_event/Quicke_Events/Widgets/ShareOptionClass.dart';
 import 'package:quickie_event/Quicke_Events/Widgets/TextWidget.dart';
 
 import '../../../ConstantProviders/AuthProviders.dart';
-import '../../Models/CollectionsModel.dart';
 import '../../Models/GetEventsModel.dart';
 import '../../Providers/EventsProvider.dart';
 import '../EventDetails/EventDetailsScreen.dart';
 
-class DetailOrganizerScreen extends StatefulWidget {
+class FavoriteDetailOrganizerScreen extends StatefulWidget {
   String? organizername;
   String? organizerid;
   dynamic model;
 
-  DetailOrganizerScreen(
+  FavoriteDetailOrganizerScreen(
       {required this.organizername,
       required this.organizerid,
       required this.model,
       super.key});
 
   @override
-  State<DetailOrganizerScreen> createState() => _DetailOrganizerScreenState();
+  State<FavoriteDetailOrganizerScreen> createState() =>
+      _FavDetailOrganizerScreenState();
 }
 
-class _DetailOrganizerScreenState extends State<DetailOrganizerScreen> {
+class _FavDetailOrganizerScreenState
+    extends State<FavoriteDetailOrganizerScreen> {
   TabController? _tabController;
   bool _isfavorite = false;
 
@@ -60,14 +61,7 @@ class _DetailOrganizerScreenState extends State<DetailOrganizerScreen> {
                               widget.organizerid);
                           await eventvalue.getFavoriteOrganzers(
                               authvalue.loginModel[0].data!.id.toString());
-                        } else {
-                          await eventvalue.removeFavoriteOrganizer(
-                              context,
-                              authvalue.loginModel[0].data?.id,
-                              widget.organizerid);
-                          await eventvalue.getFavoriteOrganzers(
-                              authvalue.loginModel[0].data!.id.toString());
-                        }
+                        } else {}
                         setState(() {
                           _isfavorite = !_isfavorite;
                         });
@@ -199,33 +193,10 @@ class _DetailOrganizerScreenState extends State<DetailOrganizerScreen> {
                                       ),
                                     ),
                                     SingleChildScrollView(
-                                      child: Consumer<EventProvider>(
-                                        builder: (context, value, child) {
-                                          return ListView.builder(
-                                            shrinkWrap: true,
-                                            scrollDirection: Axis.vertical,
-                                            physics:
-                                                NeverScrollableScrollPhysics(), // Disable scrolling of the inner ListView
-                                            itemCount:
-                                                value.collectionsmodel.length,
-                                            itemBuilder: (context, index) {
-                                              String collectionid = value
-                                                      .collectionsmodel[index]
-                                                      .id
-                                                      ?.toString() ??
-                                                  "0";
-                                              if (widget.organizerid ==
-                                                  collectionid) {
-                                                return _CollectionsWidet(
-                                                    context,
-                                                    value.collectionsmodel[
-                                                        index]);
-                                              } else {
-                                                return Container();
-                                              }
-                                            },
-                                          );
-                                        },
+                                      child: Column(
+                                        children: [
+                                          _CollectionsWidet(),
+                                        ],
                                       ),
                                     ),
                                     SingleChildScrollView(
@@ -235,7 +206,7 @@ class _DetailOrganizerScreenState extends State<DetailOrganizerScreen> {
                                             padding: const EdgeInsets.symmetric(
                                                 horizontal: 20),
                                             child: TextWidget(
-                                              title: widget.model?.bio! ??
+                                              title: widget.model?.bio ??
                                                   "Example Bio",
                                               size: 14,
                                               maxline: 20,
@@ -359,141 +330,72 @@ Widget _EventsWidget(context, GetEventsModel eventmodel) {
   );
 }
 
-Widget _CollectionsWidet(context, CollectionModel model) {
-  return GestureDetector(
-    onTap: () {
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: Text('Upcoming Events'),
-            content: Container(
-              width: double.maxFinite,
-              child: ListView.builder(
-                shrinkWrap: true,
-                itemCount: model.upcomingEvents!.length!,
-                itemBuilder: (BuildContext context, int index) {
-                  final event = model.upcomingEvents![index];
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 6.0),
-                    child: GestureDetector(
-                        onTap: () {
-                          PersistentNavBarNavigator.pushNewScreen(
-                            context,
-                            screen: EventDetailsScreen(
-                                model: model.upcomingEvents![index]),
-                            withNavBar: false,
-                          );
-                        },
-                        child: Column(
-                          children: [
-                            Text(
-                              event.eventTitle!,
-                              style: TextStyle(
-                                color: Colors.black,
-                                fontSize: 20,
-                                fontStyle: FontStyle.normal,
-                                decorationColor: Colors.black,
-                                decorationThickness: 2.0,
-                                shadows: [
-                                  Shadow(
-                                    color: Colors.black,
-                                    offset: Offset(1.0, 1.0),
-                                    blurRadius: 3.0,
-                                  ),
-                                ],
-                                letterSpacing: 0.5,
-                              ),
-                            ),
-                            Divider(
-                              color: Colors.black,
-                              thickness: 1.0,
-                            ),
-                          ],
-                        )),
-                  );
-                },
-              ),
-            ),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-                child: Text('Close'),
-              ),
-            ],
-          );
-        },
-      );
-    },
-    child: Container(
-      margin: EdgeInsets.symmetric(horizontal: 20, vertical: 5),
-      child: Stack(
-        children: [
-          ClipRRect(
-            borderRadius: BorderRadius.circular(10),
-            child: Image.asset(
-              "assets/img/5.png",
-              width: width,
-              height: height * 0.25,
-              fit: BoxFit.fill,
+Widget _CollectionsWidet() {
+  return Container(
+    margin: EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+    child: Stack(
+      children: [
+        ClipRRect(
+          borderRadius: BorderRadius.circular(10),
+          child: Image.asset(
+            "assets/img/5.png",
+            width: width,
+            height: height * 0.25,
+            fit: BoxFit.fill,
+          ),
+        ),
+        Positioned(
+          bottom: 0,
+          right: 0,
+          child: Container(
+            height: height * 0.2,
+            width: width * 0.8,
+            margin: EdgeInsets.all(20),
+            padding: EdgeInsets.all(20),
+            decoration: BoxDecoration(
+                color: Color(0XFFFFFFFF).withOpacity(0.3),
+                borderRadius: BorderRadius.circular(10)),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                TextWidget(
+                  title: "The Best Art Events in New York",
+                  fontWeight: FontWeight.w700,
+                  size: 14,
+                  color: Colors.white,
+                ),
+                Spacer(),
+                Row(
+                  children: [
+                    CircleAvatar(
+                      radius: 10,
+                      backgroundColor: appColor,
+                      child: Icon(
+                        Icons.crisis_alert_rounded,
+                        color: Colors.white,
+                        size: 12,
+                      ),
+                    ),
+                    TextWidget(
+                      title: "  by Eventer",
+                      fontWeight: FontWeight.w500,
+                      size: 12,
+                      color: Colors.white,
+                    ),
+                    Spacer(),
+                    TextWidget(
+                      title: "8 Upcoming events",
+                      fontWeight: FontWeight.w500,
+                      size: 12,
+                      color: Colors.white,
+                    ),
+                  ],
+                )
+              ],
             ),
           ),
-          Positioned(
-            bottom: 0,
-            right: 0,
-            child: Container(
-              height: height * 0.2,
-              width: width * 0.8,
-              margin: EdgeInsets.all(20),
-              padding: EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                  color: Color(0XFFFFFFFF).withOpacity(0.3),
-                  borderRadius: BorderRadius.circular(10)),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  TextWidget(
-                    title: model.name!,
-                    fontWeight: FontWeight.w700,
-                    size: 14,
-                    color: Colors.white,
-                  ),
-                  Spacer(),
-                  Row(
-                    children: [
-                      CircleAvatar(
-                        radius: 10,
-                        backgroundColor: appColor,
-                        child: Icon(
-                          Icons.crisis_alert_rounded,
-                          color: Colors.white,
-                          size: 12,
-                        ),
-                      ),
-                      TextWidget(
-                        title: "  by Eventer",
-                        fontWeight: FontWeight.w500,
-                        size: 12,
-                        color: Colors.white,
-                      ),
-                      Spacer(),
-                      TextWidget(
-                        title: model.upcomingEventsCount.toString() +
-                            " Upcoming Events ",
-                        fontWeight: FontWeight.w500,
-                        size: 12,
-                        color: Colors.white,
-                      ),
-                    ],
-                  )
-                ],
-              ),
-            ),
-          )
-        ],
-      ),
+        )
+      ],
     ),
   );
 }

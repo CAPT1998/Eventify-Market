@@ -1,11 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
+import 'package:provider/provider.dart';
 import 'package:quickie_event/Constant.dart';
+import 'package:quickie_event/Quicke_Events/Providers/EventsProvider.dart';
 import 'package:quickie_event/Quicke_Events/Screens/SearchingEvents/MapCategoryScreen.dart';
 import 'package:quickie_event/Quicke_Events/Screens/SearchingEvents/SearchScreen.dart';
 
+import '../../../ConstantProviders/AuthProviders.dart';
+import '../../Models/GetEventsModel.dart';
 import '../../Widgets/SizedBoxWidget.dart';
 import '../../Widgets/TextFormWidget.dart';
 import '../../Widgets/TextWidget.dart';
+import '../EventDetails/EventDetailsScreen.dart';
 
 class SearchCategoryScreen extends StatefulWidget {
   const SearchCategoryScreen({super.key});
@@ -73,7 +79,7 @@ class _SearchCategoryScreenState extends State<SearchCategoryScreen> {
                           icon: Icon(Icons.line_style_rounded),
                         ),
                         const Tab(
-                          text: "Musics",
+                          text: "Music",
                           icon: Icon(Icons.music_note),
                         ),
                         const Tab(
@@ -90,72 +96,80 @@ class _SearchCategoryScreenState extends State<SearchCategoryScreen> {
                         ),
                       ],
                     ),
-                    const SizedBox(
-                      height: 20,
-                    ),
                     Flexible(
                       child: SizedBox(
-                        child: TabBarView(
-                          // controller: _tabController,
-                          // physics: NeverScrollableScrollPhysics(),
-                          children: [
-                            SingleChildScrollView(
-                              child: Column(
-                                children: [
-                                  _NearWidget(
-                                      img: "1",
+                        child: Consumer<EventProvider>(
+                          builder: (context, value, child) => TabBarView(
+                            // controller: _tabController,
+                            // physics: NeverScrollableScrollPhysics(),
+                            children: [
+                              SingleChildScrollView(
+                                child: Column(
+                                  children: [
+                                    _NearWidget(
+                                      cat: "1",
                                       title: "Flash Deal",
-                                      color: yellowColor),
-                                  _NearWidget(
-                                      img: "2",
-                                      title: "Flash Deal",
-                                      color: yellowColor),
-                                  _NearWidget(
-                                      img: "3",
-                                      title: "Flash Deal",
-                                      color: yellowColor),
-                                ],
+                                      color: yellowColor,
+                                      eventmodel: value.getEventsModel,
+                                      value: value,
+                                    ),
+                                  ],
+                                ),
                               ),
-                            ),
-                            SingleChildScrollView(
-                              child: Column(
-                                children: [
-                                  _NearWidget(
-                                      img: "4",
+                              SingleChildScrollView(
+                                child: Column(
+                                  children: [
+                                    _NearWidget2(
+                                      cat: "Music",
                                       title: "Flash Deal",
-                                      color: yellowColor),
-                                  _NearWidget(
-                                      img: "5",
-                                      title: "Flash Deal",
-                                      color: yellowColor),
-                                  _NearWidget(
-                                      img: "1",
-                                      title: "Flash Deal",
-                                      color: yellowColor),
-                                ],
+                                      color: yellowColor,
+                                      eventmodel: value.getEventsModel,
+                                      value: value,
+                                    ),
+                                  ],
+                                ),
                               ),
-                            ),
-                            SingleChildScrollView(
-                              child: Column(
-                                children: [
-                                  _NearWidget(
-                                      img: "2",
+                              SingleChildScrollView(
+                                child: Column(
+                                  children: [
+                                    _NearWidget2(
+                                      cat: "Sports",
                                       title: "Flash Deal",
-                                      color: yellowColor),
-                                  _NearWidget(
-                                      img: "11",
-                                      title: "Flash Deal",
-                                      color: yellowColor),
-                                  _NearWidget(
-                                      img: "4",
-                                      title: "Flash Deal",
-                                      color: yellowColor),
-                                ],
+                                      color: yellowColor,
+                                      eventmodel: value.getEventsModel,
+                                      value: value,
+                                    ),
+                                  ],
+                                ),
                               ),
-                            ),
-                            Text("data"),
-                            Text("data"),
-                          ],
+                              SingleChildScrollView(
+                                child: Column(
+                                  children: [
+                                    _NearWidget2(
+                                      cat: "Holiday",
+                                      title: "Flash Deal",
+                                      color: yellowColor,
+                                      eventmodel: value.getEventsModel,
+                                      value: value,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              SingleChildScrollView(
+                                child: Column(
+                                  children: [
+                                    _NearWidget2(
+                                      cat: "Business",
+                                      title: "Flash Deal",
+                                      color: yellowColor,
+                                      eventmodel: [],
+                                      value: value,
+                                    ),
+                                  ],
+                                ),
+                              )
+                            ],
+                          ),
                         ),
                       ),
                     ),
@@ -228,70 +242,207 @@ class _SearchCategoryScreenState extends State<SearchCategoryScreen> {
 }
 
 Widget _NearWidget(
-    {required String img, required String title, dynamic color}) {
-  return Container(
-    margin: EdgeInsets.only(
-      bottom: 10,
-    ),
-    width: width,
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Stack(
-          children: [
-            ClipRRect(
-                borderRadius: BorderRadius.circular(20),
-                child: Image.asset("assets/img/$img.png",
-                    height: height * 0.2, width: width, fit: BoxFit.fill)),
-            Container(
-              padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-              margin: EdgeInsets.only(top: 10, left: 10),
-              decoration: BoxDecoration(
-                  color: color, borderRadius: BorderRadius.circular(5)),
-              child: TextWidget(
-                title: "$title",
-                fontWeight: FontWeight.w700,
-                size: 8,
-                color: Colors.white,
+    {required String cat,
+    required String title,
+    required List<GetEventsModel> eventmodel,
+    required EventProvider value,
+    dynamic color}) {
+  return SizedBox(
+    height: height,
+    child: value.checkValueEvent == false
+        ? Image.asset("assets/img/loading.gif")
+        : eventmodel.length == 0
+            ? TextWidget(title: "No Event Available")
+            : ListView.builder(
+                shrinkWrap: true,
+                scrollDirection: Axis.vertical,
+                itemCount: eventmodel.length,
+                physics: NeverScrollableScrollPhysics(),
+                itemBuilder: (context, index) {
+                  return GestureDetector(
+                    onTap: () {
+                      PersistentNavBarNavigator.pushNewScreen(
+                        context,
+                        screen: EventDetailsScreen(
+                          model: eventmodel[index],
+                        ),
+                        withNavBar: false,
+                      );
+                    },
+                    child: Container(
+                      margin: EdgeInsets.only(
+                        bottom: 10,
+                      ),
+                      width: width,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Stack(
+                            children: [
+                              ClipRRect(
+                                  borderRadius: BorderRadius.circular(20),
+                                  child: Image.asset("assets/img/1.png",
+                                      height: height * 0.2,
+                                      width: width,
+                                      fit: BoxFit.fill)),
+                              Container(
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: 10, vertical: 5),
+                                margin: EdgeInsets.only(top: 10, left: 10),
+                                decoration: BoxDecoration(
+                                    color: color,
+                                    borderRadius: BorderRadius.circular(5)),
+                                child: TextWidget(
+                                  title: "$title",
+                                  fontWeight: FontWeight.w700,
+                                  size: 8,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ],
+                          ),
+                          SizedBox(
+                            height: 10,
+                          ),
+                          TextWidget(
+                            title: eventmodel[0].eventTitle,
+                            size: 16,
+                            fontWeight: FontWeight.w700,
+                          ),
+                          SizedBox(
+                            height: 10,
+                          ),
+                          Row(
+                            children: [
+                              Icon(
+                                Icons.calendar_month_outlined,
+                                size: 15,
+                                color: greyColor,
+                              ),
+                              TextWidget(
+                                title: eventmodel[0].eventStartDate,
+                                size: 12,
+                                fontWeight: FontWeight.w500,
+                                color: greyColor,
+                              ),
+                              Spacer(),
+                              TextWidget(
+                                title: "\$ " + eventmodel[0].price,
+                                size: 12,
+                                fontWeight: FontWeight.w500,
+                                color: darkPurpleColor,
+                              ),
+                            ],
+                          )
+                        ],
+                      ),
+                    ),
+                  );
+                }),
+  );
+}
+
+Widget _NearWidget2({
+  required String cat,
+  required String title,
+  required List<GetEventsModel> eventmodel,
+  required EventProvider value,
+  dynamic color,
+}) {
+  List<GetEventsModel> filteredEvents =
+      eventmodel.where((event) => cat == event.categoryname).toList();
+
+  return SizedBox(
+    height: height,
+    child: value.checkValueEvent == false
+        ? Image.asset("assets/img/loading.gif")
+        : filteredEvents.length == 0
+            ? TextWidget(title: "No Event Available")
+            : ListView.builder(
+                shrinkWrap: true,
+                scrollDirection: Axis.vertical,
+                itemCount: filteredEvents.length,
+                physics: NeverScrollableScrollPhysics(),
+                itemBuilder: (context, index) {
+                  return GestureDetector(
+                    onTap: () {
+                      PersistentNavBarNavigator.pushNewScreen(
+                        context,
+                        screen: EventDetailsScreen(
+                          model: filteredEvents[index],
+                        ),
+                        withNavBar: false,
+                      );
+                    },
+                    child: Container(
+                      margin: EdgeInsets.only(bottom: 10),
+                      width: width,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Stack(
+                            children: [
+                              ClipRRect(
+                                borderRadius: BorderRadius.circular(20),
+                                child: Image.asset(
+                                  "assets/img/1.png",
+                                  height: height * 0.2,
+                                  width: width,
+                                  fit: BoxFit.fill,
+                                ),
+                              ),
+                              Container(
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: 10, vertical: 5),
+                                margin: EdgeInsets.only(top: 10, left: 10),
+                                decoration: BoxDecoration(
+                                  color: color,
+                                  borderRadius: BorderRadius.circular(5),
+                                ),
+                                child: TextWidget(
+                                  title: "$title",
+                                  fontWeight: FontWeight.w700,
+                                  size: 8,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ],
+                          ),
+                          SizedBox(height: 10),
+                          TextWidget(
+                            title: filteredEvents[index].eventTitle,
+                            size: 16,
+                            fontWeight: FontWeight.w700,
+                          ),
+                          SizedBox(height: 10),
+                          Row(
+                            children: [
+                              Icon(
+                                Icons.calendar_month_outlined,
+                                size: 15,
+                                color: greyColor,
+                              ),
+                              TextWidget(
+                                title: filteredEvents[index].eventStartDate,
+                                size: 12,
+                                fontWeight: FontWeight.w500,
+                                color: greyColor,
+                              ),
+                              Spacer(),
+                              TextWidget(
+                                title: "\$ ${filteredEvents[index].price}",
+                                size: 12,
+                                fontWeight: FontWeight.w500,
+                                color: darkPurpleColor,
+                              ),
+                            ],
+                          )
+                        ],
+                      ),
+                    ),
+                  );
+                },
               ),
-            ),
-          ],
-        ),
-        SizedBox(
-          height: 10,
-        ),
-        TextWidget(
-          title: "Bring Me The Horizon Tour",
-          size: 16,
-          fontWeight: FontWeight.w700,
-        ),
-        SizedBox(
-          height: 10,
-        ),
-        Row(
-          children: [
-            Icon(
-              Icons.calendar_month_outlined,
-              size: 15,
-              color: greyColor,
-            ),
-            TextWidget(
-              title: "  Nov 27  .  07:00 PM",
-              size: 12,
-              fontWeight: FontWeight.w500,
-              color: greyColor,
-            ),
-            Spacer(),
-            TextWidget(
-              title: "\$39.00",
-              size: 12,
-              fontWeight: FontWeight.w500,
-              color: darkPurpleColor,
-            ),
-          ],
-        )
-      ],
-    ),
   );
 }
 

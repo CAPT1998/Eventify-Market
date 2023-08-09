@@ -55,9 +55,6 @@ class _SearchScreenState extends State<SearchScreen> {
                 height: 20,
               ),
               _SearchWidget(title: "Business Networking"),
-              _SearchWidget(title: "Small Business"),
-              _SearchWidget(title: "Woman in Business"),
-              _SearchWidget(title: "Small Business Conference"),
               SizedBox(height: 20),
               TextWidget(
                 title: "Event in Business",
@@ -68,8 +65,6 @@ class _SearchScreenState extends State<SearchScreen> {
               SizedBox(
                 height: 20,
               ),
-              _NearWidget(img: "1", title: "Flash Deal", color: yellowColor),
-              _NearWidget(img: "1", title: "Flash Deal", color: yellowColor),
               _NearWidget(img: "1", title: "Flash Deal", color: yellowColor),
             ],
           ),

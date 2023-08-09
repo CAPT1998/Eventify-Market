@@ -35,9 +35,6 @@ class _PersonalInformationScreenState
     super.initState();
   }
 
-
- 
-
   bool passwordVisible = true;
   @override
   Widget build(BuildContext context) {
@@ -68,9 +65,9 @@ class _PersonalInformationScreenState
                     radius: 50,
                     child: ClipOval(
                       child: Image.network(
-                         value.loginModel[0].data?.media?.isNotEmpty == true
-      ? value.loginModel[0].data!.media![0].url!
-      : "http://quickeeapi.pakwexpo.com/images/logo_default.png",
+                        value.loginModel[0].data?.media?.isNotEmpty == true
+                            ? value.loginModel[0].data!.media![0].url!
+                            : "http://quickeeapi.pakwexpo.com/images/logo_default.png",
                         width: 100,
                         height: 100,
                         fit: BoxFit.cover,
@@ -114,8 +111,8 @@ class _PersonalInformationScreenState
                     onTap: () async {
                       await value.profileUpdate(
                           context,
-                        value.loginModel[0].data!.id.toString(),
-                        value.loginModel[0].data!.apiToken);
+                          value.loginModel[0].data!.id.toString(),
+                          value.loginModel[0].data!.apiToken);
                       final prefs = await SharedPreferences.getInstance();
                       String email = prefs.getString('email') ?? '';
                       String password = prefs.getString('password') ?? '';
@@ -124,12 +121,11 @@ class _PersonalInformationScreenState
                         email: email,
                         password: password,
                       );
-                     value.loginModel[0].data!.media![0].url = value.profile;
-                      Navigator.of(context).pushAndRemoveUntil(
+                      value.loginModel[0].data!.media![0].url = value.profile;
+                      Navigator.of(context).push(
                         MaterialPageRoute(
                           builder: (context) => ProfileScreenFeatures(),
                         ),
-                        (route) => false,
                       );
                     },
                     child: TextWidget(
@@ -150,6 +146,7 @@ class _PersonalInformationScreenState
                       Spacer(),
                       GestureDetector(
                         onTap: () async {
+                          print("update pressed");
                           await value.updateprofile(
                             id: value.loginModel[0].data!.id.toString(),
                             name: nameController.text,
@@ -194,7 +191,7 @@ class _PersonalInformationScreenState
                     inputtype: TextInputType.none,
                     isread: true,
                     context: context,
-                    name:value.loginModel[0].data!.email ?? " ",
+                    name: value.loginModel[0].data!.email ?? " ",
                     controller: emailController,
                   ),
                   SizedBox(
@@ -210,12 +207,13 @@ class _PersonalInformationScreenState
                       GestureDetector(
                         onTap: () async {
                           await value.updateprofile(
-                            id:value.loginModel[0].data!.id.toString(),
+                            id: value.loginModel[0].data!.id.toString(),
                             name: "",
                             email: "",
                             password: passwordController.text,
                             phone: "",
                           );
+                          Navigator.pop(context);
                         },
                         child: TextWidget(
                           title: "Update",
@@ -256,12 +254,13 @@ class _PersonalInformationScreenState
                       GestureDetector(
                         onTap: () async {
                           await value.updateprofile(
-                            id:value.loginModel[0].data!.id.toString(),
+                            id: value.loginModel[0].data!.id.toString(),
                             name: "",
                             email: "",
                             password: "",
                             phone: phoneController.text,
                           );
+                          Navigator.pop(context);
                         },
                         child: TextWidget(
                           title: "Update",
@@ -275,10 +274,11 @@ class _PersonalInformationScreenState
                     height: 10,
                   ),
                   textfieldProduct(
-                    isread: true,
+                    inputtype: TextInputType.number,
+                    // isread: true,
                     context: context,
                     name: value.loginModel[0].data!.phone ?? "123456789 ",
-                    controller: emailController,
+                    controller: phoneController,
                   ),
                 ],
               ),

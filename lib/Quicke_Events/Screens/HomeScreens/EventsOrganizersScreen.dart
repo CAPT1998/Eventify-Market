@@ -57,9 +57,12 @@ class _EventsOrganizersScreenState extends State<EventsOrganizersScreen> {
                     PersistentNavBarNavigator.pushNewScreen(
                       context,
                       screen: DetailOrganizerScreen(
-                        eventname: person.getEventsModel[index].eventOrganizer
-                            ?.organizerName!,
+                        organizername: person.getEventsModel[index]
+                            .eventOrganizer?.organizerName!,
                         model: person.getEventsModel,
+                        organizerid: person
+                            .getEventsModel[index].eventOrganizer?.id
+                            .toString(),
                       ),
                       withNavBar: false,
                     );

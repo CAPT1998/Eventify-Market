@@ -21,7 +21,6 @@ class _MyticketScreenState extends State<MyticketScreen> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    Provider.of<EventProvider>(context, listen: false).mGetEventSeatHistory();
   }
 
   @override
@@ -142,7 +141,7 @@ class _MyticketScreenState extends State<MyticketScreen> {
                                                                 .getEventSeatHsitoryModel[
                                                             index]),
                                                     withNavBar: false,
-                                                  ); 
+                                                  );
                                                 },
                                                 child: _TicketWidget(
                                                     model: value

@@ -20,11 +20,13 @@ import 'package:timezone/timezone.dart' as tz;
 
 import '../../../ConstantModels/LoginModel.dart';
 import '../../../ConstantProviders/AuthProviders.dart';
+import '../../Models/GetFavoriteEvents.dart';
 import '../../Widgets/TextWidget.dart';
+import '../HomeScreens/ExploreNearByEventsScreen.dart';
 
 class EventDetailsScreen extends StatefulWidget {
   EventDetailsScreen({super.key, required this.model});
-  GetEventsModel model;
+  dynamic model;
 
   @override
   State<EventDetailsScreen> createState() => _EventDetailsScreenState();
@@ -32,20 +34,27 @@ class EventDetailsScreen extends StatefulWidget {
 
 class _EventDetailsScreenState extends State<EventDetailsScreen> {
   GoogleMapController? _googleMapController;
-  List<GetEventsModel> _filteredListReviews = [];
+  List<GetEventsModel> getEventsModel = [];
   Map<DateTime, List<dynamic>> _events = {};
   final DeviceCalendarPlugin _deviceCalendarPlugin = DeviceCalendarPlugin();
   String remindertime = "";
-
+  bool _isfavorite = false;
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    Provider.of<EventProvider>(context, listen: false)
+
+    WidgetsBinding.instance.addPostFrameCallback((_) => getRequests(context));
+  }
+
+  getRequests(BuildContext context) async {
+    await Provider.of<EventProvider>(context, listen: false).mGetEvents();
+
+    await Provider.of<EventProvider>(context, listen: false)
         .mGetEventTickets(id: "${widget.model.id}");
-    Provider.of<EventProvider>(context, listen: false)
+    await Provider.of<EventProvider>(context, listen: false)
         .mGetEventSeats(id: "${widget.model.id}");
-    Provider.of<EventProvider>(context, listen: false)
+    await Provider.of<EventProvider>(context, listen: false)
         .mGetTablesEvent(id: "${widget.model.id}");
   }
 
@@ -91,14 +100,27 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
                             onTap: () {},
                             child: FavoriteButton(
                               iconSize: 40,
-                              valueChanged: (_isFavorite) async {
-                                await eventvalue.addFavoriteEvents(
-                                    context,
-                                    authvalue.loginModel[0].data?.id,
-                                    widget.model.id);
-                                await eventvalue.getFavoriteEvents(authvalue
-                                    .loginModel[0].data!.id
-                                    .toString());
+                              valueChanged: (_) async {
+                                if (!_isfavorite) {
+                                  await eventvalue.addFavoriteEvents(
+                                      context,
+                                      authvalue.loginModel[0].data?.id,
+                                      widget.model.id);
+                                  await eventvalue.getFavoriteEvents(authvalue
+                                      .loginModel[0].data!.id
+                                      .toString());
+                                } else {
+                                  await eventvalue.deleteFavoriteEvents(
+                                      context,
+                                      authvalue.loginModel[0].data?.id,
+                                      widget.model.id);
+                                  await eventvalue.getFavoriteEvents(authvalue
+                                      .loginModel[0].data!.id
+                                      .toString());
+                                }
+                                setState(() {
+                                  _isfavorite = !_isfavorite;
+                                });
                               },
                             ),
                           ),
@@ -117,7 +139,7 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
                     bottom: 0,
                     right: 0,
                     child: Container(
-                      height: height * 0.1,
+                      height: height * 0.2,
                       width: width,
                       padding: EdgeInsets.all(20),
                       decoration: BoxDecoration(
@@ -134,7 +156,8 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
                           ),
                           Spacer(),
                           TextWidget(
-                            title: "By Living Gallery",
+                            title: "By " +
+                                widget.model.eventOrganizer!.organizerName!,
                             fontWeight: FontWeight.w500,
                             size: 12,
                             color: Colors.white,
@@ -412,32 +435,45 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
                     SizedBox(
                       height: 20,
                     ),
-                    TextWidget(
-                      title: "Organizer",
-                      size: 16,
-                      fontWeight: FontWeight.w600,
-                    ),
-                    SizedBox(
-                      height: 10,
-                    ),
-                    OrganizerWidget(widget.model.eventOrganizer!.organizerName!,
-                        widget.model.eventOrganizer!.id),
-                    // OrganizerWidget(widget.model.eventOrganizer),
-                    // OrganizerWidget(widget.model.eventOrganizer),
-                    SizedBox(height: 20),
+                    widget.model.eventOrganizer != null
+                        ? TextWidget(
+                            title: "Organizer",
+                            size: 16,
+                            fontWeight: FontWeight.w600,
+                          )
+                        : SizedBox(
+                            height: 10,
+                          ),
+                    widget.model.eventOrganizer != null
+                        ? OrganizerWidget(
+                            widget.model.eventOrganizer!.organizerName!,
+                            widget.model.eventOrganizer!.id)
+                        :
+
+                        // OrganizerWidget(widget.model.eventOrganizer),
+                        // OrganizerWidget(widget.model.eventOrganizer),
+                        SizedBox(height: 20),
                     Row(
                       children: [
                         TextWidget(
-                          title: "Similiar Events",
+                          title: "Similar Events",
                           fontWeight: FontWeight.w700,
                           size: 16,
                         ),
                         Spacer(),
-                        TextWidget(
-                            title: "See All",
-                            fontWeight: FontWeight.w500,
-                            size: 14,
-                            color: appColor)
+                        InkWell(
+                            onTap: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          ExploreNearByEventsScreen()));
+                            },
+                            child: TextWidget(
+                                title: "See All",
+                                fontWeight: FontWeight.w500,
+                                size: 14,
+                                color: appColor)),
                       ],
                     ),
                     SizedBox(
@@ -445,19 +481,17 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
                     ),
                     SingleChildScrollView(
                       scrollDirection: Axis.horizontal,
-                      child: Row(
-                        children: [
-                          _NearWidget(context,
-                              img: "3",
-                              title: "",
-                              color: Colors.transparent,
-                              filteredListReviews: _filteredListReviews),
-                          _NearWidget(context,
-                              filteredListReviews: _filteredListReviews,
-                              img: "4",
-                              title: "Flash Deal",
-                              color: yellowColor),
-                        ],
+                      child: Consumer2<EventProvider, AuthProvider>(
+                        builder: (context, eventvalue, authvalue, child) => Row(
+                          children: [
+                            _NearWidget(
+                                img: "3",
+                                title: "",
+                                color: Colors.transparent,
+                                eventmodel: eventvalue.getEventsModel,
+                                value: eventvalue),
+                          ],
+                        ),
                       ),
                     ),
                     SizedBox(
@@ -556,10 +590,7 @@ class _OrganizerWidgetState extends State<OrganizerWidget> {
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
             color: appColor,
             onPressed: () {
-              setState(() {
-                isFollowing = !isFollowing;
-              });
-              if (isFollowing) {
+              if (!isFollowing) {
                 eventvalue.followorganizer(
                     context,
                     authvalue.loginModel[0].data!.id.toString(),
@@ -570,6 +601,9 @@ class _OrganizerWidgetState extends State<OrganizerWidget> {
                     authvalue.loginModel[0].data!.id.toString(),
                     widget.id.toString());
               }
+              setState(() {
+                isFollowing = !isFollowing;
+              });
               print("follower count is" + eventvalue.followersText!);
             },
             child: TextWidget(
@@ -585,85 +619,102 @@ class _OrganizerWidgetState extends State<OrganizerWidget> {
   }
 }
 
-Widget _NearWidget(context,
+Widget _NearWidget(
     {required String img,
-    required List<GetEventsModel> filteredListReviews,
     required String title,
+    required List<GetEventsModel> eventmodel,
+    required EventProvider value,
     dynamic color}) {
-  return GestureDetector(
-    onTap: () {
-      PersistentNavBarNavigator.pushNewScreen(
-        context,
-        screen: EventDetailsScreen(
-          model: filteredListReviews[0],
-        ),
-        withNavBar: false,
-      );
-    },
-    child: Container(
-      margin: EdgeInsets.only(right: 10, bottom: 10),
-      width: width * 0.6,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Stack(
-            children: [
-              ClipRRect(
-                  borderRadius: BorderRadius.circular(10),
-                  child: Image.asset("assets/img/$img.png",
-                      height: height * 0.17,
+  return SizedBox(
+    height: height * 0.30,
+    child: value.checkValueEvent == false
+        ? Image.asset("assets/img/loading.gif")
+        : eventmodel.length == 0
+            ? TextWidget(title: "No Event Available")
+            : ListView.builder(
+                shrinkWrap: true,
+                scrollDirection: Axis.horizontal,
+                itemCount: eventmodel.length,
+                physics: NeverScrollableScrollPhysics(),
+                itemBuilder: (context, index) {
+                  return GestureDetector(
+                    onTap: () {
+                      PersistentNavBarNavigator.pushNewScreen(
+                        context,
+                        screen: EventDetailsScreen(
+                          model: eventmodel[index],
+                        ),
+                        withNavBar: false,
+                      );
+                    },
+                    child: Container(
+                      margin: EdgeInsets.only(right: 20, bottom: 10),
                       width: width * 0.6,
-                      fit: BoxFit.fill)),
-              Container(
-                padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                margin: EdgeInsets.only(top: 10, left: 10),
-                decoration: BoxDecoration(
-                    color: color, borderRadius: BorderRadius.circular(5)),
-                child: TextWidget(
-                  title: "$title",
-                  fontWeight: FontWeight.w700,
-                  size: 8,
-                  color: Colors.white,
-                ),
-              ),
-            ],
-          ),
-          SizedBox(
-            height: 10,
-          ),
-          TextWidget(
-            title: "Bring Me The Horizon Tour",
-            size: 16,
-            fontWeight: FontWeight.w700,
-          ),
-          SizedBox(
-            height: 10,
-          ),
-          Row(
-            children: [
-              Icon(
-                Icons.calendar_month_outlined,
-                size: 15,
-                color: greyColor,
-              ),
-              TextWidget(
-                title: "  Nov 27  .  07:00 PM",
-                size: 12,
-                fontWeight: FontWeight.w500,
-                color: greyColor,
-              ),
-              Spacer(),
-              TextWidget(
-                title: "\$39.00",
-                size: 12,
-                fontWeight: FontWeight.w500,
-                color: darkPurpleColor,
-              ),
-            ],
-          )
-        ],
-      ),
-    ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Stack(
+                            children: [
+                              ClipRRect(
+                                  borderRadius: BorderRadius.circular(20),
+                                  child: Image.asset("assets/img/$img.png",
+                                      height: height * 0.2,
+                                      width: width,
+                                      fit: BoxFit.fill)),
+                              Container(
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: 10, vertical: 5),
+                                margin: EdgeInsets.only(top: 10, left: 10),
+                                decoration: BoxDecoration(
+                                    color: color,
+                                    borderRadius: BorderRadius.circular(5)),
+                                child: TextWidget(
+                                  title: "$title",
+                                  fontWeight: FontWeight.w700,
+                                  size: 8,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ],
+                          ),
+                          SizedBox(
+                            height: 10,
+                          ),
+                          TextWidget(
+                            title: eventmodel[0].eventTitle,
+                            size: 16,
+                            fontWeight: FontWeight.w700,
+                          ),
+                          SizedBox(
+                            height: 10,
+                          ),
+                          Row(
+                            children: [
+                              Icon(
+                                Icons.calendar_month_outlined,
+                                size: 15,
+                                color: greyColor,
+                              ),
+                              TextWidget(
+                                title: eventmodel[0].eventStartDate,
+                                size: 12,
+                                fontWeight: FontWeight.w500,
+                                color: greyColor,
+                              ),
+                              Spacer(),
+                              TextWidget(
+                                title: "\$ " + eventmodel[0].price,
+                                size: 12,
+                                fontWeight: FontWeight.w500,
+                                color: darkPurpleColor,
+                              ),
+                            ],
+                          )
+                        ],
+                      ),
+                    ),
+                  );
+                }),
   );
 }
 

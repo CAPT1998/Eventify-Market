@@ -13,6 +13,7 @@ import 'package:quickie_event/ConstantModels/LoginModel.dart';
 import 'package:quickie_event/Quicke_Features/Screen_Features/BottomNavigationFeatures/BottomNavigationFeatures.dart';
 import 'package:quickie_event/helper/storage_helper.dart';
 import 'package:flutter/foundation.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../ConstantModels/ProfileModel.dart';
 import '../Quicke_Events/Widgets/api_url.dart';
@@ -20,6 +21,24 @@ import '../Quicke_Events/Widgets/api_url.dart';
 class AuthProvider with ChangeNotifier {
   String? profile;
   List<LoginModel> loginModel = [];
+  AuthProvider() {
+    _loadLoginModel();
+  }
+
+  Future<void> loadLoginModel() async {
+    await _loadLoginModel();
+  }
+
+  _loadLoginModel() async {
+    print("login model loaded");
+
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String loginModelJson = prefs.getString('login_model') ?? '[]';
+    List<dynamic> loginModelList = json.decode(loginModelJson);
+    loginModel =
+        loginModelList.map((json) => LoginModel.fromJson(json)).toList();
+    notifyListeners();
+  }
 
   String? registerMessage;
   Map userData = {};
@@ -122,8 +141,6 @@ class AuthProvider with ChangeNotifier {
   }) async {
     List<LoginModel> loginModel = [];
 
-    String token =
-        "PivvPlsQWxPl1bB5KrbKNBuraJit0PrUZekQUgtLyTRuyBq921atFtoR1HuA"; // Assuming the token is stored in `apiToken` property of `LoginModel`
     var requestBody = {};
 
     if (name.isNotEmpty) {
@@ -141,7 +158,8 @@ class AuthProvider with ChangeNotifier {
     var response = await http.post(
       Uri.parse('http://quickeeapi.pakwexpo.com/api/users/$id'),
       headers: {
-        'Authorization': 'Bearer $token',
+        'Authorization':
+            'Bearer ' + (Storage.getJWT().isEmpty ? "" : Storage.getJWT()),
       },
       body: requestBody,
     );
@@ -151,7 +169,7 @@ class AuthProvider with ChangeNotifier {
     final Map<String, dynamic> data = json.decode(response.body);
 
     if (response.statusCode == 200) {
-      loginModel = loginModelFromJson(json.encode(data));
+      List<LoginModel> loginModel = loginModelFromJsonupdateprofile(jsonData);
       this.loginModel = loginModel;
       Storage.saveUser2(loginModel);
       Storage.saveJWT(loginModel[0].data!.apiToken!);
@@ -191,17 +209,20 @@ class AuthProvider with ChangeNotifier {
       Map<String, dynamic> jsonMap = json.decode(value);
 
       // Use the LoginModel.fromJson constructor directly
-      LoginModel model = LoginModel.fromJson(jsonMap);
+      loginModel = loginModelFromJsonlogin((jsonMap));
 
       // Add the single model to the loginModel list
-      loginModel.add(model);
 
       this.loginModel = loginModel;
       Storage.saveUser2(loginModel);
       Storage.saveJWT(loginModel[0].data!.apiToken!);
       loginMessage = "success";
+      print("token is " + loginModel[0].data!.apiToken!);
       this.loginMessage = loginMessage;
-      //             profile = loginModel.data!.media![0].url;
+      //profile = loginModel.data!.media![0].url;
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String loginModelJson = json.encode(loginModel);
+      prefs.setString('login_model', loginModelJson);
 
       notifyListeners();
     } else {
@@ -225,8 +246,8 @@ class AuthProvider with ChangeNotifier {
 
     if (response.statusCode == 200) {
       String value = await response.stream.bytesToString();
-      print(value);
-      loginModel = loginModelFromJson(value);
+      final jsonData = json.decode(value);
+      loginModel = loginModelFromJsonupdateprofile(jsonData);
       this.loginModel = loginModel;
       Storage.saveUser2(loginModel);
       Storage.saveJWT(loginModel[0].data!.apiToken!);

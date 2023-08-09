@@ -326,7 +326,7 @@ class _EventDetailsScreenState extends State<FavouriteEventDetailsScreen> {
                     SizedBox(
                       height: 200,
                       width: width,
-                      child: widget.model.lattitude == null ||
+                      child: widget.model.latitude == null ||
                               widget.model.longitude == null
                           ? Center(child: Text("No Location Available"))
                           : ClipRRect(
@@ -342,7 +342,7 @@ class _EventDetailsScreenState extends State<FavouriteEventDetailsScreen> {
                                   Marker(
                                     markerId: MarkerId("1"),
                                     position: LatLng(
-                                        double.parse(widget.model.lattitude!),
+                                        double.parse(widget.model.latitude!),
                                         double.parse(widget.model.longitude!)),
                                     // infoWindow:
                                     //     InfoWindow(title: markerIdVal, snippet: '*'),
@@ -351,7 +351,7 @@ class _EventDetailsScreenState extends State<FavouriteEventDetailsScreen> {
                                 ]),
                                 initialCameraPosition: CameraPosition(
                                   target: LatLng(
-                                      double.parse(widget.model.lattitude!),
+                                      double.parse(widget.model.latitude!),
                                       double.parse(widget.model.longitude!)),
                                   zoom: 16.0,
                                 ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
 import 'package:quickie_event/Constant.dart';
 import 'package:quickie_event/Quicke_Events/Screens/DetailOrganizer/DetaillOrganizerdetail.dart';
 import 'package:quickie_event/Quicke_Events/Screens/EventDetails/ContactInformationScreen.dart';
@@ -6,6 +7,8 @@ import 'package:quickie_event/Quicke_Events/Widgets/TextWidget.dart';
 
 import '../../../Quicke_Features/Screen_Features/BottomNavigationFeatures/BottomNavigationFeatures.dart';
 import '../BottomNavigation/PersistanceNavigationBar.dart';
+import '../HomeScreens/MyTicketScreen.dart';
+import '../MyTickets.dart/DetailTicketScreen.dart';
 
 class TicketOrderCompletedScreen extends StatefulWidget {
   const TicketOrderCompletedScreen({super.key});
@@ -67,11 +70,13 @@ class _TicketOrderCompletedScreenState
               minWidth: width,
               height: 50,
               onPressed: () {
-                // Navigator.push(
-                //     context,
-                //     MaterialPageRoute(
-                //         builder: (context) =>
-                //             ContactInformationDetailScreen()));
+                PersistentNavBarNavigator.pushNewScreen(
+                  context,
+                  screen: MyticketScreen(),
+                  withNavBar: true,
+                );
+                // Navigator.push(context,
+                //   MaterialPageRoute(builder: (context) => MyticketScreen()));
               },
               child: TextWidget(
                 title: "View Ticket",

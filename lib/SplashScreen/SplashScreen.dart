@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:provider/provider.dart';
 import 'package:quickie_event/Constant.dart';
 import 'package:quickie_event/ConstantIntroduction/IntroductionScreen1.dart';
@@ -22,15 +23,28 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    LoggingUtils.printValue("isfirst", Storage.getJWT());
-    Timer(Duration(seconds: 2), () {
+    checkisloggedin();
+    // loadloginmodel();
+  }
+
+  void loadloginmodel() async {
+    AuthProvider authProvider = AuthProvider();
+    await authProvider.loadLoginModel();
+  }
+
+  void checkisloggedin() async {
+    await GetStorage.init();
+
+    print(Storage.getJWT());
+
+    Timer(Duration(seconds: 1), () {
       Navigator.pushReplacement(
           context,
           MaterialPageRoute(
               builder: (context) => !Storage.getIsMentorTutorialComplete()
                   ? IntrductionScreen1()
                   : Storage.getJWT() != null && Storage.getJWT().isNotEmpty
-                      ? LoginScreen()
+                      ? BottomNavigationFeatures()
                       : LoginScreen()));
     });
   }

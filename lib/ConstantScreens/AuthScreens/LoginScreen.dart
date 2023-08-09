@@ -134,7 +134,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             SuccessFlushbar(
                                 context, "Login", "Log in Successfull");
                             Timer(Duration(seconds: 2), () {
-                              Navigator.pushReplacement(
+                              Navigator.push(
                                   context,
                                   MaterialPageRoute(
                                       builder: (context) =>
@@ -243,7 +243,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           SuccessFlushbar(
                               context, "Sign in", "Google Sign in Successfull");
                           Timer(Duration(seconds: 2), () {
-                            Navigator.pushReplacement(
+                            Navigator.push(
                                 context,
                                 MaterialPageRoute(
                                     builder: (context) =>

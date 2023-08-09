@@ -11,6 +11,15 @@ List<LoginModel> loginModelFromJson(String str) {
   return loginModels;
 }
 
+List<LoginModel> loginModelFromJsonlogin(Map<String, dynamic> data) {
+    LoginModel loginModel = LoginModel.fromJson(data);
+  return [loginModel];
+}
+List<LoginModel> loginModelFromJsonupdateprofile(Map<String, dynamic> data) {
+  LoginModel loginModel = LoginModel.fromJson(data);
+  return [loginModel];
+}
+
 String loginModelToJson(List<LoginModel> data) =>
     json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
 

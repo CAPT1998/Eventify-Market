@@ -13,22 +13,23 @@ import '../../Models/GetEventsModel.dart';
 import '../../Providers/EventsProvider.dart';
 import '../EventDetails/EventDetailsScreen.dart';
 
-class DetailOrganizerScreen extends StatefulWidget {
+class DetailAllOrganizerScreen extends StatefulWidget {
   String? organizername;
   String? organizerid;
-  dynamic model;
+  List<GetEventsModel> model;
 
-  DetailOrganizerScreen(
+  DetailAllOrganizerScreen(
       {required this.organizername,
       required this.organizerid,
       required this.model,
       super.key});
 
   @override
-  State<DetailOrganizerScreen> createState() => _DetailOrganizerScreenState();
+  State<DetailAllOrganizerScreen> createState() =>
+      _DetailAllOrganizerScreenState();
 }
 
-class _DetailOrganizerScreenState extends State<DetailOrganizerScreen> {
+class _DetailAllOrganizerScreenState extends State<DetailAllOrganizerScreen> {
   TabController? _tabController;
   bool _isfavorite = false;
 
@@ -98,7 +99,8 @@ class _DetailOrganizerScreenState extends State<DetailOrganizerScreen> {
                         fontWeight: FontWeight.w700,
                       ),
                       subtitle: TextWidget(
-                        title: widget.model.location ?? " Example Location",
+                        title: widget.model[0].eventOrganizer?.location ??
+                            " Example Location",
                         size: 12,
                         color: greyColor.withOpacity(0.5),
                         fontWeight: FontWeight.w500,
@@ -235,7 +237,8 @@ class _DetailOrganizerScreenState extends State<DetailOrganizerScreen> {
                                             padding: const EdgeInsets.symmetric(
                                                 horizontal: 20),
                                             child: TextWidget(
-                                              title: widget.model?.bio! ??
+                                              title: widget.model[0]
+                                                      .eventOrganizer?.bio! ??
                                                   "Example Bio",
                                               size: 14,
                                               maxline: 20,
@@ -444,7 +447,7 @@ Widget _CollectionsWidet(context, CollectionModel model) {
             bottom: 0,
             right: 0,
             child: Container(
-              height: height * 0.2,
+              height: height * 0.3,
               width: width * 0.8,
               margin: EdgeInsets.all(20),
               padding: EdgeInsets.all(20),
